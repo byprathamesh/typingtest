@@ -238,6 +238,8 @@ header h1 {
     position: relative;
     outline: none;
     cursor: text;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 .text-display:focus {

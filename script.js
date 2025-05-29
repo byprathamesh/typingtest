@@ -725,15 +725,42 @@ function displayText(words) {
     if (!textDisplay) return;
     textDisplay.innerHTML = '';
     gameState.wordElements = [];
+    
+    // Display words with better line formatting
+    const wordsPerLine = Math.floor(Math.random() * 3) + 8; // 8-10 words per line for variety
+    
     words.forEach((word, index) => {
         const wordSpan = document.createElement('span');
         wordSpan.classList.add('word');
-        word.split('').forEach(char => { const cs = document.createElement('span'); cs.textContent = char; wordSpan.appendChild(cs); });
+        word.split('').forEach(char => { 
+            const cs = document.createElement('span'); 
+            cs.textContent = char; 
+            cs.classList.add('char');
+            wordSpan.appendChild(cs); 
+        });
         textDisplay.appendChild(wordSpan);
         gameState.wordElements.push(wordSpan);
-        if (index < words.length - 1) { const s = document.createElement('span'); s.innerHTML = '&nbsp;'; textDisplay.appendChild(s); }
+        
+        // Add space between words, except at line breaks
+        if (index < words.length - 1) { 
+            const space = document.createElement('span'); 
+            space.innerHTML = '&nbsp;'; 
+            space.classList.add('space');
+            textDisplay.appendChild(space); 
+            
+            // Add line break every wordsPerLine words for better formatting
+            if ((index + 1) % wordsPerLine === 0) {
+                const lineBreak = document.createElement('br');
+                textDisplay.appendChild(lineBreak);
+            }
+        }
     });
-    if (gameState.wordElements.length > 0) { gameState.currentWordIndex = 0; gameState.currentWordElement = gameState.wordElements[0]; gameState.currentWordElement.classList.add('current'); }
+    
+    if (gameState.wordElements.length > 0) { 
+        gameState.currentWordIndex = 0; 
+        gameState.currentWordElement = gameState.wordElements[0]; 
+        gameState.currentWordElement.classList.add('current'); 
+    }
     updateCursor();
     textDisplay.scrollTop = 0;
 }
@@ -794,16 +821,35 @@ function handleInput(event) {
 function handleWordCompletion() {
     const currentWordText = gameState.words[gameState.currentWordIndex];
     const isCorrect = gameState.typedWord === currentWordText;
-    if (isCorrect) { gameState.currentWordElement.classList.add('correct'); if (keyboardSoundManager) keyboardSoundManager.playWordComplete(); }
-    else { gameState.currentWordElement.classList.add('incorrect'); if (keyboardSoundManager) keyboardSoundManager.playKeystroke(false, false); }
+    if (isCorrect) { 
+        gameState.currentWordElement.classList.add('correct'); 
+        if (keyboardSoundManager) keyboardSoundManager.playWordComplete(); 
+    }
+    else { 
+        gameState.currentWordElement.classList.add('incorrect'); 
+        if (keyboardSoundManager) keyboardSoundManager.playKeystroke(false, false); 
+    }
     gameState.currentWordElement.classList.remove('current');
-    gameState.typedWord = ''; gameState.currentWordIndex++;
-    if (gameState.currentWordIndex >= gameState.words.length) { endTest(); return; }
+    gameState.typedWord = ''; 
+    gameState.currentWordIndex++;
+    
+    if (gameState.currentWordIndex >= gameState.words.length) { 
+        endTest(); 
+        return; 
+    }
+    
     gameState.currentWordElement = gameState.wordElements[gameState.currentWordIndex];
-    if (gameState.currentWordElement) gameState.currentWordElement.classList.add('current');
+    if (gameState.currentWordElement) {
+        gameState.currentWordElement.classList.add('current');
+    }
+    
     updateWordDisplay(); 
     updateCursor();
-    ensureCurrentWordIsVisible();
+    
+    // Ensure the new word is visible with smooth scrolling
+    setTimeout(() => {
+        ensureCurrentWordIsVisible();
+    }, 50); // Small delay to ensure DOM updates are complete
 }
 
 function updateWordDisplay() {
@@ -1015,26 +1061,31 @@ function ensureCurrentWordIsVisible() {
 
     const displayVisibleHeight = textDisplay.clientHeight;
 
-    // Define a "comfort zone" (e.g., middle 50% of the display area)
-    const comfortZoneTop = displayVisibleHeight * 0.25;
-    const comfortZoneBottom = displayVisibleHeight * 0.75;
+    // Keep current word in the top third of the display (more aggressive scrolling)
+    const targetZoneTop = displayVisibleHeight * 0.1;  // Top 10%
+    const targetZoneBottom = displayVisibleHeight * 0.4; // Top 40%
 
     let targetScrollTop = textDisplay.scrollTop;
 
-    if (wordTopRelativeToDisplay < comfortZoneTop) {
-        // Word is above the comfort zone, scroll up (decrease scrollTop)
-        targetScrollTop = textDisplay.scrollTop - (comfortZoneTop - wordTopRelativeToDisplay) - (gameState.currentWordElement.offsetHeight * 0.5);
-    } else if (wordBottomRelativeToDisplay > comfortZoneBottom) {
-        // Word is below the comfort zone, scroll down (increase scrollTop)
-        targetScrollTop = textDisplay.scrollTop + (wordBottomRelativeToDisplay - comfortZoneBottom) + (gameState.currentWordElement.offsetHeight * 0.5);
+    // If word is below the target zone, scroll down to bring it to the top
+    if (wordTopRelativeToDisplay > targetZoneBottom) {
+        targetScrollTop = textDisplay.scrollTop + (wordTopRelativeToDisplay - targetZoneTop);
+    } 
+    // If word is above the target zone, scroll up to bring it to the top
+    else if (wordTopRelativeToDisplay < targetZoneTop) {
+        targetScrollTop = textDisplay.scrollTop + (wordTopRelativeToDisplay - targetZoneTop);
     }
 
     // Clamp the scroll top to valid range
     targetScrollTop = Math.max(0, targetScrollTop);
     targetScrollTop = Math.min(targetScrollTop, textDisplay.scrollHeight - displayVisibleHeight);
 
-    if (Math.abs(textDisplay.scrollTop - targetScrollTop) > 5) { // Only scroll if significant change
-        textDisplay.scrollTop = targetScrollTop; // Direct scroll for now, CSS handles smooth
+    // Apply smooth scrolling
+    if (Math.abs(textDisplay.scrollTop - targetScrollTop) > 10) {
+        textDisplay.scrollTo({
+            top: targetScrollTop,
+            behavior: 'smooth'
+        });
     }
 }
 
