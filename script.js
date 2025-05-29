@@ -463,13 +463,19 @@ function updateCursor() {
     elements.cursor.style.top = top + 'px';
 }
 
-// Progress tracking
+// Progress tracking based on time
 function updateProgress() {
     if (!elements.progressBar) return;
-    
-    const progress = gameState.currentWordIndex / Math.min(gameState.words.length, 100);
-    const percentage = Math.min(100, progress * 100);
-    elements.progressBar.style.width = percentage + '%';
+
+    if (gameState.isActive && gameState.startTime) {
+        const elapsed = (Date.now() - gameState.startTime) / 1000; // Time in seconds
+        const progress = (elapsed / gameState.timeLimit) * 100;
+        elements.progressBar.style.width = Math.min(100, progress) + '%';
+    } else if (gameState.isCompleted) {
+        elements.progressBar.style.width = '100%'; // Full bar on completion
+    } else {
+        elements.progressBar.style.width = '0%'; // Reset if test not active or not completed
+    }
 }
 
 // Enhanced statistics
@@ -571,58 +577,73 @@ function handleInput(event) {
         return;
     }
 
-    if (event.key === 'Enter') { // Explicitly handle Enter
-        event.preventDefault(); // Stop any default browser behavior
-        return; // Do nothing further with Enter for now
+    if (event.key === 'Enter') { 
+        event.preventDefault(); 
+        return; 
     }
     
-    // Prevent default for typing keys we handle for the game logic
     const handledGameKeys = ['Backspace', ' '];
     if (event.key.length === 1 || handledGameKeys.includes(event.key)) {
         event.preventDefault();
     } else {
-        // Allow other keys (F5, F12, etc.) to perform their default actions
-        // if not handled as a shortcut or game key.
         return; 
     }
 
     if (gameState.isCompleted) return;
 
     if (!gameState.isActive && (event.key.length === 1 || event.key === ' ')) {
+        // Do not count space as a typed character if it only starts the test
+        if (event.key === ' ' && gameState.userInput === '') return;
         startTest();
     }
     
     const currentWord = gameState.words[gameState.currentWordIndex];
-    if (!currentWord && gameState.isActive) { // Check if currentWord is undefined while test is active
-        endTest(); // End test if no more words
+    if (!currentWord && gameState.isActive) { 
+        endTest(); 
         return;
     }
-    if(!currentWord) return; // If not active and no current word, do nothing.
+    if(!currentWord) return; 
     
     if (event.key === ' ') {
-        if (gameState.userInput.length > 0 || gameState.difficulty === 'quotes') { // Allow space to advance if input exists or if it's quotes mode (empty words possible)
+        if (gameState.userInput.length > 0 || (gameState.difficulty === 'quotes' && currentWord.length === 0) ) { 
+            // Only process space if there is input or it's an intentionally empty word in quotes
             handleWordCompletion();
         }
     } else if (event.key === 'Backspace') {
         if (gameState.userInput.length > 0) {
+            // Determine if the character being removed was correct or incorrect
+            const charIndexToRemove = gameState.userInput.length - 1;
+            if (charIndexToRemove < currentWord.length && gameState.userInput[charIndexToRemove] === currentWord[charIndexToRemove]){
+                // If it was a correct character that is now being removed, it should not affect correctChars count for past correct input.
+                // However, totalChars should reflect the action of backspacing.
+            } else if (charIndexToRemove < currentWord.length) {
+                // If an incorrect char is removed, it was already an error. Error count doesn't change on removal by backspace itself.
+            } // Extra characters removed were errors, no change in error count on removal.
+
             gameState.userInput = gameState.userInput.slice(0, -1);
+            // gameState.totalChars--; // Decrement totalChars as a character is removed
+            // No change to errors or correctChars by backspace itself, those are judged on input.
             displayText();
-            soundManager.playKeystroke(true, false);
+            soundManager.playKeystroke(true, false); // Backspace sound is neutral
         }
-    } else if (event.key.length === 1) {
+    } else if (event.key.length === 1) { // Regular character input
         gameState.userInput += event.key;
+        gameState.totalChars++; // Increment for each character typed
         
         const charIndex = gameState.userInput.length - 1;
-        const isCorrect = charIndex < currentWord.length && event.key === currentWord[charIndex];
-        
-        gameState.totalChars++;
-        if (isCorrect) {
-            gameState.correctChars++;
-        } else {
+        const expectedChar = currentWord[charIndex];
+
+        if (charIndex < currentWord.length) { // Character is within the bounds of the current word
+            if (event.key === expectedChar) {
+                gameState.correctChars++;
+            } else {
+                gameState.errors++;
+            }
+        } else { // Character is an extra character beyond the current word's length
             gameState.errors++;
         }
         
-        soundManager.playKeystroke(isCorrect, false);
+        soundManager.playKeystroke(event.key === expectedChar || charIndex >= currentWord.length, false);
         
         const currentWordElement = elements.textDisplay.querySelector('.word.current');
         if (currentWordElement) {
@@ -640,21 +661,27 @@ function handleInput(event) {
 // Enhanced word completion
 function handleWordCompletion() {
     const currentWord = gameState.words[gameState.currentWordIndex];
+    const typedWord = gameState.userInput;
+
+    gameState.typedWords[gameState.currentWordIndex] = typedWord; // Store what was actually typed
     
-    gameState.typedWords[gameState.currentWordIndex] = gameState.userInput;
-    
-    if (gameState.userInput === currentWord) {
+    // Word correctness is determined by exact match for stats purposes.
+    // Visuals will show character by character correctness.
+    if (typedWord === currentWord) {
         gameState.correctWords++;
         soundManager.playWordComplete();
     } else {
-        const remainingChars = currentWord.length - gameState.userInput.length;
-        if (remainingChars > 0) {
-            gameState.totalChars += remainingChars;
-            gameState.errors += remainingChars;
-        }
+        // Errors for mistyped characters within the *original word length* are already counted during typing.
+        // Extra characters beyond original word length are also already counted.
+        // No additional errors are added here purely for skipping characters by pressing space early.
+        // The word is simply not counted as a `correctWord`.
+        soundManager.playKeystroke(false, true); // Play an error-like space sound if word is not perfect
     }
     
-    soundManager.playKeystroke(true, true);
+    // If no error sound played because it was a correct word, play normal space.
+    if (typedWord === currentWord) {
+        soundManager.playKeystroke(true, true); // Normal space sound
+    }
     
     gameState.currentWordIndex++;
     gameState.userInput = '';
@@ -665,7 +692,7 @@ function handleWordCompletion() {
     }
     
     displayText();
-    updateStats();
+    updateStats(); // Update stats after moving to the next word
 }
 
 // Enhanced test management
