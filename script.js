@@ -464,11 +464,8 @@ function displayText() {
     for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
         const lineDiv = document.createElement('div');
         lineDiv.style.height = 'calc(1.4rem * 1.8)';
-        lineDiv.style.display = 'flex';
-        lineDiv.style.alignItems = 'center';
-        lineDiv.style.flexWrap = 'wrap';
-        lineDiv.style.marginBottom = '0';
         lineDiv.style.lineHeight = '1.8';
+        lineDiv.style.marginBottom = '0';
         
         // Calculate word range for this line
         const lineStartWord = lineIndex * wordsPerLine;
@@ -483,7 +480,6 @@ function displayText() {
             wordElement.className = 'word';
             wordElement.setAttribute('data-word-index', wordIndex);
             wordElement.style.marginRight = '0.4rem';
-            wordElement.style.display = 'inline';
             
             // Set word state classes
             if (wordIndex === gameState.currentWordIndex) {
