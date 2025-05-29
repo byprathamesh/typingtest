@@ -253,15 +253,18 @@ header h1 {
     white-space: nowrap;
     overflow: visible;
     width: 100%;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .word {
     display: inline-block;
-    margin-right: 0.4rem;
+    margin-right: 0.8rem;
     position: relative;
     color: #ffffff;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .word.correct {

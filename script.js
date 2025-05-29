@@ -565,7 +565,7 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
-    lines: [], currentLine: 0, wordsPerLine: 10,
+    lines: [], currentLine: 0, wordsPerLine: 8, // Reduced from 10 to 8 for better spacing
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -715,9 +715,9 @@ function displayText(words) {
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
     gameState.currentLine = 0;
-    gameState.wordsPerLine = 10; // Fixed number of words per line
+    gameState.wordsPerLine = 8; // Fixed number of words per line
     
-    // Generate initial 3 lines (30 words)
+    // Generate initial 3 lines (24 words)
     generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
@@ -756,14 +756,6 @@ function generateInitialLines(words) {
             
             lineDiv.appendChild(wordSpan);
             gameState.wordElements.push(wordSpan);
-            
-            // Add space between words (except last word in line)
-            if (i < endIndex - 1) {
-                const space = document.createElement('span');
-                space.innerHTML = '&nbsp;';
-                space.classList.add('space');
-                lineDiv.appendChild(space);
-            }
         }
         
         textDisplay.appendChild(lineDiv);
@@ -805,14 +797,6 @@ async function addNewLine() {
         
         lineDiv.appendChild(wordSpan);
         gameState.wordElements.push(wordSpan);
-        
-        // Add space between words (except last word)
-        if (i < wordsPerLine - 1 && newWords[i + 1]) {
-            const space = document.createElement('span');
-            space.innerHTML = '&nbsp;';
-            space.classList.add('space');
-            lineDiv.appendChild(space);
-        }
     }
     
     // Add the new line to the bottom
@@ -896,18 +880,20 @@ function handleWordCompletion() {
     gameState.typedWord = ''; 
     gameState.currentWordIndex++;
     
-    // Check if we've completed a line (every 10 words)
+    // Check if we need more words (when approaching end)
+    if (gameState.currentWordIndex >= gameState.words.length - 10) {
+        generateMoreWords();
+    }
+    
+    // Check if we've completed a line (every 8 words) - only trigger line change after a small delay
     const currentLineNumber = Math.floor(gameState.currentWordIndex / gameState.wordsPerLine);
     const previousLineNumber = Math.floor((gameState.currentWordIndex - 1) / gameState.wordsPerLine);
     
     if (currentLineNumber > previousLineNumber) {
-        // We've moved to a new line, add new line and remove top line
-        addNewLine();
-    }
-    
-    // Check if we need more words (when approaching end)
-    if (gameState.currentWordIndex >= gameState.words.length - 5) {
-        generateMoreWords();
+        // Small delay to prevent jarring changes
+        setTimeout(() => {
+            addNewLine();
+        }, 100);
     }
     
     gameState.currentWordElement = gameState.wordElements[gameState.currentWordIndex];
