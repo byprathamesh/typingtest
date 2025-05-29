@@ -263,14 +263,15 @@ header h1 {
     transition: background-color 0.2s ease; /* Smooth transitions */
 }
 
-/* Active line styling - applied by JavaScript */
-.text-line.active {
+/* Highlight the middle line (second line) where user types */
+.text-line:nth-child(2) {
     background-color: rgba(255, 255, 255, 0.05); /* Very subtle highlight */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
 }
 
-/* Inactive line styling - applied by JavaScript */
-.text-line.inactive {
+/* Dimmer appearance for first and third lines */
+.text-line:nth-child(1),
+.text-line:nth-child(3) {
     opacity: 0.7; /* Slightly dimmed */
 }
 
