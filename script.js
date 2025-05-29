@@ -565,7 +565,9 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
-    lines: [], currentLine: 0, wordsPerLine: 9, // Increased to 9 for better space utilization
+    lines: [], currentLine: 0, wordsPerLine: 8, // Reduced to 8 for better spacing with long words
+    wordPool: [], // Pre-generated word pool to maintain consistency
+    poolIndex: 0, // Current position in the word pool
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -705,8 +707,19 @@ function setupEventListeners() {
 }
 
 async function getWords(difficulty) {
+    // Create a large, consistent pool of words for the entire session
     let pool = wordLists[difficulty] || wordLists.mixed;
-    return [...pool].sort(() => 0.5 - Math.random()).slice(0, 100);
+    
+    // Create a much larger pool by repeating and shuffling
+    let extendedPool = [];
+    for (let i = 0; i < 10; i++) { // Create 10x the original pool size
+        extendedPool.push(...pool);
+    }
+    
+    // Shuffle the extended pool once at the beginning
+    extendedPool.sort(() => 0.5 - Math.random());
+    
+    return extendedPool;
 }
 
 function displayText(words) {
@@ -715,9 +728,16 @@ function displayText(words) {
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
     gameState.currentLine = 0;
-    gameState.wordsPerLine = 9; // Fixed number of words per line
+    gameState.wordsPerLine = 8; // Fixed number of words per line
     
-    // Generate initial 3 lines (27 words)
+    // Apply hard mode class for better word spacing
+    if (settingsManager.difficulty === 'hard' || settingsManager.difficulty === 'programming') {
+        textDisplay.classList.add('hard-mode');
+    } else {
+        textDisplay.classList.remove('hard-mode');
+    }
+    
+    // Generate initial 3 lines (24 words)
     generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
@@ -733,29 +753,33 @@ function generateInitialLines(words) {
     const linesToShow = 3;
     const wordsPerLine = gameState.wordsPerLine;
     
+    // Initialize the pool index
+    gameState.poolIndex = 0;
+    
     for (let line = 0; line < linesToShow; line++) {
         const lineDiv = document.createElement('div');
         lineDiv.classList.add('text-line');
         
-        const startIndex = line * wordsPerLine;
-        const endIndex = Math.min(startIndex + wordsPerLine, words.length);
-        
-        for (let i = startIndex; i < endIndex; i++) {
-            const word = words[i];
-            const wordSpan = document.createElement('span');
-            wordSpan.classList.add('word');
-            wordSpan.setAttribute('data-line', line);
-            wordSpan.setAttribute('data-word-index', i);
-            
-            word.split('').forEach(char => { 
-                const cs = document.createElement('span'); 
-                cs.textContent = char; 
-                cs.classList.add('char');
-                wordSpan.appendChild(cs); 
-            });
-            
-            lineDiv.appendChild(wordSpan);
-            gameState.wordElements.push(wordSpan);
+        for (let wordInLine = 0; wordInLine < wordsPerLine; wordInLine++) {
+            const wordIndex = gameState.poolIndex;
+            if (wordIndex < words.length) {
+                const word = words[wordIndex];
+                const wordSpan = document.createElement('span');
+                wordSpan.classList.add('word');
+                wordSpan.setAttribute('data-line', line);
+                wordSpan.setAttribute('data-word-index', wordIndex);
+                
+                word.split('').forEach(char => { 
+                    const cs = document.createElement('span'); 
+                    cs.textContent = char; 
+                    cs.classList.add('char');
+                    wordSpan.appendChild(cs); 
+                });
+                
+                lineDiv.appendChild(wordSpan);
+                gameState.wordElements.push(wordSpan);
+                gameState.poolIndex++;
+            }
         }
         
         textDisplay.appendChild(lineDiv);
@@ -765,15 +789,20 @@ function generateInitialLines(words) {
 
 // New function to add a new line when needed
 async function addNewLine() {
-    const newWords = await getWords(settingsManager.difficulty);
     const wordsPerLine = gameState.wordsPerLine;
-    const currentTotalWords = gameState.words.length;
     
-    // Add new words to our word array
-    const startIndex = currentTotalWords;
+    // Use words from our existing word pool instead of generating new ones
+    const newWords = [];
     for (let i = 0; i < wordsPerLine; i++) {
-        if (newWords[i]) {
-            gameState.words.push(newWords[i]);
+        if (gameState.poolIndex < gameState.words.length) {
+            newWords.push(gameState.words[gameState.poolIndex]);
+            gameState.poolIndex++;
+        } else {
+            // If we've exhausted our pool, generate more words and extend it
+            const moreWords = await getWords(settingsManager.difficulty);
+            gameState.words.push(...moreWords);
+            newWords.push(gameState.words[gameState.poolIndex]);
+            gameState.poolIndex++;
         }
     }
     
@@ -782,11 +811,14 @@ async function addNewLine() {
     lineDiv.classList.add('text-line');
     
     // Add words to the new line
-    for (let i = 0; i < wordsPerLine && newWords[i]; i++) {
+    for (let i = 0; i < newWords.length; i++) {
         const word = newWords[i];
         const wordSpan = document.createElement('span');
         wordSpan.classList.add('word');
-        wordSpan.setAttribute('data-word-index', startIndex + i);
+        
+        // Use poolIndex - newWords.length + i for proper indexing
+        const wordIndex = gameState.poolIndex - newWords.length + i;
+        wordSpan.setAttribute('data-word-index', wordIndex);
         
         word.split('').forEach(char => { 
             const cs = document.createElement('span'); 
@@ -809,6 +841,9 @@ async function addNewLine() {
         if (topLine && topLine.parentNode) {
             topLine.parentNode.removeChild(topLine);
         }
+        
+        // Remove the corresponding word elements from our tracking array
+        gameState.wordElements.splice(0, wordsPerLine);
     }
 }
 
@@ -881,35 +916,58 @@ function handleWordCompletion() {
     gameState.currentWordIndex++;
     
     // Check if we need more words (when approaching end)
-    if (gameState.currentWordIndex >= gameState.words.length - 10) {
-        generateMoreWords();
+    if (gameState.currentWordIndex >= gameState.words.length - 30) {
+        const moreWords = getWords(settingsManager.difficulty);
+        moreWords.then(words => {
+            gameState.words.push(...words);
+        });
     }
     
-    // Check if we've completed a line (every 9 words) - only trigger line change after a small delay
+    // Check if we've completed a line (every 8 words) - trigger line change immediately
     const currentLineNumber = Math.floor(gameState.currentWordIndex / gameState.wordsPerLine);
     const previousLineNumber = Math.floor((gameState.currentWordIndex - 1) / gameState.wordsPerLine);
     
     if (currentLineNumber > previousLineNumber) {
-        // Small delay to prevent jarring changes
-        setTimeout(() => {
-            addNewLine();
-        }, 100);
+        addNewLine();
+        // After adding new line, find the current word element more reliably
+        const targetWordIndex = gameState.currentWordIndex;
+        gameState.currentWordElement = gameState.wordElements.find(el => 
+            parseInt(el.getAttribute('data-word-index')) === targetWordIndex
+        );
+        
+        // If not found, calculate position relative to visible words
+        if (!gameState.currentWordElement) {
+            const relativeIndex = (targetWordIndex) % (gameState.wordsPerLine * 3);
+            gameState.currentWordElement = gameState.wordElements[relativeIndex];
+        }
+        
+        // Final fallback
+        if (!gameState.currentWordElement && gameState.wordElements.length > 0) {
+            gameState.currentWordElement = gameState.wordElements[0];
+            console.warn('Using fallback word element');
+        }
+    } else {
+        // Normal progression - find by data-word-index first
+        const targetWordIndex = gameState.currentWordIndex;
+        gameState.currentWordElement = gameState.wordElements.find(el => 
+            parseInt(el.getAttribute('data-word-index')) === targetWordIndex
+        );
+        
+        // Fallback to relative position
+        if (!gameState.currentWordElement) {
+            const relativeIndex = targetWordIndex % (gameState.wordsPerLine * 3);
+            gameState.currentWordElement = gameState.wordElements[relativeIndex];
+        }
     }
     
-    gameState.currentWordElement = gameState.wordElements[gameState.currentWordIndex];
     if (gameState.currentWordElement) {
         gameState.currentWordElement.classList.add('current');
+    } else {
+        console.error('Could not find current word element for index:', gameState.currentWordIndex);
     }
     
     updateWordDisplay(); 
     updateCursor();
-}
-
-// Updated function to generate more words for infinite typing (simplified for 3-line system)
-async function generateMoreWords() {
-    const newWords = await getWords(settingsManager.difficulty);
-    // Just add more words to the pool - the addNewLine function handles display
-    gameState.words.push(...newWords);
 }
 
 function updateWordDisplay() {
@@ -1093,7 +1151,11 @@ async function startTest(forceNewWords = false) {
         return;
     }
     if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+    
+    // Initialize the word pool properly
     gameState.words = await getWords(settingsManager.difficulty);
+    gameState.poolIndex = 0; // Reset pool index
+    
     gameState.currentWordIndex = 0; gameState.typedWord = ''; gameState.startTime = null;
     gameState.timeLimit = settingsManager.timeLimit; gameState.errors = 0; gameState.totalCharsTyped = 0; gameState.isCompleted = false;
     if(resultsDisplay) resultsDisplay.style.display = 'none';
