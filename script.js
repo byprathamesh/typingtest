@@ -174,24 +174,24 @@ const progressBar = document.getElementById('progressBar');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// Premium Typing Sound Manager with Best Loved Typing Sounds
+// Dream Keyboard Sound Manager - Sounds People LOVE Their Keyboard to Make
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
         this.enabled = enabled;
         this.volume = volume / 100;
         this.masterGain = null;
-        this.currentSoundType = 'mechanical'; // Changed default to mechanical clicks
+        this.currentSoundType = 'raindrops'; // Perfect default - everyone loves raindrops
         
-        // Best 7 typing sounds that people love
+        // 7 dream sounds people wish their keyboard made
         this.soundTypes = {
-            mechanical: 'Mechanical Keyboard', // Crisp, satisfying clicks
-            typewriter: 'Classic Typewriter', // Nostalgic typewriter sounds
-            bubble: 'Bubble Pop', // Fun, satisfying pops
-            wood: 'Wood Percussion', // Natural, warm clicks
-            digital: 'Digital Beeps', // Clean electronic sounds
-            soft: 'Soft Clicks', // Gentle, quiet clicks
-            cosmic: 'Cosmic Pings' // Futuristic, space-like sounds
+            raindrops: 'Gentle Raindrops', // Soft, satisfying water drops
+            windchimes: 'Wind Chimes', // Peaceful, musical chimes
+            crystalbells: 'Crystal Bells', // Clear, sparkling bell tones
+            naturepops: 'Nature Pops', // Like popping bubbles in a forest
+            softpiano: 'Dreamy Piano', // Gentle piano note touches
+            oceanwaves: 'Ocean Waves', // Soft wave sounds
+            magicbells: 'Magic Bells' // Fairy-tale like magical bells
         };
         
         this._initAudio();
@@ -219,108 +219,124 @@ class KeyboardSoundManager {
         const now = this.audioContext.currentTime;
         
         switch (this.currentSoundType) {
-            case 'mechanical':
-                this._createMechanicalClick(now, type, variation);
+            case 'raindrops':
+                this._createRaindropSound(now, type, variation);
                 break;
-            case 'typewriter':
-                this._createTypewriterSound(now, type, variation);
+            case 'windchimes':
+                this._createWindChimeSound(now, type, variation);
                 break;
-            case 'bubble':
-                this._createBubblePopSound(now, type, variation);
+            case 'crystalbells':
+                this._createCrystalBellSound(now, type, variation);
                 break;
-            case 'wood':
-                this._createWoodPercussionSound(now, type, variation);
+            case 'naturepops':
+                this._createNaturePopSound(now, type, variation);
                 break;
-            case 'digital':
-                this._createDigitalBeepSound(now, type, variation);
+            case 'softpiano':
+                this._createSoftPianoSound(now, type, variation);
                 break;
-            case 'soft':
-                this._createSoftClickSound(now, type, variation);
+            case 'oceanwaves':
+                this._createOceanWaveSound(now, type, variation);
                 break;
-            case 'cosmic':
-                this._createCosmicPingSound(now, type, variation);
+            case 'magicbells':
+                this._createMagicBellSound(now, type, variation);
                 break;
             default:
-                this._createMechanicalClick(now, type, variation);
+                this._createRaindropSound(now, type, variation);
         }
     }
 
-    _createMechanicalClick(now, type, variation) {
-        // Realistic mechanical keyboard click
+    _createRaindropSound(now, type, variation) {
+        // Gentle, satisfying water drop sounds
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filter = this.audioContext.createBiquadFilter();
         
         if (type === 'spacebar') {
-            // Deeper, longer spacebar sound
-            oscillator.frequency.setValueAtTime(120, now);
-            filter.frequency.setValueAtTime(800, now);
+            // Bigger water drop
+            oscillator.frequency.setValueAtTime(300, now);
+            oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.2);
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.15, now + 0.002);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
         } else if (type === 'error') {
-            // Harsh, unpleasant click for errors
-            oscillator.frequency.setValueAtTime(90, now);
-            filter.frequency.setValueAtTime(300, now);
+            // Harsh drop sound
+            oscillator.frequency.setValueAtTime(200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.1);
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.001);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
         } else {
-            // Regular key clicks with slight variation
-            const baseFreq = 150 + (variation * 20);
+            // Regular gentle drops
+            const baseFreq = 400 + (variation * 100);
             oscillator.frequency.setValueAtTime(baseFreq, now);
-            filter.frequency.setValueAtTime(1200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.3, now + 0.15);
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, now + 0.001);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
         }
         
-        oscillator.type = 'square';
-        filter.type = 'highpass';
+        oscillator.type = 'sine';
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1000, now);
+        filter.Q.value = 2;
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        oscillator.start(now);
+        oscillator.stop(now + 0.4);
+    }
+
+    _createWindChimeSound(now, type, variation) {
+        // Peaceful wind chime sounds
+        const oscillator1 = this.audioContext.createOscillator();
+        const oscillator2 = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        
+        const chimeFreqs = [523, 659, 784, 1047, 1319]; // C major pentatonic
+        const baseFreq = chimeFreqs[variation % chimeFreqs.length];
+        
+        oscillator1.frequency.setValueAtTime(baseFreq, now);
+        oscillator2.frequency.setValueAtTime(baseFreq * 2.01, now); // Slight detune for richness
+        
+        if (type === 'spacebar') {
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        } else {
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.06, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        }
+        
+        oscillator1.type = 'sine';
+        oscillator2.type = 'sine';
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2000, now);
         filter.Q.value = 1;
         
-        oscillator.connect(filter);
+        const gain1 = this.audioContext.createGain();
+        const gain2 = this.audioContext.createGain();
+        gain1.gain.value = 0.7;
+        gain2.gain.value = 0.3;
+        
+        oscillator1.connect(gain1);
+        oscillator2.connect(gain2);
+        gain1.connect(filter);
+        gain2.connect(filter);
         filter.connect(gainNode);
         gainNode.connect(this.masterGain);
         
-        oscillator.start(now);
-        oscillator.stop(now + 0.1);
+        oscillator1.start(now);
+        oscillator2.start(now);
+        oscillator1.stop(now + 1.5);
+        oscillator2.stop(now + 1.5);
     }
 
-    _createTypewriterSound(now, type, variation) {
-        // Classic typewriter strike
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-        
-        if (type === 'spacebar') {
-            oscillator.frequency.setValueAtTime(80, now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.2, now + 0.003);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        } else {
-            const baseFreq = 200 + (variation * 15);
-            oscillator.frequency.setValueAtTime(baseFreq, now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.15, now + 0.002);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        }
-        
-        oscillator.type = 'sawtooth';
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(800, now);
-        filter.Q.value = 3;
-        
-        oscillator.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(this.masterGain);
-        
-        oscillator.start(now);
-        oscillator.stop(now + 0.15);
-    }
-
-    _createBubblePopSound(now, type, variation) {
-        // Fun bubble pop sound
+    _createCrystalBellSound(now, type, variation) {
+        // Clear, sparkling bell sound
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         
@@ -347,72 +363,36 @@ class KeyboardSoundManager {
         oscillator.stop(now + 0.1);
     }
 
-    _createWoodPercussionSound(now, type, variation) {
-        // Natural wood click sound
+    _createNaturePopSound(now, type, variation) {
+        // Natural pop sound like popping bubbles in a forest
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
         
         if (type === 'spacebar') {
             oscillator.frequency.setValueAtTime(180, now);
-            filter.frequency.setValueAtTime(500, now);
+            oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.05);
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.18, now + 0.004);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
         } else {
             const baseFreq = 250 + (variation * 30);
             oscillator.frequency.setValueAtTime(baseFreq, now);
-            filter.frequency.setValueAtTime(800, now);
+            oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + 0.03);
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.002);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.003);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
         }
         
         oscillator.type = 'triangle';
-        filter.type = 'lowpass';
-        filter.Q.value = 2;
-        
-        oscillator.connect(filter);
-        filter.connect(gainNode);
+        oscillator.connect(gainNode);
         gainNode.connect(this.masterGain);
         
         oscillator.start(now);
         oscillator.stop(now + 0.2);
     }
 
-    _createDigitalBeepSound(now, type, variation) {
-        // Clean digital beep
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        
-        if (type === 'spacebar') {
-            oscillator.frequency.setValueAtTime(800, now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, now + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        } else if (type === 'error') {
-            oscillator.frequency.setValueAtTime(300, now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.005);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        } else {
-            const baseFreq = 1000 + (variation * 100);
-            oscillator.frequency.setValueAtTime(baseFreq, now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.06, now + 0.005);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-        }
-        
-        oscillator.type = 'sine';
-        oscillator.connect(gainNode);
-        gainNode.connect(this.masterGain);
-        
-        oscillator.start(now);
-        oscillator.stop(now + 0.08);
-    }
-
-    _createSoftClickSound(now, type, variation) {
-        // Gentle, soft clicking
+    _createSoftPianoSound(now, type, variation) {
+        // Gentle, soft piano sound
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filter = this.audioContext.createBiquadFilter();
@@ -444,8 +424,43 @@ class KeyboardSoundManager {
         oscillator.stop(now + 0.12);
     }
 
-    _createCosmicPingSound(now, type, variation) {
-        // Futuristic space-like pings
+    _createOceanWaveSound(now, type, variation) {
+        // Soft, soothing ocean wave sound
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        
+        if (type === 'spacebar') {
+            oscillator.frequency.setValueAtTime(1200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+            filter.frequency.setValueAtTime(2000, now);
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        } else {
+            const baseFreq = 1500 + (variation * 200);
+            oscillator.frequency.setValueAtTime(baseFreq, now);
+            oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.05);
+            filter.frequency.setValueAtTime(3000, now);
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.07, now + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        }
+        
+        oscillator.type = 'sine';
+        filter.type = 'lowpass';
+        filter.Q.value = 4;
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        oscillator.start(now);
+        oscillator.stop(now + 0.2);
+    }
+
+    _createMagicBellSound(now, type, variation) {
+        // Futuristic, magical bell sound
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filter = this.audioContext.createBiquadFilter();
@@ -540,7 +555,7 @@ class SettingsManager {
         this.timeLimit = 60; 
         this.soundEnabled = true; 
         this.volume = 30; 
-        this.musicScale = 'mechanical'; // Changed default to mechanical clicks
+        this.musicScale = 'raindrops'; // Changed default to gentle raindrops
         this.liveWpmEnabled = true;
     }
     
