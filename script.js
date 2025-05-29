@@ -120,7 +120,6 @@ const musicScaleSelect = document.getElementById('musicScale');
 const soundToggle = document.getElementById('soundToggle');
 const volumeSlider = document.getElementById('volumeSlider');
 const volumeDisplay = document.getElementById('volumeDisplay');
-const themeToggleBtn = document.getElementById('themeToggle');
 const settingsBtn = document.getElementById('settingsBtn');
 const shortcutsBtn = document.getElementById('shortcutsBtn');
 const restartBtn = document.getElementById('restartBtn');
@@ -520,7 +519,6 @@ class SettingsManager {
         this.timeLimit = 60; 
         this.soundEnabled = true; 
         this.volume = 30; 
-        this.currentTheme = 'dark';
         this.musicScale = 'pentatonic';
         this.liveWpmEnabled = true;
     }
@@ -533,7 +531,6 @@ class SettingsManager {
                 this.timeLimit = s.timeLimit || this.timeLimit; 
                 this.soundEnabled = s.soundEnabled !== undefined ? s.soundEnabled : this.soundEnabled; 
                 this.volume = s.volume || this.volume; 
-                this.currentTheme = s.theme || this.currentTheme; 
                 this.musicScale = s.musicScale || this.musicScale;
                 this.liveWpmEnabled = s.liveWpmEnabled !== undefined ? s.liveWpmEnabled : this.liveWpmEnabled;
             }
@@ -550,7 +547,6 @@ class SettingsManager {
                 timeLimit: this.timeLimit,
                 soundEnabled: this.soundEnabled,
                 volume: this.volume,
-                theme: this.currentTheme,
                 musicScale: this.musicScale,
                 liveWpmEnabled: this.liveWpmEnabled
             };
@@ -558,11 +554,6 @@ class SettingsManager {
         } catch (e) {
             console.warn('Failed to save settings:', e);
         }
-    }
-    
-    applyCurrentTheme() { 
-        document.body.classList.toggle('light-theme', this.currentTheme === 'light'); 
-        if (themeToggleBtn) themeToggleBtn.textContent = this.currentTheme === 'light' ? '☀️' : '🌙'; 
     }
 }
 
@@ -584,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     keyboardSoundManager = new KeyboardSoundManager(settingsManager.soundEnabled, settingsManager.volume);
 
     const welcomeTextElement = document.querySelector('#welcomeScreen .welcome-text');
-    const welcomeString = "Welcome to Infinite Typing Test!";
+    const welcomeString = "Welcome to Typing Test";
     const typingSpeed = 100; // Milliseconds per character
     const postTypingDelay = 500; // Milliseconds to wait after typing before fading
     const fadeOutDuration = 1000; // Milliseconds for the fade-out animation
@@ -603,7 +594,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (charIndex < welcomeString.length) {
                 if (welcomeTextElement) {
                     welcomeTextElement.textContent += welcomeString.charAt(charIndex);
-                    // Add a blinking cursor effect (optional, handled by CSS for simplicity here)
+                    // Add typing sound for each character
+                    if (keyboardSoundManager) {
+                        keyboardSoundManager.playKeystroke(true, welcomeString.charAt(charIndex) === ' ');
+                    }
                 }
                 charIndex++;
                 setTimeout(typeCharacter, typingSpeed);
@@ -628,7 +622,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // App Initialization Function
 function initializeApp() {
     updateUIFromSettings();
-    settingsManager.applyCurrentTheme();
     setupEventListeners();
     startTest(); // Initial test start
     if (textDisplay && mainContainer && mainContainer.style.display === 'block') {
@@ -695,12 +688,6 @@ function setupEventListeners() {
         if (liveWpmDisplay) liveWpmDisplay.style.display = settingsManager.liveWpmEnabled ? 'block' : 'none';
     });
     
-    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => { 
-        settingsManager.currentTheme = settingsManager.currentTheme === 'light' ? 'dark' : 'light'; 
-        settingsManager.save(); 
-        settingsManager.applyCurrentTheme(); 
-    });
-    
     if (settingsBtn) settingsBtn.addEventListener('click', toggleSettingsPanel);
     if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcutsPanel);
     
@@ -749,7 +736,6 @@ function generateInitialLines(words) {
     for (let line = 0; line < linesToShow; line++) {
         const lineDiv = document.createElement('div');
         lineDiv.classList.add('text-line');
-        lineDiv.style.marginBottom = '1rem';
         
         const startIndex = line * wordsPerLine;
         const endIndex = Math.min(startIndex + wordsPerLine, words.length);
@@ -781,7 +767,6 @@ function generateInitialLines(words) {
         }
         
         textDisplay.appendChild(lineDiv);
-        if (!gameState.lines[line]) gameState.lines[line] = [];
         gameState.lines[line] = lineDiv;
     }
 }
@@ -803,7 +788,6 @@ async function addNewLine() {
     // Create new line div
     const lineDiv = document.createElement('div');
     lineDiv.classList.add('text-line');
-    lineDiv.style.marginBottom = '1rem';
     
     // Add words to the new line
     for (let i = 0; i < wordsPerLine && newWords[i]; i++) {
@@ -1182,7 +1166,6 @@ function handleGlobalKeyDown(e) {
 
     const activeEl = document.activeElement, isInput = activeEl === textDisplay || activeEl.tagName === 'INPUT' || activeEl.tagName === 'SELECT' || activeEl.tagName === 'TEXTAREA';
     if (e.ctrlKey && e.key === ',') { e.preventDefault(); toggleSettingsPanel(); }
-    else if (e.ctrlKey && e.key === 't') { e.preventDefault(); if (themeToggleBtn) themeToggleBtn.click(); }
     else if (e.ctrlKey && e.key === 's') { e.preventDefault(); if (soundToggle) soundToggle.click(); }
     else if (e.key === 'Escape') {
         if (settingsPanel && settingsPanel.style.display !== 'none') { e.preventDefault(); toggleSettingsPanel(); if(textDisplay) textDisplay.focus(); }

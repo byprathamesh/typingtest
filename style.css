@@ -231,14 +231,16 @@ header h1 {
     background: #000000;
     border: 2px solid #ffffff;
     border-radius: 5px;
-    padding: 30px;
+    padding: 20px;
     font-size: 1.2rem;
-    line-height: 1.8;
-    height: calc(1.8rem * 3 + 2rem + 60px); /* Exactly 3 lines + padding */
+    line-height: 1.6;
+    height: calc(1.6rem * 3 + 2rem + 40px); /* Exactly 3 lines + padding */
     position: relative;
     outline: none;
     cursor: text;
     overflow: hidden; /* Hide overflow to maintain 3-line view */
+    width: 100%;
+    max-width: 100%;
 }
 
 .text-display:focus {
@@ -246,17 +248,20 @@ header h1 {
 }
 
 .text-line {
-    margin-bottom: 1rem;
-    height: 1.8rem;
+    margin-bottom: 0.8rem;
+    height: 1.6rem;
     white-space: nowrap;
     overflow: visible;
+    width: 100%;
+    display: block;
 }
 
 .word {
     display: inline-block;
-    margin-right: 0.5rem;
+    margin-right: 0.4rem;
     position: relative;
     color: #ffffff;
+    white-space: nowrap;
 }
 
 .word.correct {
@@ -268,10 +273,10 @@ header h1 {
 }
 
 .word.current {
-    background: #ffffff;
-    color: #000000;
-    padding: 2px 4px;
-    border-radius: 2px;
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-color: #00ff00;
+    text-decoration-thickness: 2px;
 }
 
 .char {
@@ -433,26 +438,6 @@ header h1 {
 
 .results button:hover {
     background: #ffffff;
-}
-
-/* Light theme (optional - maintains 4 color scheme) */
-body.light {
-    background: #ffffff;
-    color: #000000;
-}
-
-body.light .text-display {
-    background: #ffffff;
-    border-color: #000000;
-}
-
-body.light .word.current {
-    background: #000000;
-    color: #ffffff;
-}
-
-body.light .cursor {
-    background: #000000;
 }
 
 /* Mobile Responsive */
