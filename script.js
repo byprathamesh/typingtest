@@ -826,12 +826,15 @@ function generateInitialLines(words) {
     
     // Initialize the pool index
     gameState.poolIndex = 0;
+    console.log('Generating initial lines. Starting pool index:', gameState.poolIndex);
     
     for (let line = 0; line < linesToShow; line++) {
         const lineDiv = document.createElement('div');
         lineDiv.classList.add('text-line');
         
         let currentLineLength = 0;
+        const wordsInThisLine = [];
+        
         while (currentLineLength < gameState.maxCharsPerLine && gameState.poolIndex < words.length) {
             const word = words[gameState.poolIndex];
             
@@ -854,6 +857,7 @@ function generateInitialLines(words) {
             
             lineDiv.appendChild(wordSpan);
             gameState.wordElements.push(wordSpan);
+            wordsInThisLine.push({word, index: gameState.poolIndex});
             currentLineLength += word.length + 1; // +1 for space
             gameState.poolIndex++;
         }
@@ -875,16 +879,23 @@ function generateInitialLines(words) {
             
             lineDiv.appendChild(wordSpan);
             gameState.wordElements.push(wordSpan);
+            wordsInThisLine.push({word, index: gameState.poolIndex});
             gameState.poolIndex++;
         }
+        
+        console.log(`Line ${line} has ${wordsInThisLine.length} words:`, wordsInThisLine.map(w => `${w.word}(${w.index})`).join(', '));
         
         textDisplay.appendChild(lineDiv);
         gameState.lines[line] = lineDiv;
     }
+    
+    console.log('Initial generation complete. Final pool index:', gameState.poolIndex);
 }
 
 // New function to add a new line when needed
 async function addNewLine() {
+    console.log('Adding new line. Current word index:', gameState.currentWordIndex, 'Pool index:', gameState.poolIndex);
+    
     // Use words from our existing word pool instead of generating new ones
     const newWords = [];
     let currentLineLength = 0;
@@ -930,6 +941,8 @@ async function addNewLine() {
         gameState.poolIndex++;
     }
     
+    console.log('New line will have', newWords.length, 'words:', newWords);
+    
     // Create new line div
     const lineDiv = document.createElement('div');
     lineDiv.classList.add('text-line');
@@ -962,14 +975,18 @@ async function addNewLine() {
     // Remove the top line to maintain 3 lines
     if (gameState.lines.length > 3) {
         const topLine = gameState.lines.shift();
+        const removedWords = topLine.children.length;
+        console.log('Removing top line with', removedWords, 'words');
+        
         if (topLine && topLine.parentNode) {
             topLine.parentNode.removeChild(topLine);
         }
         
         // Remove the corresponding word elements from our tracking array
-        const removedWords = topLine.children.length;
         gameState.wordElements.splice(0, removedWords);
     }
+    
+    console.log('After adding line - Current word index:', gameState.currentWordIndex, 'Pool index:', gameState.poolIndex);
 }
 
 function handleInput(event) {
@@ -1048,35 +1065,59 @@ function handleWordCompletion() {
         });
     }
     
-    // Check if we need to add a new line - find current word's line
-    const currentWordElement = gameState.wordElements.find(el => 
-        parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
-    );
+    // Check if we're at the end of the bottom (3rd) line
+    const currentLineElement = gameState.currentWordElement.parentElement;
+    const currentLineIndex = gameState.lines.indexOf(currentLineElement);
+    const isLastWordInLine = gameState.currentWordElement === currentLineElement.lastElementChild;
+    const isBottomLine = currentLineIndex === 2; // Third line (index 2)
     
-    // If we can't find the current word element in our visible elements, add new line
-    if (!currentWordElement) {
+    if (isLastWordInLine && isBottomLine) {
+        // We just completed the last word on the bottom line, need to scroll
         addNewLine();
         
-        // After adding new line, find the current word element more reliably
-        const targetWordIndex = gameState.currentWordIndex;
+        // After adding new line, find the word element that corresponds to our current word index
+        // The currentWordIndex was already incremented above, so we're looking for that word
         gameState.currentWordElement = gameState.wordElements.find(el => 
-            parseInt(el.getAttribute('data-word-index')) === targetWordIndex
+            parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
         );
         
-        // If not found, calculate position relative to visible words
+        // If not found, something is wrong with our indexing
         if (!gameState.currentWordElement) {
-            const relativeIndex = (targetWordIndex) % gameState.maxCharsPerLine;
-            gameState.currentWordElement = gameState.wordElements[relativeIndex];
-        }
-        
-        // Final fallback
-        if (!gameState.currentWordElement && gameState.wordElements.length > 0) {
-            gameState.currentWordElement = gameState.wordElements[0];
-            console.warn('Using fallback word element');
+            console.error('Could not find word element for index:', gameState.currentWordIndex);
+            // Fallback to first word of the new bottom line
+            const newBottomLine = gameState.lines[gameState.lines.length - 1];
+            if (newBottomLine && newBottomLine.children.length > 0) {
+                gameState.currentWordElement = newBottomLine.children[0];
+                // Sync the word index with what we actually selected
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            }
         }
     } else {
-        // Normal progression - we found the current word element
-        gameState.currentWordElement = currentWordElement;
+        // Normal progression within the same line or moving to next line
+        const nextWordElement = gameState.wordElements.find(el => 
+            parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
+        );
+        
+        if (nextWordElement) {
+            gameState.currentWordElement = nextWordElement;
+        } else {
+            // Fallback: find next word in DOM order
+            const allWords = Array.from(textDisplay.querySelectorAll('.word'));
+            const currentIndex = allWords.indexOf(gameState.currentWordElement);
+            if (currentIndex >= 0 && currentIndex < allWords.length - 1) {
+                gameState.currentWordElement = allWords[currentIndex + 1];
+                // Sync the word index with the element we selected
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            } else {
+                console.error('Could not find next word element');
+            }
+        }
     }
     
     if (gameState.currentWordElement) {
