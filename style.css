@@ -212,7 +212,7 @@ header h1 {
 
 .text-display {
     background-color: var(--bg-primary);
-    padding: 2rem 4rem;
+    padding: 2rem;
     border-radius: var(--border-radius);
     font-size: 1.4rem;
     line-height: 1.8;
