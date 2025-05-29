@@ -71,12 +71,29 @@ class KeyboardSoundManager {
         if (!this.enabled || !this.audioContext) return;
         const oscillator = this.audioContext.createOscillator();
         oscillator.connect(this.gainNode);
-        let freq = 1000, duration = 0.05; oscillator.type = 'sine';
+        let freq = 600, duration = 0.04; oscillator.type = 'sine'; // Default to a softer sound
+
         switch (type) {
-            case 'keypress': freq = 800 + Math.random() * 400; duration = 0.03; oscillator.type = 'triangle'; break;
-            case 'space': freq = 400; duration = 0.05; oscillator.type = 'square'; break;
-            case 'error': freq = 200; duration = 0.1; oscillator.type = 'sawtooth'; break;
-            case 'complete': freq = 1200; duration = 0.15; break;
+            case 'keypress': 
+                freq = 500 + Math.random() * 200; // Lower and less varied frequency
+                duration = 0.03;
+                oscillator.type = 'sine'; // Softer waveform
+                break;
+            case 'space': 
+                freq = 300; // Lower frequency
+                duration = 0.04;
+                oscillator.type = 'sine'; // Softer waveform
+                break;
+            case 'error': 
+                freq = 150; // Much lower frequency for error
+                duration = 0.1;
+                oscillator.type = 'sine'; // Less harsh waveform
+                break;
+            case 'complete': // Test completion sound
+                freq = 800; 
+                duration = 0.15;
+                // Could also use multiple oscillators for a chord here if desired for a more 'complete' feel
+                break;
         }
         oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
         oscillator.start(this.audioContext.currentTime);
@@ -254,7 +271,9 @@ function handleWordCompletion() {
     if (gameState.currentWordIndex >= gameState.words.length) { endTest(); return; }
     gameState.currentWordElement = gameState.wordElements[gameState.currentWordIndex];
     if (gameState.currentWordElement) gameState.currentWordElement.classList.add('current');
-    updateWordDisplay(); updateCursor();
+    updateWordDisplay(); 
+    updateCursor();
+    ensureCurrentWordIsVisible();
 }
 
 function updateWordDisplay() {
@@ -341,6 +360,42 @@ async function startTest(forceNewWords = false) {
     // Ensure focus only if main container is visible (welcome screen is done)
     if (textDisplay && mainContainer && mainContainer.style.display === 'block') {
         textDisplay.focus();
+    }
+    ensureCurrentWordIsVisible();
+}
+
+function ensureCurrentWordIsVisible() {
+    if (!textDisplay || !gameState.currentWordElement) return;
+
+    const displayRect = textDisplay.getBoundingClientRect();
+    const wordRect = gameState.currentWordElement.getBoundingClientRect();
+
+    // Calculate position of the word relative to the textDisplay container
+    const wordTopRelativeToDisplay = wordRect.top - displayRect.top;
+    const wordBottomRelativeToDisplay = wordRect.bottom - displayRect.top;
+
+    const displayVisibleHeight = textDisplay.clientHeight;
+
+    // Define a "comfort zone" (e.g., middle 50% of the display area)
+    const comfortZoneTop = displayVisibleHeight * 0.25;
+    const comfortZoneBottom = displayVisibleHeight * 0.75;
+
+    let targetScrollTop = textDisplay.scrollTop;
+
+    if (wordTopRelativeToDisplay < comfortZoneTop) {
+        // Word is above the comfort zone, scroll up (decrease scrollTop)
+        targetScrollTop = textDisplay.scrollTop - (comfortZoneTop - wordTopRelativeToDisplay) - (gameState.currentWordElement.offsetHeight * 0.5);
+    } else if (wordBottomRelativeToDisplay > comfortZoneBottom) {
+        // Word is below the comfort zone, scroll down (increase scrollTop)
+        targetScrollTop = textDisplay.scrollTop + (wordBottomRelativeToDisplay - comfortZoneBottom) + (gameState.currentWordElement.offsetHeight * 0.5);
+    }
+
+    // Clamp the scroll top to valid range
+    targetScrollTop = Math.max(0, targetScrollTop);
+    targetScrollTop = Math.min(targetScrollTop, textDisplay.scrollHeight - displayVisibleHeight);
+
+    if (Math.abs(textDisplay.scrollTop - targetScrollTop) > 5) { // Only scroll if significant change
+        textDisplay.scrollTop = targetScrollTop; // Direct scroll for now, CSS handles smooth
     }
 }
 
