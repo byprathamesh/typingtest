@@ -591,10 +591,10 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
-    lines: [], currentLine: 0, 
+    lines: [], currentLine: 1, // Always stay on line 1 (second line, 0-indexed)
     wordPool: [], // Pre-generated word pool to maintain consistency
     poolIndex: 0, // Current position in the word pool
-    maxCharsPerLine: 85, // Approximate characters that fit per line (adjustable)
+    maxCharsPerLine: 70, // More conservative character count to prevent overflow
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -800,7 +800,7 @@ function displayText(words) {
     textDisplay.innerHTML = '';
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
-    gameState.currentLine = 0;
+    gameState.currentLine = 1; // Always stay on second line (middle)
     
     // Apply hard mode class for better word spacing
     if (settingsManager.difficulty === 'hard' || settingsManager.difficulty === 'programming') {
@@ -809,12 +809,24 @@ function displayText(words) {
         textDisplay.classList.remove('hard-mode');
     }
     
-    // Generate initial 3 lines (24 words)
+    // Generate initial 3 lines 
     generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
         gameState.currentWordIndex = 0; 
-        gameState.currentWordElement = gameState.wordElements[0]; 
+        // Start on the second line (index 1) - middle line
+        const secondLine = gameState.lines[1];
+        if (secondLine && secondLine.children.length > 0) {
+            gameState.currentWordElement = secondLine.children[0];
+            // Update current word index to match the first word on second line
+            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+            if (!isNaN(elementIndex)) {
+                gameState.currentWordIndex = elementIndex;
+            }
+        } else {
+            // Fallback to first word
+            gameState.currentWordElement = gameState.wordElements[0]; 
+        }
         gameState.currentWordElement.classList.add('current'); 
     }
     updateCursor();
@@ -1065,58 +1077,44 @@ function handleWordCompletion() {
         });
     }
     
-    // Check if we're at the end of the bottom (3rd) line
+    // Check if we completed the last word on the second line (where user always types)
     const currentLineElement = gameState.currentWordElement.parentElement;
     const currentLineIndex = gameState.lines.indexOf(currentLineElement);
     const isLastWordInLine = gameState.currentWordElement === currentLineElement.lastElementChild;
-    const isBottomLine = currentLineIndex === 2; // Third line (index 2)
+    const isSecondLine = currentLineIndex === 1; // Second line (middle line, 0-indexed)
     
-    if (isLastWordInLine && isBottomLine) {
-        // We just completed the last word on the bottom line, need to scroll
+    if (isLastWordInLine && isSecondLine) {
+        // Completed last word on middle line - scroll up and add new line
+        console.log('Completed middle line, scrolling up...');
         addNewLine();
         
-        // After adding new line, find the word element that corresponds to our current word index
-        // The currentWordIndex was already incremented above, so we're looking for that word
-        gameState.currentWordElement = gameState.wordElements.find(el => 
-            parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
-        );
-        
-        // If not found, something is wrong with our indexing
-        if (!gameState.currentWordElement) {
-            console.error('Could not find word element for index:', gameState.currentWordIndex);
-            // Fallback to first word of the new bottom line
-            const newBottomLine = gameState.lines[gameState.lines.length - 1];
-            if (newBottomLine && newBottomLine.children.length > 0) {
-                gameState.currentWordElement = newBottomLine.children[0];
-                // Sync the word index with what we actually selected
-                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
-                if (!isNaN(elementIndex)) {
-                    gameState.currentWordIndex = elementIndex;
-                }
+        // After scrolling, user should stay on the second line (index 1)
+        // Find the first word on the current second line
+        const secondLine = gameState.lines[1];
+        if (secondLine && secondLine.children.length > 0) {
+            gameState.currentWordElement = secondLine.children[0];
+            // Update current word index to match this element's index
+            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+            if (!isNaN(elementIndex)) {
+                gameState.currentWordIndex = elementIndex;
             }
+        } else {
+            console.error('Second line has no words after scrolling!');
         }
     } else {
-        // Normal progression within the same line or moving to next line
-        const nextWordElement = gameState.wordElements.find(el => 
-            parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
-        );
-        
-        if (nextWordElement) {
-            gameState.currentWordElement = nextWordElement;
-        } else {
-            // Fallback: find next word in DOM order
-            const allWords = Array.from(textDisplay.querySelectorAll('.word'));
-            const currentIndex = allWords.indexOf(gameState.currentWordElement);
-            if (currentIndex >= 0 && currentIndex < allWords.length - 1) {
-                gameState.currentWordElement = allWords[currentIndex + 1];
-                // Sync the word index with the element we selected
-                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
-                if (!isNaN(elementIndex)) {
-                    gameState.currentWordIndex = elementIndex;
-                }
-            } else {
-                console.error('Could not find next word element');
+        // Normal progression within the same line
+        // Find the next word element on the same line
+        const nextSibling = gameState.currentWordElement.nextElementSibling;
+        if (nextSibling) {
+            gameState.currentWordElement = nextSibling;
+            // Update current word index to match this element's index  
+            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+            if (!isNaN(elementIndex)) {
+                gameState.currentWordIndex = elementIndex;
             }
+        } else {
+            // This shouldn't happen if we're properly detecting end of line above
+            console.error('No next word found on current line');
         }
     }
     
@@ -1390,10 +1388,10 @@ function updateTitleColors() {
 
 // Calculate maximum characters per line based on screen size
 function calculateMaxCharsPerLine() {
-    if (!textDisplay) return 85; // Default fallback
+    if (!textDisplay) return 60; // More conservative default fallback
     
     const displayRect = textDisplay.getBoundingClientRect();
-    const displayWidth = displayRect.width - 40; // Subtract padding
+    const displayWidth = displayRect.width - 60; // Larger margin for safety
     
     // Create a temporary element to measure character width
     const tempSpan = document.createElement('span');
@@ -1401,16 +1399,19 @@ function calculateMaxCharsPerLine() {
     tempSpan.style.visibility = 'hidden';
     tempSpan.style.fontSize = window.getComputedStyle(textDisplay).fontSize;
     tempSpan.style.fontFamily = window.getComputedStyle(textDisplay).fontFamily;
-    tempSpan.textContent = 'M'; // Use 'M' as it's typically the widest character
+    tempSpan.textContent = 'MMMMMMMMMM'; // Use multiple wide characters for better measurement
     document.body.appendChild(tempSpan);
     
-    const charWidth = tempSpan.getBoundingClientRect().width;
+    const tenCharWidth = tempSpan.getBoundingClientRect().width;
+    const charWidth = tenCharWidth / 10; // Average width per character
     document.body.removeChild(tempSpan);
     
-    // Calculate approximate characters that fit, accounting for spaces
-    const maxChars = Math.floor(displayWidth / charWidth) - 5; // -5 for safety margin
+    // Calculate approximate characters that fit, with larger safety margin
+    const maxChars = Math.floor(displayWidth / charWidth) - 10; // -10 for extra safety margin
     
-    return Math.max(60, Math.min(120, maxChars)); // Keep between 60-120 characters
+    console.log('Display width:', displayWidth, 'Char width:', charWidth, 'Max chars:', maxChars);
+    
+    return Math.max(50, Math.min(100, maxChars)); // Keep between 50-100 characters
 }
 
 // Update max chars when window resizes

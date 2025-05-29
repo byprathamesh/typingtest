@@ -259,6 +259,20 @@ header h1 {
     justify-content: flex-start; /* Changed from space-evenly to flex-start for better long word handling */
     padding: 0 10px;
     gap: 0.8rem; /* Add consistent gap between words */
+    border-radius: 3px; /* Add subtle border radius */
+    transition: background-color 0.2s ease; /* Smooth transitions */
+}
+
+/* Highlight the middle line (second line) where user types */
+.text-line:nth-child(2) {
+    background-color: rgba(255, 255, 255, 0.05); /* Very subtle highlight */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+}
+
+/* Dimmer appearance for first and third lines */
+.text-line:nth-child(1),
+.text-line:nth-child(3) {
+    opacity: 0.7; /* Slightly dimmed */
 }
 
 .word {
