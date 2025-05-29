@@ -464,13 +464,9 @@ function displayText() {
     for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
         const lineDiv = document.createElement('div');
         lineDiv.style.height = 'calc(1.4rem * 1.8)';
-        lineDiv.style.display = 'flex';
-        lineDiv.style.alignItems = 'center';
-        lineDiv.style.justifyContent = 'center';
-        lineDiv.style.flexWrap = 'wrap';
         lineDiv.style.marginBottom = '0';
         lineDiv.style.lineHeight = '1.8';
-        lineDiv.style.width = '100%';
+        lineDiv.style.textAlign = 'center';
         
         // Calculate word range for this line
         const lineStartWord = lineIndex * wordsPerLine;
