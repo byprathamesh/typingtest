@@ -252,7 +252,7 @@ header h1 {
     margin-bottom: 0.8rem;
     height: 1.6rem;
     white-space: nowrap;
-    overflow: visible;
+    overflow: hidden; /* Ensure overflow is hidden */
     width: 100%;
     display: flex;
     align-items: center;

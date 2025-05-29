@@ -591,9 +591,10 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
-    lines: [], currentLine: 0, wordsPerLine: 8, // Reduced to 8 for better spacing with long words
+    lines: [], currentLine: 0, 
     wordPool: [], // Pre-generated word pool to maintain consistency
     poolIndex: 0, // Current position in the word pool
+    maxCharsPerLine: 85, // Approximate characters that fit per line (adjustable)
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -651,6 +652,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeApp() {
     updateUIFromSettings();
     setupEventListeners();
+    
+    // Calculate max chars per line based on screen size
+    updateMaxCharsPerLine();
+    
+    // Add window resize listener to recalculate on screen size changes
+    window.addEventListener('resize', updateMaxCharsPerLine);
+    
     startTest(); // Initial test start
     if (textDisplay && mainContainer && mainContainer.style.display === 'block') {
         setTimeout(() => textDisplay.focus(), 50); // Ensure focus after potential layout shifts
@@ -793,7 +801,6 @@ function displayText(words) {
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
     gameState.currentLine = 0;
-    gameState.wordsPerLine = 8; // Fixed number of words per line
     
     // Apply hard mode class for better word spacing
     if (settingsManager.difficulty === 'hard' || settingsManager.difficulty === 'programming') {
@@ -816,7 +823,6 @@ function displayText(words) {
 
 function generateInitialLines(words) {
     const linesToShow = 3;
-    const wordsPerLine = gameState.wordsPerLine;
     
     // Initialize the pool index
     gameState.poolIndex = 0;
@@ -825,26 +831,51 @@ function generateInitialLines(words) {
         const lineDiv = document.createElement('div');
         lineDiv.classList.add('text-line');
         
-        for (let wordInLine = 0; wordInLine < wordsPerLine; wordInLine++) {
-            const wordIndex = gameState.poolIndex;
-            if (wordIndex < words.length) {
-                const word = words[wordIndex];
-                const wordSpan = document.createElement('span');
-                wordSpan.classList.add('word');
-                wordSpan.setAttribute('data-line', line);
-                wordSpan.setAttribute('data-word-index', wordIndex);
-                
-                word.split('').forEach(char => { 
-                    const cs = document.createElement('span'); 
-                    cs.textContent = char; 
-                    cs.classList.add('char');
-                    wordSpan.appendChild(cs); 
-                });
-                
-                lineDiv.appendChild(wordSpan);
-                gameState.wordElements.push(wordSpan);
-                gameState.poolIndex++;
+        let currentLineLength = 0;
+        while (currentLineLength < gameState.maxCharsPerLine && gameState.poolIndex < words.length) {
+            const word = words[gameState.poolIndex];
+            
+            // Check if adding this word would exceed line length
+            if (currentLineLength + word.length + 1 > gameState.maxCharsPerLine && lineDiv.children.length > 0) {
+                break; // Don't add this word, line is full
             }
+            
+            const wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.setAttribute('data-line', line);
+            wordSpan.setAttribute('data-word-index', gameState.poolIndex);
+            
+            word.split('').forEach(char => { 
+                const cs = document.createElement('span'); 
+                cs.textContent = char; 
+                cs.classList.add('char');
+                wordSpan.appendChild(cs); 
+            });
+            
+            lineDiv.appendChild(wordSpan);
+            gameState.wordElements.push(wordSpan);
+            currentLineLength += word.length + 1; // +1 for space
+            gameState.poolIndex++;
+        }
+        
+        // Ensure we have at least one word per line
+        if (lineDiv.children.length === 0 && gameState.poolIndex < words.length) {
+            const word = words[gameState.poolIndex];
+            const wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.setAttribute('data-line', line);
+            wordSpan.setAttribute('data-word-index', gameState.poolIndex);
+            
+            word.split('').forEach(char => { 
+                const cs = document.createElement('span'); 
+                cs.textContent = char; 
+                cs.classList.add('char');
+                wordSpan.appendChild(cs); 
+            });
+            
+            lineDiv.appendChild(wordSpan);
+            gameState.wordElements.push(wordSpan);
+            gameState.poolIndex++;
         }
         
         textDisplay.appendChild(lineDiv);
@@ -854,21 +885,49 @@ function generateInitialLines(words) {
 
 // New function to add a new line when needed
 async function addNewLine() {
-    const wordsPerLine = gameState.wordsPerLine;
-    
     // Use words from our existing word pool instead of generating new ones
     const newWords = [];
-    for (let i = 0; i < wordsPerLine; i++) {
+    let currentLineLength = 0;
+    
+    // Fill line based on character count, not fixed word count
+    while (currentLineLength < gameState.maxCharsPerLine) {
         if (gameState.poolIndex < gameState.words.length) {
-            newWords.push(gameState.words[gameState.poolIndex]);
+            const word = gameState.words[gameState.poolIndex];
+            
+            // Check if adding this word would exceed line length
+            if (currentLineLength + word.length + 1 > gameState.maxCharsPerLine && newWords.length > 0) {
+                break; // Don't add this word, line is full
+            }
+            
+            newWords.push(word);
+            currentLineLength += word.length + 1; // +1 for space
             gameState.poolIndex++;
         } else {
             // If we've exhausted our pool, generate more words and extend it
             const moreWords = await getWords(settingsManager.difficulty);
             gameState.words.push(...moreWords);
-            newWords.push(gameState.words[gameState.poolIndex]);
-            gameState.poolIndex++;
+            
+            if (gameState.poolIndex < gameState.words.length) {
+                const word = gameState.words[gameState.poolIndex];
+                
+                // Check if adding this word would exceed line length
+                if (currentLineLength + word.length + 1 > gameState.maxCharsPerLine && newWords.length > 0) {
+                    break;
+                }
+                
+                newWords.push(word);
+                currentLineLength += word.length + 1;
+                gameState.poolIndex++;
+            } else {
+                break; // No more words available
+            }
         }
+    }
+    
+    // Ensure we have at least one word per line
+    if (newWords.length === 0 && gameState.poolIndex < gameState.words.length) {
+        newWords.push(gameState.words[gameState.poolIndex]);
+        gameState.poolIndex++;
     }
     
     // Create new line div
@@ -881,9 +940,9 @@ async function addNewLine() {
         const wordSpan = document.createElement('span');
         wordSpan.classList.add('word');
         
-        // Use poolIndex - newWords.length + i for proper indexing
-        const wordIndex = gameState.poolIndex - newWords.length + i;
-        wordSpan.setAttribute('data-word-index', wordIndex);
+        // Use the absolute word index in the entire sequence
+        const absoluteWordIndex = gameState.poolIndex - newWords.length + i;
+        wordSpan.setAttribute('data-word-index', absoluteWordIndex);
         
         word.split('').forEach(char => { 
             const cs = document.createElement('span'); 
@@ -908,7 +967,8 @@ async function addNewLine() {
         }
         
         // Remove the corresponding word elements from our tracking array
-        gameState.wordElements.splice(0, wordsPerLine);
+        const removedWords = topLine.children.length;
+        gameState.wordElements.splice(0, removedWords);
     }
 }
 
@@ -988,12 +1048,15 @@ function handleWordCompletion() {
         });
     }
     
-    // Check if we've completed a line (every 8 words) - trigger line change immediately
-    const currentLineNumber = Math.floor(gameState.currentWordIndex / gameState.wordsPerLine);
-    const previousLineNumber = Math.floor((gameState.currentWordIndex - 1) / gameState.wordsPerLine);
+    // Check if we need to add a new line - find current word's line
+    const currentWordElement = gameState.wordElements.find(el => 
+        parseInt(el.getAttribute('data-word-index')) === gameState.currentWordIndex
+    );
     
-    if (currentLineNumber > previousLineNumber) {
+    // If we can't find the current word element in our visible elements, add new line
+    if (!currentWordElement) {
         addNewLine();
+        
         // After adding new line, find the current word element more reliably
         const targetWordIndex = gameState.currentWordIndex;
         gameState.currentWordElement = gameState.wordElements.find(el => 
@@ -1002,7 +1065,7 @@ function handleWordCompletion() {
         
         // If not found, calculate position relative to visible words
         if (!gameState.currentWordElement) {
-            const relativeIndex = (targetWordIndex) % (gameState.wordsPerLine * 3);
+            const relativeIndex = (targetWordIndex) % gameState.maxCharsPerLine;
             gameState.currentWordElement = gameState.wordElements[relativeIndex];
         }
         
@@ -1012,17 +1075,8 @@ function handleWordCompletion() {
             console.warn('Using fallback word element');
         }
     } else {
-        // Normal progression - find by data-word-index first
-        const targetWordIndex = gameState.currentWordIndex;
-        gameState.currentWordElement = gameState.wordElements.find(el => 
-            parseInt(el.getAttribute('data-word-index')) === targetWordIndex
-        );
-        
-        // Fallback to relative position
-        if (!gameState.currentWordElement) {
-            const relativeIndex = targetWordIndex % (gameState.wordsPerLine * 3);
-            gameState.currentWordElement = gameState.wordElements[relativeIndex];
-        }
+        // Normal progression - we found the current word element
+        gameState.currentWordElement = currentWordElement;
     }
     
     if (gameState.currentWordElement) {
@@ -1291,5 +1345,36 @@ function handleGlobalKeyDown(e) {
 function updateTitleColors() {
     // Title is now set in HTML, no need to manipulate it here
     return;
+}
+
+// Calculate maximum characters per line based on screen size
+function calculateMaxCharsPerLine() {
+    if (!textDisplay) return 85; // Default fallback
+    
+    const displayRect = textDisplay.getBoundingClientRect();
+    const displayWidth = displayRect.width - 40; // Subtract padding
+    
+    // Create a temporary element to measure character width
+    const tempSpan = document.createElement('span');
+    tempSpan.style.position = 'absolute';
+    tempSpan.style.visibility = 'hidden';
+    tempSpan.style.fontSize = window.getComputedStyle(textDisplay).fontSize;
+    tempSpan.style.fontFamily = window.getComputedStyle(textDisplay).fontFamily;
+    tempSpan.textContent = 'M'; // Use 'M' as it's typically the widest character
+    document.body.appendChild(tempSpan);
+    
+    const charWidth = tempSpan.getBoundingClientRect().width;
+    document.body.removeChild(tempSpan);
+    
+    // Calculate approximate characters that fit, accounting for spaces
+    const maxChars = Math.floor(displayWidth / charWidth) - 5; // -5 for safety margin
+    
+    return Math.max(60, Math.min(120, maxChars)); // Keep between 60-120 characters
+}
+
+// Update max chars when window resizes
+function updateMaxCharsPerLine() {
+    gameState.maxCharsPerLine = calculateMaxCharsPerLine();
+    console.log('Updated max chars per line to:', gameState.maxCharsPerLine);
 }
 // End of script. Ensure no duplicated/old functions below this line. 
