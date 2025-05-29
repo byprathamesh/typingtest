@@ -218,8 +218,7 @@ header h1 {
     line-height: 1.8;
     margin-bottom: 1rem;
     height: calc(1.4rem * 1.8 * 6 + 4rem);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     border: 2px solid var(--text-primary);
     transition: var(--transition-medium);
     position: relative;
@@ -228,7 +227,6 @@ header h1 {
     user-select: none;
     cursor: text;
     outline: none;
-    scroll-behavior: smooth;
 }
 
 .text-display:hover {

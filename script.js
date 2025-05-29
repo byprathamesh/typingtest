@@ -425,7 +425,7 @@ function generateWords(count) {
     return words.slice(0, targetWords);
 }
 
-// Enhanced text display with flowing lines and auto-scroll
+// Typewriter-style text display with top-down flow
 function displayText() {
     if (!textDisplay) {
         console.warn('textDisplay element not found');
@@ -434,107 +434,121 @@ function displayText() {
     
     textDisplay.innerHTML = '';
     
-    // Calculate words to show around current position
-    const wordsToShow = 80; // Total words to render
-    const startIndex = Math.max(0, gameState.currentWordIndex - 10);
-    const endIndex = Math.min(gameState.words.length, startIndex + wordsToShow);
+    // Calculate how many words per line and which line we're currently on
+    const wordsPerLine = Math.floor((textDisplay.clientWidth - 80) / 60); // Rough estimate
+    const currentLineIndex = Math.floor(gameState.currentWordIndex / wordsPerLine);
     
-    // Create a container for all words
-    const wordsContainer = document.createElement('div');
-    wordsContainer.style.position = 'relative';
-    wordsContainer.style.width = '100%';
-    wordsContainer.style.lineHeight = '1.8';
-    wordsContainer.style.fontSize = '1.4rem';
+    // Calculate which lines to show (show lines around current line)
+    const startLine = Math.max(0, currentLineIndex - 1); // 1 line before current
+    const endLine = startLine + 6; // Show 6 total lines
     
-    for (let wordIndex = startIndex; wordIndex < endIndex; wordIndex++) {
-        const word = gameState.words[wordIndex];
-        const wordElement = document.createElement('span');
-        wordElement.className = 'word';
-        wordElement.setAttribute('data-word-index', wordIndex);
-        wordElement.style.marginRight = '0.4rem';
-        wordElement.style.display = 'inline';
+    // Create lines
+    for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
+        const lineDiv = document.createElement('div');
+        lineDiv.style.height = 'calc(1.4rem * 1.8)';
+        lineDiv.style.display = 'flex';
+        lineDiv.style.alignItems = 'center';
+        lineDiv.style.flexWrap = 'wrap';
+        lineDiv.style.marginBottom = '0';
+        lineDiv.style.lineHeight = '1.8';
         
-        // Set word state classes
-        if (wordIndex === gameState.currentWordIndex) {
-            wordElement.classList.add('current');
-        } else if (wordIndex < gameState.currentWordIndex) {
-            const typedWord = gameState.typedWords[wordIndex] || '';
-            const isCorrect = typedWord === word;
-            wordElement.classList.add(isCorrect ? 'correct' : 'incorrect');
-        }
+        // Calculate word range for this line
+        const lineStartWord = lineIndex * wordsPerLine;
+        const lineEndWord = Math.min(gameState.words.length, lineStartWord + wordsPerLine);
         
-        // Create character elements
-        word.split('').forEach((char, charIndex) => {
-            const charElement = document.createElement('span');
-            charElement.className = 'char';
-            charElement.textContent = char;
-            charElement.setAttribute('data-char-index', charIndex);
+        // Add words to this line
+        for (let wordIndex = lineStartWord; wordIndex < lineEndWord; wordIndex++) {
+            if (wordIndex >= gameState.words.length) break;
             
-            // Apply character states for completed words or current word up to typed position
-            if (wordIndex < gameState.currentWordIndex || 
-                (wordIndex === gameState.currentWordIndex && charIndex < gameState.currentCharIndex)) {
+            const word = gameState.words[wordIndex];
+            const wordElement = document.createElement('span');
+            wordElement.className = 'word';
+            wordElement.setAttribute('data-word-index', wordIndex);
+            wordElement.style.marginRight = '0.4rem';
+            wordElement.style.display = 'inline';
+            
+            // Set word state classes
+            if (wordIndex === gameState.currentWordIndex) {
+                wordElement.classList.add('current');
+            } else if (wordIndex < gameState.currentWordIndex) {
                 const typedWord = gameState.typedWords[wordIndex] || '';
+                const isCorrect = typedWord === word;
+                wordElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+            }
+            
+            // Create character elements
+            word.split('').forEach((char, charIndex) => {
+                const charElement = document.createElement('span');
+                charElement.className = 'char';
+                charElement.textContent = char;
+                charElement.setAttribute('data-char-index', charIndex);
                 
-                if (wordIndex === gameState.currentWordIndex) {
-                    // Current word being typed
-                    const inputValue = gameState.currentTypedWord || '';
-                    if (charIndex < inputValue.length) {
-                        if (inputValue[charIndex] === char) {
-                            charElement.classList.add('correct');
-                        } else {
-                            charElement.classList.add('incorrect');
+                // Apply character states
+                if (wordIndex < gameState.currentWordIndex || 
+                    (wordIndex === gameState.currentWordIndex && charIndex < gameState.currentCharIndex)) {
+                    const typedWord = gameState.typedWords[wordIndex] || '';
+                    
+                    if (wordIndex === gameState.currentWordIndex) {
+                        // Current word being typed
+                        const inputValue = gameState.currentTypedWord || '';
+                        if (charIndex < inputValue.length) {
+                            if (inputValue[charIndex] === char) {
+                                charElement.classList.add('correct');
+                            } else {
+                                charElement.classList.add('incorrect');
+                            }
+                        }
+                    } else {
+                        // Completed word
+                        if (charIndex < typedWord.length) {
+                            if (typedWord[charIndex] === char) {
+                                charElement.classList.add('correct');
+                            } else {
+                                charElement.classList.add('incorrect');
+                            }
                         }
                     }
-                } else {
-                    // Completed word
-                    if (charIndex < typedWord.length) {
-                        if (typedWord[charIndex] === char) {
-                            charElement.classList.add('correct');
-                        } else {
-                            charElement.classList.add('incorrect');
-                        }
+                }
+                
+                wordElement.appendChild(charElement);
+            });
+            
+            // Add extra characters if typed word is longer than original
+            if (wordIndex === gameState.currentWordIndex) {
+                const inputValue = gameState.currentTypedWord || '';
+                if (inputValue.length > word.length) {
+                    for (let i = word.length; i < inputValue.length; i++) {
+                        const extraChar = document.createElement('span');
+                        extraChar.className = 'char extra';
+                        extraChar.textContent = inputValue[i];
+                        extraChar.setAttribute('data-char-index', i);
+                        wordElement.appendChild(extraChar);
+                    }
+                }
+            } else if (wordIndex < gameState.currentWordIndex) {
+                const typedWord = gameState.typedWords[wordIndex] || '';
+                if (typedWord.length > word.length) {
+                    for (let i = word.length; i < typedWord.length; i++) {
+                        const extraChar = document.createElement('span');
+                        extraChar.className = 'char extra';
+                        extraChar.textContent = typedWord[i];
+                        extraChar.setAttribute('data-char-index', i);
+                        wordElement.appendChild(extraChar);
                     }
                 }
             }
             
-            wordElement.appendChild(charElement);
-        });
-        
-        // Add extra characters if typed word is longer than original
-        if (wordIndex === gameState.currentWordIndex) {
-            const inputValue = gameState.currentTypedWord || '';
-            if (inputValue.length > word.length) {
-                for (let i = word.length; i < inputValue.length; i++) {
-                    const extraChar = document.createElement('span');
-                    extraChar.className = 'char extra';
-                    extraChar.textContent = inputValue[i];
-                    extraChar.setAttribute('data-char-index', i);
-                    wordElement.appendChild(extraChar);
-                }
-            }
-        } else if (wordIndex < gameState.currentWordIndex) {
-            const typedWord = gameState.typedWords[wordIndex] || '';
-            if (typedWord.length > word.length) {
-                for (let i = word.length; i < typedWord.length; i++) {
-                    const extraChar = document.createElement('span');
-                    extraChar.className = 'char extra';
-                    extraChar.textContent = typedWord[i];
-                    extraChar.setAttribute('data-char-index', i);
-                    wordElement.appendChild(extraChar);
-                }
-            }
+            lineDiv.appendChild(wordElement);
         }
         
-        wordsContainer.appendChild(wordElement);
+        textDisplay.appendChild(lineDiv);
     }
     
-    textDisplay.appendChild(wordsContainer);
     if (caret) textDisplay.appendChild(caret);
     
-    // Update caret position and auto-scroll
+    // Update caret position
     requestAnimationFrame(() => {
         updateCaret();
-        autoScrollToKeepCurrentWordVisible();
     });
 }
 
@@ -584,35 +598,6 @@ function updateCaret() {
     // Apply the position
     caret.style.left = caretLeft + 'px';
     caret.style.top = caretTop + 'px';
-}
-
-// Auto-scroll to keep current word visible in the 6-line display
-function autoScrollToKeepCurrentWordVisible() {
-    if (!textDisplay) return;
-    
-    const currentWordElement = textDisplay.querySelector(`[data-word-index="${gameState.currentWordIndex}"]`);
-    if (!currentWordElement) return;
-    
-    const displayRect = textDisplay.getBoundingClientRect();
-    const wordRect = currentWordElement.getBoundingClientRect();
-    
-    const lineHeight = 1.4 * 1.8; // font-size * line-height in rem
-    const lineHeightPx = lineHeight * 16; // Convert to pixels (assuming 1rem = 16px)
-    
-    // Calculate which line the current word is on relative to the display
-    const relativeTop = wordRect.top - displayRect.top;
-    const currentLine = Math.floor(relativeTop / lineHeightPx);
-    
-    // If current word is on line 4 or beyond (0-indexed), scroll up to keep it visible
-    if (currentLine >= 4) {
-        const scrollAmount = (currentLine - 3) * lineHeightPx;
-        textDisplay.scrollTop += scrollAmount;
-    }
-    // If current word is above the visible area, scroll up
-    else if (currentLine < 0) {
-        const scrollAmount = Math.abs(currentLine) * lineHeightPx;
-        textDisplay.scrollTop -= scrollAmount;
-    }
 }
 
 // Enhanced timer with better tracking
@@ -685,89 +670,131 @@ function calculateConsistency() {
 
 // Optimized stats calculation with real-time tracking
 function updateStats() {
-    // Recalculate character counts
-    gameState.totalChars = 0;
-    gameState.correctChars = 0;
-    gameState.errors = 0;
+    // Only recalculate for current word being typed, not all previous words
+    // (Previous words are already counted when completed)
     
-    // Count previous complete words
-    for (let i = 0; i < gameState.currentWordIndex; i++) {
-        const typedWord = gameState.typedWords[i] || '';
-        const originalWord = gameState.words[i] || '';
-        for (let j = 0; j < Math.max(typedWord.length, originalWord.length); j++) {
-            gameState.totalChars++;
-            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
-                gameState.correctChars++;
-            } else {
-                gameState.errors++;
-            }
-        }
-    }
-    
-    // Count current word being typed
-    const currentWord = gameState.words[gameState.currentWordIndex] || '';
-    const currentTyped = gameState.currentTypedWord || '';
-    for (let i = 0; i < Math.max(currentTyped.length, currentWord.length); i++) {
-        if (i < currentTyped.length) {
-            gameState.totalChars++;
-            if (i < currentWord.length && currentTyped[i] === currentWord[i]) {
-                gameState.correctChars++;
-            } else {
-                gameState.errors++;
-            }
-        }
-    }
-
     // Calculate time-based stats
     const timeElapsed = gameState.isActive && gameState.startTime ? 
         (Date.now() - gameState.startTime) / 1000 : gameState.currentTime;
     const minutes = timeElapsed / 60;
 
-    // Calculate WPM (words per minute)
-    const wordsTyped = gameState.correctChars / 5; // Standard: 5 chars = 1 word
-    const wpm = minutes > 0 ? Math.round(wordsTyped / minutes) : 0;
+    // Calculate total characters typed so far
+    let totalCharsTyped = 0;
+    let correctCharsTyped = 0;
+    let errorsCount = 0;
+    
+    // Count completed words
+    for (let i = 0; i < gameState.currentWordIndex; i++) {
+        const typedWord = gameState.typedWords[i] || '';
+        const originalWord = gameState.words[i] || '';
+        
+        // Count all characters in both typed and original word
+        const maxLength = Math.max(typedWord.length, originalWord.length);
+        for (let j = 0; j < maxLength; j++) {
+            totalCharsTyped++;
+            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
+                correctCharsTyped++;
+            } else {
+                errorsCount++;
+            }
+        }
+    }
+    
+    // Add current word being typed
+    const currentWord = gameState.words[gameState.currentWordIndex] || '';
+    const currentTyped = gameState.currentTypedWord || '';
+    for (let i = 0; i < currentTyped.length; i++) {
+        totalCharsTyped++;
+        if (i < currentWord.length && currentTyped[i] === currentWord[i]) {
+            correctCharsTyped++;
+        } else {
+            errorsCount++;
+        }
+    }
 
-    // Calculate raw WPM (includes incorrect characters)
-    const rawWordsTyped = gameState.totalChars / 5;
-    const rawWpm = minutes > 0 ? Math.round(rawWordsTyped / minutes) : 0;
+    // Calculate WPM properly (net WPM = correct chars only)
+    const netWpm = minutes > 0 ? Math.round((correctCharsTyped / 5) / minutes) : 0;
+    
+    // Calculate raw WPM (all characters typed)
+    const rawWpm = minutes > 0 ? Math.round((totalCharsTyped / 5) / minutes) : 0;
 
     // Calculate accuracy
-    const accuracy = gameState.totalChars > 0 ? 
-        Math.round((gameState.correctChars / gameState.totalChars) * 100) : 100;
+    const accuracy = totalCharsTyped > 0 ? 
+        Math.round((correctCharsTyped / totalCharsTyped) * 100) : 100;
+
+    // Update global state
+    gameState.totalChars = totalCharsTyped;
+    gameState.correctChars = correctCharsTyped;
+    gameState.errors = errorsCount;
 
     // Update display elements
-    if (wpmElement) wpmElement.textContent = wpm;
+    if (wpmElement) wpmElement.textContent = netWpm;
     if (rawWpmElement) rawWpmElement.textContent = rawWpm;
     if (accuracyElement) accuracyElement.textContent = accuracy + '%';
-    if (errorsElement) errorsElement.textContent = gameState.errors;
+    if (errorsElement) errorsElement.textContent = errorsCount;
 
     // Update live WPM indicator
     const floatingWpm = document.getElementById('floatingWpm');
     const liveWpmValue = document.getElementById('liveWpmValue');
     if (floatingWpm && liveWpmValue && gameState.isActive) {
-        liveWpmValue.textContent = wpm;
+        liveWpmValue.textContent = netWpm;
         floatingWpm.style.display = (liveWpmToggle && liveWpmToggle.checked) ? 'block' : 'none';
     }
 
-    // Store WPM history for charts
+    // Store WPM history for charts (but not every update, only every second)
     if (gameState.isActive && timeElapsed > 0) {
-        gameState.wpmHistory.push(wpm);
-        gameState.rawWpmHistory.push(rawWpm);
+        const currentSecond = Math.floor(timeElapsed);
+        if (gameState.wpmHistory.length < currentSecond) {
+            gameState.wpmHistory.push({
+                time: timeElapsed,
+                wpm: netWpm
+            });
+            gameState.rawWpmHistory.push({
+                time: timeElapsed,
+                wpm: rawWpm
+            });
+        }
     }
 }
 
 // Enhanced test completion with detailed results
 function endTest() {
     gameState.isActive = false;
-    textInput.disabled = true;
-    textDisplay.classList.remove('focused');
+    if (textDisplay) textDisplay.classList.remove('focused');
     
     soundManager.playSound('complete');
     
-    // Calculate final statistics
-    const finalWpm = calculateWPM();
-    const finalRawWpm = calculateRawWPM();
-    const finalAccuracy = calculateAccuracy();
+    // Calculate final statistics using the same methods as updateStats
+    const timeElapsed = gameState.currentTime > 0 ? gameState.currentTime : 
+        (Date.now() - gameState.startTime) / 1000;
+    const minutes = timeElapsed / 60;
+    
+    // Final character count
+    let totalCharsTyped = 0;
+    let correctCharsTyped = 0;
+    let errorsCount = 0;
+    
+    // Count all completed words
+    for (let i = 0; i < gameState.currentWordIndex; i++) {
+        const typedWord = gameState.typedWords[i] || '';
+        const originalWord = gameState.words[i] || '';
+        
+        const maxLength = Math.max(typedWord.length, originalWord.length);
+        for (let j = 0; j < maxLength; j++) {
+            totalCharsTyped++;
+            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
+                correctCharsTyped++;
+            } else {
+                errorsCount++;
+            }
+        }
+    }
+    
+    // Final calculations
+    const finalNetWpm = minutes > 0 ? Math.round((correctCharsTyped / 5) / minutes) : 0;
+    const finalRawWpm = minutes > 0 ? Math.round((totalCharsTyped / 5) / minutes) : 0;
+    const finalAccuracy = totalCharsTyped > 0 ? 
+        Math.round((correctCharsTyped / totalCharsTyped) * 100) : 100;
     const consistency = calculateConsistency();
     
     let correctWords = 0;
@@ -782,38 +809,60 @@ function endTest() {
     }
     
     // Display results
-    document.getElementById('finalWpm').textContent = finalWpm;
+    document.getElementById('finalWpm').textContent = finalNetWpm;
     document.getElementById('finalRawWpm').textContent = finalRawWpm;
     document.getElementById('finalAccuracy').textContent = finalAccuracy + '%';
     document.getElementById('consistency').textContent = consistency + '%';
     document.getElementById('correctWords').textContent = correctWords;
     document.getElementById('wrongWords').textContent = wrongWords;
-    document.getElementById('totalCharsTyped').textContent = gameState.totalChars;
+    document.getElementById('totalCharsTyped').textContent = totalCharsTyped;
     document.getElementById('testDuration').textContent = gameState.timeLimit + 's';
     
     // Create enhanced speed chart
     createSpeedChart();
     
     // Show results with animation
-    statsBar.style.display = 'none';
-    resultsDiv.style.display = 'block';
-    resultsDiv.classList.add('fade-in');
+    if (statsBar) statsBar.style.display = 'none';
+    if (resultsDiv) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('fade-in');
+    }
 }
 
 // Enhanced chart with dual WPM tracking
 function createSpeedChart() {
-    const ctx = document.getElementById('wpmChart').getContext('2d');
+    const ctx = document.getElementById('wpmChart');
+    if (!ctx) return;
     
     // Clear any existing chart
     if (window.typingChart) {
         window.typingChart.destroy();
     }
     
-    const labels = gameState.wpmHistory.map((_, index) => (index + 1) + 's');
-    const netWpmData = gameState.wpmHistory.map(point => point.wpm);
-    const rawWpmData = gameState.rawWpmHistory.map(point => point.wpm);
+    const chartCtx = ctx.getContext('2d');
     
-    window.typingChart = new Chart(ctx, {
+    // Create labels and data arrays from history
+    const labels = [];
+    const netWpmData = [];
+    const rawWpmData = [];
+    
+    for (let i = 0; i < gameState.wpmHistory.length; i++) {
+        const historyPoint = gameState.wpmHistory[i];
+        const rawHistoryPoint = gameState.rawWpmHistory[i];
+        
+        if (historyPoint && typeof historyPoint === 'object') {
+            labels.push((i + 1) + 's');
+            netWpmData.push(historyPoint.wpm || 0);
+            rawWpmData.push(rawHistoryPoint ? (rawHistoryPoint.wpm || 0) : 0);
+        } else {
+            // Fallback for old format
+            labels.push((i + 1) + 's');
+            netWpmData.push(historyPoint || 0);
+            rawWpmData.push(gameState.rawWpmHistory[i] || 0);
+        }
+    }
+    
+    window.typingChart = new Chart(chartCtx, {
         type: 'line',
         data: {
             labels: labels,
@@ -1136,7 +1185,6 @@ function initializeTest() {
     if (textDisplay) {
         textDisplay.classList.remove('focused');
         textDisplay.focus(); // Auto-focus the text display
-        textDisplay.scrollTop = 0; // Reset scroll position
     }
     
     // Update timer display
@@ -1199,18 +1247,8 @@ function handleKeyboard(event) {
     // Handle space (word completion)
     else if (event.key === ' ') {
         if (gameState.currentTypedWord.length > 0) {
+            // Store the completed word
             gameState.typedWords[gameState.currentWordIndex] = gameState.currentTypedWord;
-            
-            // Count characters for this word
-            const originalWord = gameState.words[gameState.currentWordIndex];
-            for (let i = 0; i < Math.max(gameState.currentTypedWord.length, originalWord.length); i++) {
-                gameState.totalChars++;
-                if (i < gameState.currentTypedWord.length && i < originalWord.length && gameState.currentTypedWord[i] === originalWord[i]) {
-                    gameState.correctChars++;
-                } else {
-                    gameState.errors++;
-                }
-            }
             
             // Move to next word
             gameState.currentWordIndex++;
