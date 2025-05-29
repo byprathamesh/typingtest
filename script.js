@@ -565,7 +565,7 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
-    lines: [], currentLine: 0, wordsPerLine: 8, // Reduced from 10 to 8 for better spacing
+    lines: [], currentLine: 0, wordsPerLine: 9, // Increased to 9 for better space utilization
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -715,9 +715,9 @@ function displayText(words) {
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
     gameState.currentLine = 0;
-    gameState.wordsPerLine = 8; // Fixed number of words per line
+    gameState.wordsPerLine = 9; // Fixed number of words per line
     
-    // Generate initial 3 lines (24 words)
+    // Generate initial 3 lines (27 words)
     generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
@@ -885,7 +885,7 @@ function handleWordCompletion() {
         generateMoreWords();
     }
     
-    // Check if we've completed a line (every 8 words) - only trigger line change after a small delay
+    // Check if we've completed a line (every 9 words) - only trigger line change after a small delay
     const currentLineNumber = Math.floor(gameState.currentWordIndex / gameState.wordsPerLine);
     const previousLineNumber = Math.floor((gameState.currentWordIndex - 1) / gameState.wordsPerLine);
     
