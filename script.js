@@ -182,6 +182,8 @@ class KeyboardSoundManager {
         this.volume = volume / 100;
         this.masterGain = null;
         this.currentSoundType = 'windchimes'; // Perfect default - wind chimes are universally loved
+        this.lastKeyTime = 0; // For smooth timing
+        this.activeNodes = new Set(); // Track active audio nodes for cleanup
         
         // 7 dream sounds people wish their keyboard made
         this.soundTypes = {
@@ -201,7 +203,7 @@ class KeyboardSoundManager {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             
-            // Create master gain node
+            // Create master gain node with perfect settings
             this.masterGain = this.audioContext.createGain();
             this.masterGain.gain.value = this.volume;
             this.masterGain.connect(this.audioContext.destination);
@@ -213,7 +215,7 @@ class KeyboardSoundManager {
         }
     }
 
-    _createTypingSound(type = 'keystroke', variation = 0) {
+    _createDreamSound(type = 'keystroke', variation = 0) {
         if (!this.enabled || !this.audioContext) return;
 
         const now = this.audioContext.currentTime;
@@ -241,8 +243,20 @@ class KeyboardSoundManager {
                 this._createMagicBellSound(now, type, variation);
                 break;
             default:
-                this._createRaindropSound(now, type, variation);
+                this._createWindChimeSound(now, type, variation); // Default to perfected wind chimes
         }
+    }
+
+    _cleanupOldNodes() {
+        // Clean up finished audio nodes for better performance
+        if (!this.audioContext) return;
+        
+        const now = this.audioContext.currentTime;
+        this.activeNodes.forEach(node => {
+            if (node.endTime && now > node.endTime) {
+                this.activeNodes.delete(node);
+            }
+        });
     }
 
     _createRaindropSound(now, type, variation) {
@@ -316,74 +330,86 @@ class KeyboardSoundManager {
     }
 
     _createWindChimeSound(now, type, variation) {
-        // SPECTACULAR wind chimes with perfect harmonic resonance
+        // PERFECTED smooth wind chimes with flawless typing flow
         const oscillator1 = this.audioContext.createOscillator();
         const oscillator2 = this.audioContext.createOscillator();
         const oscillator3 = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filter = this.audioContext.createBiquadFilter();
-        const reverb = this.audioContext.createConvolver();
+        const compressor = this.audioContext.createDynamicsCompressor();
         
-        const chimeFreqs = [523, 659, 784, 1047, 1319, 1568]; // Extended pentatonic
+        // Perfect pentatonic scale for seamless harmony
+        const chimeFreqs = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99]; // C pentatonic
         const baseFreq = chimeFreqs[variation % chimeFreqs.length];
         
-        // Perfect harmonic series for magical chimes
+        // Smooth harmonic progression for perfect blending
         oscillator1.frequency.setValueAtTime(baseFreq, now);
-        oscillator2.frequency.setValueAtTime(baseFreq * 1.5, now); // Perfect fifth
-        oscillator3.frequency.setValueAtTime(baseFreq * 2.01, now); // Slightly detuned octave
+        oscillator2.frequency.setValueAtTime(baseFreq * 1.498, now); // Perfect fifth for harmony
+        oscillator3.frequency.setValueAtTime(baseFreq * 1.996, now); // Nearly perfect octave for smoothness
         
+        // Perfect timing for smooth typing flow
         if (type === 'spacebar') {
-            // Majestic spacebar chime
+            // Gentle spacebar chime that doesn't overwhelm
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.28, now + 0.03);
-            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.18, now + 0.2);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.15, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.08, now + 0.15);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
         } else if (type === 'error') {
-            // Dissonant chime
-            oscillator2.frequency.setValueAtTime(baseFreq * 1.414, now); // Tritone for dissonance
+            // Subtle dissonance for errors
+            oscillator2.frequency.setValueAtTime(baseFreq * 1.414, now); // Tritone but gentle
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.15, now + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
         } else {
-            // Perfect harmonious chimes
+            // Perfect smooth chimes for typing flow
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.22, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.15, now + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.08, now + 0.08);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
         }
         
         oscillator1.type = 'sine';
         oscillator2.type = 'sine';
-        oscillator3.type = 'triangle';
+        oscillator3.type = 'sine';
         
-        // Perfect filtering for chime resonance
+        // Smooth filtering for seamless blending
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(3000, now);
-        filter.Q.value = 2;
+        filter.frequency.setValueAtTime(2500, now);
+        filter.Q.value = 1.2;
         
-        // Individual gain control for perfect balance
+        // Gentle compression for consistent volume
+        compressor.threshold.setValueAtTime(-18, now);
+        compressor.knee.setValueAtTime(20, now);
+        compressor.ratio.setValueAtTime(3, now);
+        compressor.attack.setValueAtTime(0.01, now);
+        compressor.release.setValueAtTime(0.3, now);
+        
+        // Perfect balance for smooth harmony
         const gain1 = this.audioContext.createGain();
         const gain2 = this.audioContext.createGain();
         const gain3 = this.audioContext.createGain();
-        gain1.gain.value = 0.6; // Fundamental
-        gain2.gain.value = 0.3; // Fifth
-        gain3.gain.value = 0.1; // Octave shimmer
+        gain1.gain.value = 0.65; // Strong fundamental
+        gain2.gain.value = 0.25; // Harmonic support
+        gain3.gain.value = 0.1;  // Subtle octave shimmer
         
+        // Smooth audio chain for perfect flow
         oscillator1.connect(gain1);
         oscillator2.connect(gain2);
         oscillator3.connect(gain3);
         gain1.connect(filter);
         gain2.connect(filter);
         gain3.connect(filter);
-        filter.connect(gainNode);
+        filter.connect(compressor);
+        compressor.connect(gainNode);
         gainNode.connect(this.masterGain);
         
+        // Perfect timing for smooth typing
         oscillator1.start(now);
         oscillator2.start(now);
         oscillator3.start(now);
-        oscillator1.stop(now + 3.0);
-        oscillator2.stop(now + 3.0);
-        oscillator3.stop(now + 3.0);
+        oscillator1.stop(now + 1.0);
+        oscillator2.stop(now + 1.0);
+        oscillator3.stop(now + 1.0);
     }
 
     _createCrystalBellSound(now, type, variation) {
@@ -628,15 +654,30 @@ class KeyboardSoundManager {
     }
 
     playKeystroke(isCorrect = true, isSpace = false) {
-        const variation = Math.floor(Math.random() * 5); // Add variety to sounds
+        if (!this.enabled || !this.audioContext) return;
+        
+        const now = this.audioContext.currentTime;
+        const timeSinceLastKey = now - this.lastKeyTime;
+        
+        // Smart variation for smooth typing flow
+        const smartVariation = Math.floor((now * 1000) % 6); // Time-based variation for smoothness
+        
+        // Clean up old nodes for better performance
+        this._cleanupOldNodes();
         
         if (isSpace) {
-            this._createTypingSound('spacebar', variation);
+            this._createDreamSound('spacebar', smartVariation);
         } else if (isCorrect) {
-            this._createTypingSound('keystroke', variation);
+            // For rapid typing, slightly reduce volume to prevent overwhelming
+            const rapidTypingMultiplier = timeSinceLastKey < 0.1 ? 0.85 : 1.0;
+            this.volume *= rapidTypingMultiplier;
+            this._createDreamSound('keystroke', smartVariation);
+            this.volume /= rapidTypingMultiplier; // Reset volume
         } else {
-            this._createTypingSound('error', variation);
+            this._createDreamSound('error', smartVariation);
         }
+        
+        this.lastKeyTime = now;
     }
 
     playWordComplete() {
@@ -645,7 +686,7 @@ class KeyboardSoundManager {
             // Play a brief sequence for word completion
             for (let i = 0; i < 2; i++) {
                 setTimeout(() => {
-                    this._createTypingSound('word_complete', i);
+                    this._createDreamSound('word_complete', i);
                 }, i * 50);
             }
         }
@@ -657,7 +698,7 @@ class KeyboardSoundManager {
             // Play ascending completion sounds
             for (let i = 0; i < 4; i++) {
                 setTimeout(() => {
-                    this._createTypingSound('celebration', i);
+                    this._createDreamSound('celebration', i);
                 }, i * 100);
             }
         }
