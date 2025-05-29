@@ -174,7 +174,7 @@ const progressBar = document.getElementById('progressBar');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// Premium KeyboardSoundManager with Advanced Synthesis and Sound Design
+// Simplified but Effective KeyboardSoundManager 
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
@@ -182,360 +182,67 @@ class KeyboardSoundManager {
         this.volume = volume / 100;
         this.masterGain = null;
         this.noteIndex = 0;
-        this.lastKeypressTime = 0;
-        this.typingSpeed = 0;
         this.currentScale = 'pentatonic';
         
-        // Premium musical scales with perfect frequency ratios
+        // Musical scales
         this.scales = {
-            pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25], // Extended pentatonic
-            major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25], // C Major
-            minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Natural Minor
-            dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25], // C Dorian
-            ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63], // Lower ambient tones
-            crystal: [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50], // High crystalline
-            warm: [174.61, 196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23] // Warm low tones
+            pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25],
+            major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25],
+            minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25],
+            dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25],
+            ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63],
+            crystal: [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50],
+            warm: [174.61, 196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23]
         };
         
-        this._initAdvancedAudio();
+        this._initAudio();
     }
 
-    _initAdvancedAudio() {
+    _initAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.masterGain = this.audioContext.createGain();
-            
-            // Create professional-grade audio processing chain
-            this.compressor = this.audioContext.createDynamicsCompressor();
-            this.compressor.threshold.setValueAtTime(-18, this.audioContext.currentTime);
-            this.compressor.knee.setValueAtTime(25, this.audioContext.currentTime);
-            this.compressor.ratio.setValueAtTime(8, this.audioContext.currentTime);
-            this.compressor.attack.setValueAtTime(0.001, this.audioContext.currentTime);
-            this.compressor.release.setValueAtTime(0.15, this.audioContext.currentTime);
-            
-            // Add subtle saturation for warmth
-            this.waveshaper = this.audioContext.createWaveShaper();
-            this.waveshaper.curve = this._createSaturationCurve();
-            this.waveshaper.oversample = '4x';
-            
-            // Master reverb for ambient feel
-            this.masterReverb = this._createPremiumReverb(0.15, 1.2);
-            
-            // Audio chain: masterGain -> waveshaper -> compressor -> reverb -> destination
-            this.masterGain.connect(this.waveshaper);
-            this.waveshaper.connect(this.compressor);
-            this.compressor.connect(this.masterReverb.input);
-            this.masterReverb.output.connect(this.audioContext.destination);
-            
+            this.masterGain.connect(this.audioContext.destination);
             this.masterGain.gain.value = this.volume;
+            console.log('Audio system initialized successfully');
         } catch (e) { 
-            console.warn('Web Audio API not supported'); 
+            console.warn('Web Audio API not supported:', e); 
             this.audioContext = null; 
         }
     }
 
-    _createSaturationCurve() {
-        const samples = 44100;
-        const curve = new Float32Array(samples);
-        const deg = Math.PI / 180;
-        
-        for (let i = 0; i < samples; i++) {
-            const x = (i * 2) / samples - 1;
-            curve[i] = (3 + 2) * x * 20 * deg / (Math.PI + 2 * Math.abs(x));
-        }
-        return curve;
-    }
-
-    _updateTypingSpeed() {
-        const now = Date.now();
-        if (this.lastKeypressTime > 0) {
-            const timeDiff = now - this.lastKeypressTime;
-            this.typingSpeed = Math.max(0.1, Math.min(3.0, 1000 / timeDiff));
-        }
-        this.lastKeypressTime = now;
-    }
-
-    _getAdaptiveParameters(baseVolume) {
-        const speedFactor = Math.max(0.5, 1.3 - (this.typingSpeed * 0.2));
-        return {
-            volume: baseVolume * speedFactor,
-            brightness: 0.6 + (this.typingSpeed * 0.2),
-            decay: 0.3 + (this.typingSpeed * 0.1)
-        };
-    }
-
-    _createPremiumReverb(wetness, roomSize = 1.0) {
-        const convolver = this.audioContext.createConvolver();
-        const wetGain = this.audioContext.createGain();
-        const dryGain = this.audioContext.createGain();
-        const output = this.audioContext.createGain();
-        
-        // Create high-quality impulse response
-        const sampleRate = this.audioContext.sampleRate;
-        const length = sampleRate * roomSize * 2;
-        const impulse = this.audioContext.createBuffer(2, length, sampleRate);
-        
-        for (let channel = 0; channel < 2; channel++) {
-            const channelData = impulse.getChannelData(channel);
-            for (let i = 0; i < length; i++) {
-                const decay = Math.pow(1 - i / length, 1.5);
-                const noise = (Math.random() * 2 - 1) * decay;
-                // Add some early reflections
-                const earlyReflection = i < 1000 ? Math.sin(i * 0.01) * decay * 0.3 : 0;
-                channelData[i] = noise + earlyReflection;
-            }
-        }
-        convolver.buffer = impulse;
-        
-        wetGain.gain.setValueAtTime(wetness, this.audioContext.currentTime);
-        dryGain.gain.setValueAtTime(1 - wetness, this.audioContext.currentTime);
-        
-        return {
-            input: this.audioContext.createGain(),
-            output: output,
-            connect: function(input) {
-                input.connect(convolver);
-                input.connect(dryGain);
-                convolver.connect(wetGain);
-                wetGain.connect(output);
-                dryGain.connect(output);
-            }
-        };
-    }
-
-    _createPremiumTone(type = 'keypress') {
+    _createTone(frequency, duration = 0.3, volume = 0.1) {
         if (!this.enabled || !this.audioContext) return;
 
-        this._updateTypingSpeed();
-        
         const now = this.audioContext.currentTime;
+        const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+
+        // Create nice sine wave tone
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, now);
+
+        // Add filtering for warmth
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(frequency * 3, now);
+        filter.Q.setValueAtTime(1, now);
+
+        // Smooth envelope
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(volume, now + 0.01);
+        gainNode.gain.linearRampToValueAtTime(volume * 0.7, now + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        // Connect audio chain
+        oscillator.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(this.masterGain);
 
-        let config;
-        const currentNotes = this.scales[this.currentScale];
-        
-        switch (type) {
-            case 'keypress':
-                // Intelligent musical progression with variations
-                let noteFreq;
-                const progressionPatterns = [
-                    [0, 1, 2, 3, 4, 5, 6, 7], // Ascending
-                    [0, 2, 4, 6, 1, 3, 5, 7], // Thirds pattern
-                    [0, 4, 2, 5, 1, 6, 3, 7], // Musical intervals
-                ];
-                const pattern = progressionPatterns[Math.floor(this.noteIndex / 8) % progressionPatterns.length];
-                noteFreq = currentNotes[pattern[this.noteIndex % pattern.length]];
-                this.noteIndex++;
-                
-                const adaptive = this._getAdaptiveParameters(0.08);
-                config = {
-                    frequency: noteFreq,
-                    harmonics: [1, 0.6, 0.3, 0.15, 0.08, 0.04], // Rich harmonic series
-                    attackTime: 0.008 + (Math.random() * 0.005),
-                    decayTime: 0.06 + (adaptive.decay * 0.02),
-                    sustainLevel: 0.4,
-                    releaseTime: 0.35 + (Math.random() * 0.15),
-                    volume: adaptive.volume,
-                    brightness: adaptive.brightness,
-                    modulation: true
-                };
-                break;
-                
-            case 'space':
-                // Magical spacebar sound with shimmer
-                const baseFreq = currentNotes[Math.floor(Math.random() * currentNotes.length)] * 2;
-                config = {
-                    frequency: baseFreq,
-                    harmonics: [1, 0.8, 0.5, 0.3, 0.15, 0.08],
-                    attackTime: 0.02,
-                    decayTime: 0.1,
-                    sustainLevel: 0.35,
-                    releaseTime: 0.8,
-                    volume: this._getAdaptiveParameters(0.06).volume,
-                    brightness: 0.8,
-                    sparkle: true,
-                    modulation: true
-                };
-                break;
-                
-            case 'error':
-                // Gentle, forgiving error sound
-                config = {
-                    frequency: 220.00, // A3
-                    harmonics: [1, 0.3, 0.1],
-                    attackTime: 0.03,
-                    decayTime: 0.08,
-                    sustainLevel: 0.3,
-                    releaseTime: 0.25,
-                    volume: this._getAdaptiveParameters(0.04).volume,
-                    brightness: 0.3
-                };
-                break;
-                
-            case 'complete':
-                // Triumphant completion with ascending arpeggios
-                config = {
-                    frequency: 523.25, // C5
-                    harmonics: [1, 0.8, 0.5, 0.3, 0.15],
-                    attackTime: 0.03,
-                    decayTime: 0.15,
-                    sustainLevel: 0.7,
-                    releaseTime: 1.5,
-                    volume: this._getAdaptiveParameters(0.15).volume,
-                    brightness: 0.9,
-                    arpeggio: true
-                };
-                break;
-        }
-
-        // Create sophisticated multi-oscillator setup
-        config.harmonics.forEach((amplitude, index) => {
-            if (amplitude > 0.01) {
-                this._createAdvancedOscillator(config, amplitude, index, gainNode, now);
-            }
-        });
-
-        // Add special effects
-        if (config.sparkle) this._addSparkleEffect(config, gainNode, now);
-        if (config.arpeggio) this._addArpeggioEffect(config, gainNode, now);
-        if (config.modulation) this._addSubtleModulation(config, gainNode, now);
+        oscillator.start(now);
+        oscillator.stop(now + duration);
     }
 
-    _createAdvancedOscillator(config, amplitude, harmonicIndex, gainNode, startTime) {
-        const osc = this.audioContext.createOscillator();
-        const oscGain = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-        const lfo = this.audioContext.createOscillator(); // For subtle modulation
-        const lfoGain = this.audioContext.createGain();
-
-        // Sophisticated waveform selection
-        const waveforms = ['sine', 'triangle', 'sawtooth'];
-        osc.type = harmonicIndex === 0 ? 'sine' : waveforms[harmonicIndex % waveforms.length];
-        
-        const frequency = config.frequency * (harmonicIndex + 1);
-        osc.frequency.setValueAtTime(frequency, startTime);
-
-        // Subtle frequency modulation for organic feel
-        if (config.modulation && harmonicIndex === 0) {
-            lfo.type = 'sine';
-            lfo.frequency.setValueAtTime(4.5 + Math.random() * 2, startTime);
-            lfoGain.gain.setValueAtTime(frequency * 0.003, startTime); // Very subtle vibrato
-            
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
-            lfo.start(startTime);
-            lfo.stop(startTime + config.attackTime + config.decayTime + config.releaseTime);
-        }
-
-        // Advanced filtering based on harmonic content
-        filter.type = harmonicIndex < 2 ? 'lowpass' : 'bandpass';
-        const cutoffFreq = Math.min(4000, frequency * (2 - harmonicIndex * 0.2)) * config.brightness;
-        filter.frequency.setValueAtTime(cutoffFreq, startTime);
-        filter.Q.setValueAtTime(0.8 + (harmonicIndex * 0.2), startTime);
-
-        // Sophisticated envelope with micro-variations
-        const finalVolume = amplitude * config.volume * (0.95 + Math.random() * 0.1);
-        oscGain.gain.setValueAtTime(0, startTime);
-        oscGain.gain.linearRampToValueAtTime(finalVolume, startTime + config.attackTime);
-        oscGain.gain.linearRampToValueAtTime(finalVolume * config.sustainLevel, startTime + config.attackTime + config.decayTime);
-        oscGain.gain.exponentialRampToValueAtTime(0.001, startTime + config.attackTime + config.decayTime + config.releaseTime);
-
-        // Audio chain
-        osc.connect(filter);
-        filter.connect(oscGain);
-        oscGain.connect(gainNode);
-
-        osc.start(startTime);
-        osc.stop(startTime + config.attackTime + config.decayTime + config.releaseTime);
-    }
-
-    _addSparkleEffect(config, gainNode, startTime) {
-        // Create magical sparkle sounds
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                if (this.enabled && this.audioContext) {
-                    const sparkleOsc = this.audioContext.createOscillator();
-                    const sparkleGain = this.audioContext.createGain();
-                    const sparkleFilter = this.audioContext.createBiquadFilter();
-
-                    sparkleOsc.type = 'sine';
-                    sparkleOsc.frequency.setValueAtTime(
-                        config.frequency * (3 + Math.random() * 2), 
-                        this.audioContext.currentTime
-                    );
-
-                    sparkleFilter.type = 'highpass';
-                    sparkleFilter.frequency.setValueAtTime(1000 + Math.random() * 800, this.audioContext.currentTime);
-                    sparkleFilter.Q.setValueAtTime(2, this.audioContext.currentTime);
-
-                    sparkleGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                    sparkleGain.gain.linearRampToValueAtTime(config.volume * 0.15, this.audioContext.currentTime + 0.02);
-                    sparkleGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
-
-                    sparkleOsc.connect(sparkleFilter);
-                    sparkleFilter.connect(sparkleGain);
-                    sparkleGain.connect(gainNode);
-
-                    sparkleOsc.start(this.audioContext.currentTime);
-                    sparkleOsc.stop(this.audioContext.currentTime + 0.5);
-                }
-            }, i * 100 + Math.random() * 50);
-        }
-    }
-
-    _addArpeggioEffect(config, gainNode, startTime) {
-        // Create ascending arpeggio for completion sound
-        const currentNotes = this.scales[this.currentScale];
-        const arpNotes = [0, 2, 4, 6, 7].map(i => currentNotes[i % currentNotes.length] * 2);
-        
-        arpNotes.forEach((freq, index) => {
-            setTimeout(() => {
-                if (this.enabled && this.audioContext) {
-                    const arpOsc = this.audioContext.createOscillator();
-                    const arpGain = this.audioContext.createGain();
-                    const arpFilter = this.audioContext.createBiquadFilter();
-
-                    arpOsc.type = 'sine';
-                    arpOsc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-
-                    arpFilter.type = 'lowpass';
-                    arpFilter.frequency.setValueAtTime(3000, this.audioContext.currentTime);
-
-                    arpGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                    arpGain.gain.linearRampToValueAtTime(config.volume * 0.4, this.audioContext.currentTime + 0.02);
-                    arpGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.6);
-
-                    arpOsc.connect(arpFilter);
-                    arpFilter.connect(arpGain);
-                    arpGain.connect(gainNode);
-
-                    arpOsc.start(this.audioContext.currentTime);
-                    arpOsc.stop(this.audioContext.currentTime + 0.7);
-                }
-            }, index * 120);
-        });
-    }
-
-    _addSubtleModulation(config, gainNode, startTime) {
-        // Add gentle tremolo effect
-        const tremolo = this.audioContext.createOscillator();
-        const tremoloGain = this.audioContext.createGain();
-        const tremoloDepth = this.audioContext.createGain();
-
-        tremolo.type = 'sine';
-        tremolo.frequency.setValueAtTime(6.5, startTime);
-        tremoloGain.gain.setValueAtTime(1, startTime);
-        tremoloDepth.gain.setValueAtTime(0.03, startTime); // Very subtle
-
-        tremolo.connect(tremoloDepth);
-        tremoloDepth.connect(tremoloGain.gain);
-        
-        tremolo.start(startTime);
-        tremolo.stop(startTime + config.releaseTime);
-    }
-
-    // Updated method signatures
     setScale(scaleName) {
         if (this.scales[scaleName]) {
             this.currentScale = scaleName;
@@ -543,22 +250,46 @@ class KeyboardSoundManager {
         }
     }
 
-    playKeystroke(isCorrect = true, isSpace = false) { 
+    playKeystroke(isCorrect = true, isSpace = false) {
         if (isSpace) {
-            this._createPremiumTone('space');
+            // Special spacebar sound
+            const notes = this.scales[this.currentScale];
+            const freq = notes[Math.floor(Math.random() * notes.length)] * 2;
+            this._createTone(freq, 0.4, 0.06);
         } else if (isCorrect) {
-            this._createPremiumTone('keypress');
+            // Normal keystroke
+            const notes = this.scales[this.currentScale];
+            const freq = notes[this.noteIndex % notes.length];
+            this.noteIndex++;
+            this._createTone(freq, 0.3, 0.08);
         } else {
-            this._createPremiumTone('error');
+            // Error sound
+            this._createTone(200, 0.2, 0.04);
         }
     }
 
-    playWordComplete() { 
-        this._createPremiumTone('complete');
+    playWordComplete() {
+        // Play a nice chord
+        if (this.enabled && this.audioContext) {
+            const notes = this.scales[this.currentScale];
+            [0, 2, 4].forEach((interval, index) => {
+                setTimeout(() => {
+                    this._createTone(notes[interval % notes.length], 0.4, 0.04);
+                }, index * 100);
+            });
+        }
     }
 
-    playTestComplete() { 
-        this._createPremiumTone('complete');
+    playTestComplete() {
+        // Celebration sound
+        if (this.enabled && this.audioContext) {
+            const notes = this.scales[this.currentScale];
+            [0, 2, 4, 5, 7].forEach((interval, index) => {
+                setTimeout(() => {
+                    this._createTone(notes[interval % notes.length] * 2, 0.6, 0.06);
+                }, index * 150);
+            });
+        }
     }
 
     toggleSound(enable) { 
