@@ -356,7 +356,7 @@ class ThemeManager {
             root.style.setProperty('--error-color', '#ff0000');
             root.style.setProperty('--success-color', '#ffffff');
             root.style.setProperty('--warning-color', '#ffffff');
-            themeToggle.textContent = '��';
+            themeToggle.textContent = '🌙';
         }
     }
 }
