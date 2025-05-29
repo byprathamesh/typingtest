@@ -4,10 +4,28 @@ const wordLists = {
         "cat", "dog", "run", "jump", "play", "book", "car", "tree", "sun", "moon", "fish", "bird", "home", "door", "good", "bad", "big", "small", "hot", "cold", "yes", "no", "go", "stop", "fast", "slow", "up", "down", "in", "out", "red", "blue", "green", "white", "black", "one", "two", "three", "four", "five"
     ],
     normal: [
-        "the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at", "this", "but", "his", "by", "from", "they", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "what", "so", "up", "out", "if", "about", "who", "get", "which", "go", "when", "make", "can", "like", "time", "no", "just", "him", "know", "take", "people", "into", "year", "your", "good", "some", "could", "them", "see", "other", "than", "then", "now", "look", "only", "come", "its", "over", "think", "also", "back", "after", "use", "two", "how", "our", "work", "first", "well", "way", "even", "new", "want", "because", "any", "these", "give", "day", "most", "us", "is", "was", "are", "been", "has", "had", "were", "said", "each", "which", "where", "much", "very", "what", "know", "just", "first", "get", "over", "think", "also", "back", "use", "her", "would", "make", "like", "into", "him", "time", "has", "look", "two", "more", "write", "go", "see", "number", "no", "way", "could", "people", "my", "than", "first", "water", "been", "call", "who", "oil", "sit", "now", "find", "long", "down", "day", "did", "get", "come", "made", "may", "part"
+        // Short common words
+        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say",
+        
+        // Medium length words
+        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "move", "means", "before", "around", "another", "through", "change", "much", "very", "well", "back", "good", "take", "came", "help", "too", "line", "turn", "cause", "same", "tell", "differ", "follow", "want", "show", "also", "live", "where", "after", "back", "little", "only", "round", "man", "year", "came", "show", "every", "good", "me", "give", "our", "under", "name", "very", "through", "just", "form", "sentence", "great", "think", "say", "help", "low", "line", "differ", "turn", "cause", "much", "mean", "before", "move", "right", "boy", "old", "too", "same", "tell", "does", "set", "three", "want", "air", "well", "also", "play", "small", "end", "put", "home", "read", "hand", "port", "large", "spell", "add", "even", "land", "here", "must", "big", "high", "such", "follow", "act", "why", "ask", "men", "change", "went", "light", "kind", "off", "need", "house", "picture", "try", "us", "again", "animal", "point", "mother", "world", "near", "build", "self", "earth", "father", "head", "stand", "own", "page", "should", "country", "found", "answer", "school", "grow", "study", "still", "learn", "plant", "cover", "food", "sun", "four", "between", "state", "keep", "eye", "never", "last", "let", "thought", "city", "tree", "cross", "farm", "hard", "start", "story", "saw", "far", "sea", "draw", "left", "late", "run", "don't", "while", "press", "close", "night", "real", "life", "few", "north", "open", "seem", "together", "next", "white", "children", "begin", "got", "walk", "example", "ease", "paper", "group", "always", "music", "those", "both", "mark", "often", "letter", "until", "mile", "river", "car", "feet", "care", "second", "book", "carry", "took", "science", "eat", "room", "friend", "began", "idea", "fish", "mountain", "stop", "once", "base", "hear", "horse", "cut", "sure", "watch", "color", "face", "wood", "main", "enough", "plain", "girl", "usual", "young", "ready", "above", "ever", "red", "list", "though", "feel", "talk", "bird", "soon", "body", "dog", "family", "direct", "leave", "song", "measure", "door", "product", "black", "short", "numeral", "class", "wind", "question", "happen", "complete", "ship", "area", "half", "rock", "order", "fire", "south", "problem", "piece", "told", "knew", "pass", "since", "top", "whole", "king", "space", "heard", "best", "hour", "better", "during", "hundred", "five", "remember", "step", "early", "hold", "west", "ground", "interest", "reach", "fast", "verb", "sing", "listen", "six", "table", "travel", "less", "morning", "ten", "simple", "several", "vowel", "toward", "war", "lay", "against", "pattern", "slow", "center", "love", "person", "money", "serve", "appear", "road", "map", "rain", "rule", "govern", "pull", "cold", "notice", "voice", "unit", "power", "town", "fine", "certain", "fly", "fall", "lead", "cry", "dark", "machine", "note", "wait", "plan", "figure", "star", "box", "noun", "field", "rest", "correct", "able", "pound", "done", "beauty", "drive", "stood", "contain", "front", "teach", "week", "final", "gave", "green", "oh", "quick", "develop", "ocean", "warm", "free", "minute", "strong", "special", "mind", "behind", "clear", "tail", "produce", "fact", "street", "inch", "multiply", "nothing", "course", "stay", "wheel", "full", "force", "blue", "object", "decide", "surface", "deep", "moon", "island", "foot", "system", "busy", "test", "record", "boat", "common", "gold", "possible", "plane", "stead", "dry", "wonder", "laugh", "thousands", "ago", "ran", "check", "game", "shape", "equate", "hot", "miss", "brought", "heat", "snow", "tire", "bring", "yes", "distant", "fill", "east", "paint", "language", "among"
     ],
     hard: [
         "accommodate", "embarrass", "millennium", "restaurant", "bureaucracy", "pharmaceutical", "Massachusetts", "pronunciation", "surveillance", "conscientious", "maintenance", "necessary", "occurrence", "personnel", "privilege", "rhythm", "separate", "temperature", "vacuum", "weird", "absence", "calendar", "foreign", "government", "knowledge", "library", "received", "appreciate", "definitely", "experience", "independent", "intelligence", "leisure", "possession", "thorough", "existence", "piece", "science", "achieve", "believe", "ceiling", "neighbor", "field", "neither", "height", "eight", "ancient", "conscience", "conscious", "curiosity", "beginning", "business", "address", "occasion", "occurred", "omitted", "referred", "committed", "preferred", "benefited", "equipped", "transferred", "permitted", "submitted", "controlled", "excelled", "compelled", "propelled", "excellent", "travelled", "cancelled", "counsellor", "jewellery", "marvellous", "fascinating", "extraordinary", "responsibility", "acknowledgment", "disappointing", "congratulations", "representative", "characteristics", "simultaneously", "transformation", "understanding", "opportunities", "consequences", "administration", "recommendation", "implementation", "sophisticated", "revolutionary", "environmental", "entertainment", "international", "communication", "technological", "philosophical", "psychological", "physiological", "archaeological", "geographical", "mathematical", "automatically", "unfortunately", "uncomfortable", "unbelievable", "extraordinary", "unprecedented", "corresponding", "overwhelming", "comprehensive", "distinguished", "controversial", "fundamental", "experimental", "professional", "traditional", "educational", "operational", "organizational", "inspirational", "motivational", "exceptional", "constitutional", "institutional", "instrumental", "circumstantial", "developmental", "entrepreneurial", "interdisciplinary", "multidisciplinary", "intergenerational", "internationally", "uncharacteristically", "disproportionately", "incomprehensible", "indistinguishable", "counterproductive", "hypersensitivity", "electroencephalogram", "immunoelectrophoresis", "spectrophotometry", "deoxyribonucleic"
+    ],
+    mixed: [
+        // Super common short words (3-4 letters)
+        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "do", "how", "if", "will", "up", "other", "about", "many", "then", "them", "these", "so", "some", "make", "like", "into", "time", "has", "look", "two", "more", "go", "no", "could", "my", "than", "first", "been", "call", "who", "its", "find", "long", "down", "did", "get", "come", "made", "part", "over", "here", "just", "also", "back", "well", "work", "life", "only", "year", "much", "good", "very", "when", "much", "know", "take", "see", "him", "two", "how", "its", "said", "each", "which", "do", "their", "time", "will", "about", "if", "up", "out", "many", "then", "them", "some", "her", "would", "make", "like", "into", "him", "has", "two", "more", "go", "no", "way", "could", "my", "than", "first", "water", "been", "call", "who", "oil", "sit", "now", "find", "long", "down", "day", "did", "get", "come", "made", "may", "part",
+        
+        // Common medium words (5-8 letters)
+        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "world", "school", "thought", "number", "water", "called", "people", "between", "state", "started", "city", "earth", "eyes", "light", "head", "open", "story", "example", "begin", "life", "always", "both", "paper", "together", "group", "often", "important", "until", "children", "side", "feet", "mile", "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family", "during", "against", "nothing", "someone", "around", "today", "money", "music", "heard", "morning", "best", "change", "help", "line", "turn", "problem", "move", "trying", "told", "should", "asked", "going", "things", "looked", "need", "hand", "high", "keep", "last", "never", "start", "might", "story", "while", "here", "show", "why", "before", "turn", "too", "means", "old", "any", "same", "tell", "boy", "follow", "came", "want", "show", "also", "around", "form", "three", "small", "set", "put", "end", "why", "turned", "here", "asked", "went", "men", "read", "need", "land", "different", "home", "move", "try", "kind", "hand", "picture", "again", "change", "off", "play", "spell", "air", "away", "animal", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "should", "America", "world", "high", "every", "near", "add", "food", "between", "own", "below", "country", "plant", "last", "school", "father", "keep", "tree", "never", "start", "city", "earth", "eyes", "light", "thought", "head", "under", "story", "saw", "left", "don't", "few", "while", "along", "might", "close", "something", "seem", "next", "hard", "open", "example", "begin", "life", "always", "those", "both", "paper", "together", "got", "group", "often", "run", "important", "until", "children", "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four", "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "eat", "face", "watch", "far", "Indian", "really", "almost", "let", "above", "girl", "sometimes", "mountain", "cut", "young", "talk", "soon", "list", "song", "leave", "family",
+        
+        // Everyday useful words
+        // Longer words (8+ letters)
+        "important", "children", "different", "following", "thought", "example", "another", "came", "three", "states", "himself", "few", "house", "use", "during", "without", "again", "place", "around", "however", "home", "small", "found", "Mrs", "thought", "went", "say", "great", "where", "help", "through", "much", "before", "line", "right", "too", "means", "old", "any", "same", "tell", "boy", "follow", "came", "want", "show", "also", "around", "form", "three", "small", "set", "put", "end", "why", "turned", "here", "why", "asked", "went", "men", "read", "need", "land", "different", "home", "us", "move", "try", "kind", "hand", "picture", "again", "change", "off", "play", "spell", "air", "away", "animal", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "should", "America", "world", "high", "every", "near", "add", "food", "between", "own", "below", "country", "plant", "last", "school", "father", "keep", "tree", "never", "start", "city", "earth", "eyes", "light", "thought", "head", "under", "story", "saw", "left", "don't", "few", "while", "along", "might", "close", "something", "seem", "next", "hard", "open", "example", "begin", "life", "always", "those", "both", "paper", "together", "got", "group", "often", "run", "important", "until", "children", "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four", "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "eat", "face", "watch", "far", "Indian", "really", "almost", "let", "above", "girl", "sometimes", "mountain", "cut", "young", "talk", "soon", "list", "song", "leave", "family",
+        
+        // Challenging but common words
+        "business", "problem", "complete", "brought", "during", "special", "working", "against", "standard", "building", "nothing", "reached", "difference", "number", "part", "turned", "wanted", "beautiful", "knowledge", "machine", "usually", "money", "system", "government", "development", "information", "social", "within", "national", "support", "available", "including", "whether", "education", "experience", "individual", "particular", "remember", "important", "community", "economic", "medical", "environmental", "international", "technology", "understand", "successful", "significant", "organization", "responsibility", "opportunity", "relationship", "management", "performance", "professional", "development", "especially", "including", "following", "different", "important", "between", "through", "should", "because", "without", "before", "around", "another", "however", "something", "important", "example", "children", "together", "possible", "information", "experience", "development", "including", "different", "following", "important", "between", "through", "without", "before", "around", "another", "however", "something", "possible"
     ],
     quotes: [
         "The only way to do great work is to love what you do. - Steve Jobs",
@@ -104,7 +122,7 @@ class SoundManager {
 class SettingsManager {
     constructor() {
         this.settings = {
-            difficulty: 'normal',
+            difficulty: 'mixed',
             soundEnabled: true,
             smoothCaret: true,
             liveWpm: true,
@@ -141,7 +159,7 @@ class SettingsManager {
     validate() {
         // Validate and fix any invalid settings
         if (!wordLists[this.settings.difficulty]) {
-            this.settings.difficulty = 'normal';
+            this.settings.difficulty = 'mixed';
         }
         if (typeof this.settings.soundEnabled !== 'boolean') {
             this.settings.soundEnabled = true;
@@ -243,7 +261,7 @@ let gameState = {
     errors: 0,
     wpmHistory: [],
     rawWpmHistory: [],
-    difficulty: 'normal'
+    difficulty: 'mixed'
 };
 
 // DOM elements with error checking
@@ -356,7 +374,7 @@ const themeManager = new ThemeManager();
 // Advanced word generation with improved algorithms
 function generateWords(count) {
     const difficulty = gameState.difficulty;
-    const wordPool = wordLists[difficulty] || wordLists.normal;
+    const wordPool = wordLists[difficulty] || wordLists.mixed;
     const words = [];
     
     // Generate many more words to ensure the display is always full
@@ -440,7 +458,7 @@ function displayText() {
     
     // Calculate which lines to show (show lines around current line)
     const startLine = Math.max(0, currentLineIndex - 1); // 1 line before current
-    const endLine = startLine + 6; // Show 6 total lines
+    const endLine = startLine + 7; // Show 7 total lines instead of 6
     
     // Create lines
     for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
@@ -448,9 +466,11 @@ function displayText() {
         lineDiv.style.height = 'calc(1.4rem * 1.8)';
         lineDiv.style.display = 'flex';
         lineDiv.style.alignItems = 'center';
+        lineDiv.style.justifyContent = 'center';
         lineDiv.style.flexWrap = 'wrap';
         lineDiv.style.marginBottom = '0';
         lineDiv.style.lineHeight = '1.8';
+        lineDiv.style.width = '100%';
         
         // Calculate word range for this line
         const lineStartWord = lineIndex * wordsPerLine;
@@ -1173,7 +1193,7 @@ function initializeTest() {
         errors: 0,
         wpmHistory: [],
         rawWpmHistory: [],
-        difficulty: (difficultySelect && difficultySelect.value) || 'normal'
+        difficulty: (difficultySelect && difficultySelect.value) || 'mixed'
     });
 
     // Generate plenty of words to completely fill the larger display area
