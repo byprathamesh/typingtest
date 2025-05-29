@@ -453,12 +453,12 @@ function displayText() {
     textDisplay.innerHTML = '';
     
     // Calculate how many words per line and which line we're currently on
-    const wordsPerLine = Math.floor((textDisplay.clientWidth - 80) / 60); // Rough estimate
+    const wordsPerLine = Math.floor((textDisplay.clientWidth - 160) / 60); // Account for increased padding
     const currentLineIndex = Math.floor(gameState.currentWordIndex / wordsPerLine);
     
     // Calculate which lines to show (show lines around current line)
     const startLine = Math.max(0, currentLineIndex - 1); // 1 line before current
-    const endLine = startLine + 7; // Show 7 total lines instead of 6
+    const endLine = startLine + 7; // Show 7 total lines
     
     // Create lines
     for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
@@ -466,7 +466,6 @@ function displayText() {
         lineDiv.style.height = 'calc(1.4rem * 1.8)';
         lineDiv.style.marginBottom = '0';
         lineDiv.style.lineHeight = '1.8';
-        lineDiv.style.textAlign = 'center';
         
         // Calculate word range for this line
         const lineStartWord = lineIndex * wordsPerLine;
