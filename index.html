@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Typing Test</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>typing test</h1>
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌓</button>
+                <div class="settings-toggle" id="settingsToggle">⚙️</div>
+            </div>
+        </header>
+
+        <div class="settings-panel" id="settingsPanel">
+            <div class="setting-group">
+                <label>Difficulty:</label>
+                <select id="difficultySelect">
+                    <option value="easy">Easy Words</option>
+                    <option value="normal" selected>Normal Words</option>
+                    <option value="hard">Hard Words</option>
+                    <option value="quotes">Quotes</option>
+                    <option value="numbers">Numbers</option>
+                    <option value="punctuation">Punctuation</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>Sound Effects:</label>
+                <input type="checkbox" id="soundToggle" checked>
+            </div>
+            <div class="setting-group">
+                <label>Smooth Caret:</label>
+                <input type="checkbox" id="smoothCaretToggle" checked>
+            </div>
+            <div class="setting-group">
+                <label>Show Live WPM:</label>
+                <input type="checkbox" id="liveWpmToggle" checked>
+            </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat">
+                <span class="stat-label">wpm</span>
+                <span class="stat-value" id="wpm">0</span>
+            </div>
+            <div class="stat" id="rawWpmStat" style="display: none;">
+                <span class="stat-label">raw</span>
+                <span class="stat-value" id="rawWpm">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">accuracy</span>
+                <span class="stat-value" id="accuracy">100%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">time</span>
+                <span class="stat-value" id="timer">60</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">errors</span>
+                <span class="stat-value" id="errors">0</span>
+            </div>
+        </div>
+
+        <div class="test-area">
+            <div class="text-display" id="textDisplay">
+                <div class="caret" id="caret"></div>
+            </div>
+            <textarea 
+                class="input-area" 
+                id="textInput" 
+                placeholder="Click here or press any key to start typing..."
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                autofocus
+            ></textarea>
+        </div>
+
+        <div class="controls">
+            <button class="restart-btn" id="restartBtn" title="Restart (Tab)">
+                <span class="btn-icon">↻</span>
+                restart test
+            </button>
+            <select class="time-select" id="timeSelect" title="Test Duration">
+                <option value="15">15s</option>
+                <option value="30">30s</option>
+                <option value="60" selected>60s</option>
+                <option value="120">120s</option>
+                <option value="300">300s</option>
+            </select>
+            <button class="info-btn" id="infoBtn" title="Keyboard Shortcuts">
+                <span class="btn-icon">?</span>
+            </button>
+        </div>
+
+        <div class="keyboard-shortcuts" id="keyboardShortcuts" style="display: none;">
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcut-grid">
+                <div class="shortcut"><kbd>Tab</kbd><span>Restart test</span></div>
+                <div class="shortcut"><kbd>Esc</kbd><span>Focus input</span></div>
+                <div class="shortcut"><kbd>Ctrl + Shift + P</kbd><span>Toggle settings</span></div>
+                <div class="shortcut"><kbd>Ctrl + Shift + S</kbd><span>Toggle sound</span></div>
+            </div>
+        </div>
+
+        <div class="results" id="results" style="display: none;">
+            <h2>Test Complete! 🎉</h2>
+            <div class="result-stats">
+                <div class="result-stat">
+                    <div class="result-label">wpm</div>
+                    <div class="result-value" id="finalWpm">0</div>
+                    <div class="result-subtitle">net speed</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">raw wpm</div>
+                    <div class="result-value" id="finalRawWpm">0</div>
+                    <div class="result-subtitle">total speed</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">accuracy</div>
+                    <div class="result-value" id="finalAccuracy">100%</div>
+                    <div class="result-subtitle">precision</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">consistency</div>
+                    <div class="result-value" id="consistency">95%</div>
+                    <div class="result-subtitle">stability</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">correct</div>
+                    <div class="result-value" id="correctWords">0</div>
+                    <div class="result-subtitle">words</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">incorrect</div>
+                    <div class="result-value" id="wrongWords">0</div>
+                    <div class="result-subtitle">words</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">characters</div>
+                    <div class="result-value" id="totalCharsTyped">0</div>
+                    <div class="result-subtitle">typed</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-label">time</div>
+                    <div class="result-value" id="testDuration">60s</div>
+                    <div class="result-subtitle">duration</div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h3>Speed Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="wpmChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="restartTest()">
+                    <span class="btn-icon">↻</span>
+                    try again
+                </button>
+                <button class="share-btn" id="shareBtn">
+                    <span class="btn-icon">📋</span>
+                    copy results
+                </button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

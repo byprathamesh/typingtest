@@ -1,0 +1,53 @@
+{
+  "name": "minimal-typing-test",
+  "version": "1.0.0",
+  "description": "A professional-grade, minimalistic typing test with pure black and white design",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 8080 -c-1",
+    "dev": "npx live-server --port=8080 --no-browser",
+    "build": "echo 'No build step needed - pure HTML/CSS/JS'",
+    "test": "echo 'No automated tests yet'",
+    "serve": "python -m http.server 8080",
+    "format": "npx prettier --write *.html *.css *.js",
+    "lint": "npx eslint *.js"
+  },
+  "keywords": [
+    "typing",
+    "test",
+    "wpm",
+    "speed",
+    "keyboard",
+    "practice",
+    "monkeytype",
+    "minimalist",
+    "black",
+    "white",
+    "monochrome"
+  ],
+  "author": "Minimal Typing Test Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/minimal-typing-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/minimal-typing-test/issues"
+  },
+  "homepage": "https://yourusername.github.io/minimal-typing-test",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "http-server": "^14.0.0",
+    "live-server": "^1.2.2"
+  },
+  "browserslist": [
+    "Chrome >= 80",
+    "Firefox >= 75",
+    "Safari >= 13",
+    "Edge >= 80"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
