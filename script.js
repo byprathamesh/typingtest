@@ -320,25 +320,32 @@ function generateWords() {
 function displayText() {
     if (!elements.textDisplay) return;
     
-    elements.textDisplay.innerHTML = '';
+    const fragment = document.createDocumentFragment(); // Use a document fragment for performance
     
-    const startIndex = Math.max(0, gameState.currentWordIndex - 3);
-    const endIndex = Math.min(gameState.words.length, gameState.currentWordIndex + 35);
+    // Show a limited window of words for better performance and smoother scrolling
+    const wordsToDisplayAhead = 20; // How many words ahead to render
+    const wordsToDisplayBehind = 5; // How many words behind to keep for context
+
+    const startIndex = Math.max(0, gameState.currentWordIndex - wordsToDisplayBehind);
+    const endIndex = Math.min(gameState.words.length, gameState.currentWordIndex + wordsToDisplayAhead);
     
     const textContainer = document.createElement('div');
     textContainer.style.display = 'flex';
     textContainer.style.flexWrap = 'wrap';
     textContainer.style.gap = '0.6rem';
-    textContainer.style.lineHeight = '2.6';
+    textContainer.style.lineHeight = '2.6'; // Keep original line height for word spans
     
+    let currentWordSpan = null; // To store the span of the current word for scrolling
+
     for (let i = startIndex; i < endIndex; i++) {
         const word = gameState.words[i];
         const wordSpan = document.createElement('span');
         wordSpan.className = 'word';
-        wordSpan.style.display = 'inline-block';
+        wordSpan.style.display = 'inline-block'; // Ensures proper spacing and layout
         
         if (i === gameState.currentWordIndex) {
             wordSpan.classList.add('current');
+            currentWordSpan = wordSpan; // Assign current word span
         } else if (i < gameState.currentWordIndex) {
             const typedWord = gameState.typedWords[i];
             if (typedWord && typedWord === word) {
@@ -371,7 +378,6 @@ function displayText() {
                     }
                 }
             }
-            
             wordSpan.appendChild(charSpan);
         }
         
@@ -393,11 +399,36 @@ function displayText() {
                 }
             }
         }
-        
         textContainer.appendChild(wordSpan);
     }
     
-    elements.textDisplay.appendChild(textContainer);
+    fragment.appendChild(textContainer);
+    elements.textDisplay.innerHTML = ''; // Clear previous content
+    elements.textDisplay.appendChild(fragment); // Append new content
+
+    // Scroll into view logic
+    if (currentWordSpan) {
+        const displayRect = elements.textDisplay.getBoundingClientRect();
+        const wordRect = currentWordSpan.getBoundingClientRect();
+        const wordTopRelativeToDisplay = wordRect.top - displayRect.top;
+        const wordBottomRelativeToDisplay = wordRect.bottom - displayRect.top;
+
+        const scrollTop = elements.textDisplay.scrollTop;
+        const displayHeight = elements.textDisplay.clientHeight;
+
+        // Define a comfortable viewing zone (e.g., between 1/3 and 2/3 of the display height)
+        const viewZoneTop = displayHeight * 0.25;
+        const viewZoneBottom = displayHeight * 0.65;
+
+        if (wordTopRelativeToDisplay < viewZoneTop) {
+            // Word is above the comfortable zone, scroll up
+            elements.textDisplay.scrollTop = scrollTop + wordTopRelativeToDisplay - viewZoneTop;
+        } else if (wordBottomRelativeToDisplay > viewZoneBottom) {
+            // Word is below the comfortable zone, scroll down
+            elements.textDisplay.scrollTop = scrollTop + wordBottomRelativeToDisplay - viewZoneBottom;
+        }
+    }
+
     updateCursor();
     updateProgress();
 }
@@ -443,9 +474,10 @@ function updateProgress() {
 
 // Enhanced statistics
 function calculateWPM() {
-    if (!gameState.startTime || gameState.isCompleted) return 0;
+    if (!gameState.startTime || gameState.correctChars === 0) return 0; // Also return 0 if no correct chars
     const minutes = (Date.now() - gameState.startTime) / 60000;
-    return Math.round((gameState.correctChars / 5) / minutes) || 0;
+    if (minutes === 0) return 0; // Prevent division by zero if test ends too quickly
+    return Math.round((gameState.correctChars / 5) / minutes);
 }
 
 function calculateAccuracy() {
@@ -662,20 +694,19 @@ function startTest() {
 function endTest() {
     if (gameState.isCompleted) return;
 
+    // Calculate final stats BEFORE setting isCompleted to true and isActive to false
+    const finalWpm = calculateWPM(); 
+    const finalAccuracy = calculateAccuracy();
+    const wordsTyped = gameState.currentWordIndex;
+
     gameState.isActive = false;
+    gameState.isCompleted = true; 
 
     if (gameState.timer) {
         clearInterval(gameState.timer);
         gameState.timer = null;
     }
     elements.liveWpm.classList.remove('active');
-
-    // Calculate final stats BEFORE setting isCompleted to true
-    const finalWpm = calculateWPM();
-    const finalAccuracy = calculateAccuracy();
-    const wordsTyped = gameState.currentWordIndex; 
-
-    gameState.isCompleted = true; // NOW set isCompleted
     soundManager.playTestComplete();
 
     if (elements.results) {

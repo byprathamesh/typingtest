@@ -1,4 +1,4 @@
-# ⚡ Premium Typing Test
+# ⚡ Typing Test
 
 A beautiful, feature-rich typing test application with realistic keyboard sounds, stunning animations, and comprehensive statistics tracking. Built with pure HTML, CSS, and JavaScript for optimal performance.
 
@@ -10,6 +10,7 @@ A beautiful, feature-rich typing test application with realistic keyboard sounds
 - **Real-time Statistics**: WPM, Accuracy, Errors, Progress tracking
 - **Live WPM Indicator**: Floating real-time speed display
 - **Comprehensive Results**: Detailed performance breakdown
+- **Word Advancement**: Use Space bar to move to the next word.
 
 ### 🎨 Visual Excellence
 - **Stunning Animations**: Smooth character-by-character feedback
@@ -78,10 +79,10 @@ A beautiful, feature-rich typing test application with realistic keyboard sounds
 ### Option 1: Direct Download
 1. Download the repository files
 2. Open `index.html` in your browser
-3. Start typing!
+3. Click the text area to focus and start typing! Use the Space bar to advance words.
 
 ### Option 2: GitHub Pages
-Visit the live demo: [Premium Typing Test](https://byprathamesh.github.io/typingtest/)
+Visit the live demo: [Typing Test](https://byprathamesh.github.io/typingtest/)
 
 ### Option 3: Local Development
 ```bash
