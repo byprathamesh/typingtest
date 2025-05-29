@@ -120,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsManager.load();
     keyboardSoundManager = new KeyboardSoundManager(settingsManager.soundEnabled, settingsManager.volume);
 
+    const welcomeTextElement = document.querySelector('#welcomeScreen .welcome-text');
+    const welcomeString = "Welcome to Typing Test!";
+    const typingSpeed = 100; // Milliseconds per character
+    const postTypingDelay = 500; // Milliseconds to wait after typing before fading
+    const fadeOutDuration = 1000; // Milliseconds for the fade-out animation
+
     if (sessionStorage.getItem('welcomeScreenShown')) {
         if (welcomeScreen) welcomeScreen.style.display = 'none';
         if (mainContainer) mainContainer.style.display = 'block';
@@ -127,15 +133,32 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         if (welcomeScreen) welcomeScreen.style.display = 'flex';
         if (mainContainer) mainContainer.style.display = 'none';
-        setTimeout(() => {
-            if (welcomeScreen) welcomeScreen.style.opacity = '0';
-            setTimeout(() => {
-                if (welcomeScreen) welcomeScreen.style.display = 'none';
-                if (mainContainer) mainContainer.style.display = 'block';
-                initializeApp();
-                sessionStorage.setItem('welcomeScreenShown', 'true');
-            }, 1000); // CSS opacity transition
-        }, 4000); // Animation time + pause
+        if (welcomeTextElement) welcomeTextElement.innerHTML = ''; // Clear static text
+
+        let charIndex = 0;
+        function typeCharacter() {
+            if (charIndex < welcomeString.length) {
+                if (welcomeTextElement) {
+                    welcomeTextElement.textContent += welcomeString.charAt(charIndex);
+                    // Add a blinking cursor effect (optional, handled by CSS for simplicity here)
+                }
+                charIndex++;
+                setTimeout(typeCharacter, typingSpeed);
+            } else {
+                // Typing finished, start fade out sequence
+                setTimeout(() => {
+                    if (welcomeScreen) welcomeScreen.style.opacity = '0';
+                    // Ensure the opacity transition has time to complete
+                    setTimeout(() => {
+                        if (welcomeScreen) welcomeScreen.style.display = 'none';
+                        if (mainContainer) mainContainer.style.display = 'block';
+                        initializeApp();
+                        sessionStorage.setItem('welcomeScreenShown', 'true');
+                    }, fadeOutDuration);
+                }, postTypingDelay);
+            }
+        }
+        typeCharacter(); // Start the typing animation
     }
 });
 

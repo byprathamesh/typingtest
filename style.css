@@ -55,20 +55,12 @@ header h1 {
     animation: glow 2s ease-in-out infinite alternate;
 }
 
-header h1::before {
-    content: "typing ";
-    background: linear-gradient(45deg, #00ff00, #00ff00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.title-typing {
+    color: #00ff00; /* Green */
 }
 
-header h1::after {
-    content: "test";
-    background: linear-gradient(45deg, #ff0000, #ff0000);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.title-test {
+    color: #ff0000; /* Red */
 }
 
 @keyframes glow {
@@ -730,7 +722,6 @@ body.light .settings input:focus {
     align-items: center;
     z-index: 9999;
     opacity: 1;
-    transition: opacity 1s ease-out 4s;
 }
 
 .welcome-text {
@@ -739,42 +730,21 @@ body.light .settings input:focus {
     font-weight: 600;
     color: #ffffff;
     text-align: center;
+    position: relative;
 }
 
-.welcome-text span {
+/* Blinking cursor for welcome text */
+.welcome-text::after {
+    content: '_';
     display: inline-block;
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-    animation: letterReveal 0.5s ease-out forwards;
-    margin: 0 0.05em;
+    margin-left: 0.1em;
+    animation: welcomeCursorBlink 1s infinite step-start;
+    color: #00ff00;
 }
 
-.welcome-text span:nth-child(1) { animation-delay: 0.1s; }
-.welcome-text span:nth-child(2) { animation-delay: 0.2s; }
-.welcome-text span:nth-child(3) { animation-delay: 0.3s; }
-.welcome-text span:nth-child(4) { animation-delay: 0.4s; }
-.welcome-text span:nth-child(5) { animation-delay: 0.5s; }
-.welcome-text span:nth-child(6) { animation-delay: 0.6s; }
-.welcome-text span:nth-child(7) { animation-delay: 0.7s; }
-.welcome-text span:nth-child(8) { animation-delay: 0.9s; margin-left: 0.3em; }
-.welcome-text span:nth-child(9) { animation-delay: 1.0s; }
-.welcome-text span:nth-child(10) { animation-delay: 1.2s; margin-left: 0.3em; }
-.welcome-text span:nth-child(11) { animation-delay: 1.3s; }
-.welcome-text span:nth-child(12) { animation-delay: 1.4s; }
-.welcome-text span:nth-child(13) { animation-delay: 1.5s; }
-.welcome-text span:nth-child(14) { animation-delay: 1.6s; }
-.welcome-text span:nth-child(15) { animation-delay: 1.7s; }
-.welcome-text span:nth-child(16) { animation-delay: 1.9s; margin-left: 0.3em; }
-.welcome-text span:nth-child(17) { animation-delay: 2.0s; }
-.welcome-text span:nth-child(18) { animation-delay: 2.1s; }
-.welcome-text span:nth-child(19) { animation-delay: 2.2s; }
-.welcome-text span:nth-child(20) { animation-delay: 2.3s; color: #00ff00; }
-
-@keyframes letterReveal {
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+@keyframes welcomeCursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 /* Responsive Welcome Text */
