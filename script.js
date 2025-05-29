@@ -50,60 +50,237 @@ const shortcutsPanel = document.getElementById('shortcuts');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// KeyboardSoundManager Class (reverted to simpler version)
+// Enhanced KeyboardSoundManager Class with Realistic Mechanical Keyboard Sounds
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
         this.enabled = enabled;
         this.volume = volume / 100;
-        this.gainNode = null;
+        this.masterGain = null;
         this._initAudio();
     }
+
     _initAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.gainNode = this.audioContext.createGain();
-            this.gainNode.connect(this.audioContext.destination);
-            this.gainNode.gain.value = this.volume;
-        } catch (e) { console.warn('Web Audio API not supported'); this.audioContext = null; }
+            this.masterGain = this.audioContext.createGain();
+            this.masterGain.connect(this.audioContext.destination);
+            this.masterGain.gain.value = this.volume;
+        } catch (e) { 
+            console.warn('Web Audio API not supported'); 
+            this.audioContext = null; 
+        }
     }
-    _playSound(type) {
-        if (!this.enabled || !this.audioContext) return;
-        const oscillator = this.audioContext.createOscillator();
-        oscillator.connect(this.gainNode);
-        let freq = 600, duration = 0.04; oscillator.type = 'sine'; // Default to a softer sound
 
+    _createMechanicalKeysound(type = 'keypress') {
+        if (!this.enabled || !this.audioContext) return;
+
+        const now = this.audioContext.currentTime;
+        const gainNode = this.audioContext.createGain();
+        gainNode.connect(this.masterGain);
+
+        // Create multiple oscillators for richer sound
+        const oscillators = [];
+        const filters = [];
+
+        let config;
         switch (type) {
-            case 'keypress': 
-                freq = 500 + Math.random() * 200; // Lower and less varied frequency
-                duration = 0.03;
-                oscillator.type = 'sine'; // Softer waveform
+            case 'keypress':
+                config = {
+                    fundamentalFreq: 800 + Math.random() * 400, // 800-1200 Hz base
+                    harmonics: [1, 0.6, 0.4, 0.2], // Fundamental + harmonics
+                    attackTime: 0.005,
+                    decayTime: 0.02,
+                    sustainLevel: 0.3,
+                    releaseTime: 0.08,
+                    clickFreq: 2500 + Math.random() * 1000, // High-freq click component
+                    volume: 0.15 + Math.random() * 0.1
+                };
                 break;
-            case 'space': 
-                freq = 300; // Lower frequency
-                duration = 0.04;
-                oscillator.type = 'sine'; // Softer waveform
+            case 'space':
+                config = {
+                    fundamentalFreq: 400 + Math.random() * 200, // Lower pitch for spacebar
+                    harmonics: [1, 0.4, 0.2, 0.1],
+                    attackTime: 0.008,
+                    decayTime: 0.04,
+                    sustainLevel: 0.2,
+                    releaseTime: 0.12,
+                    clickFreq: 1800 + Math.random() * 600,
+                    volume: 0.2 + Math.random() * 0.08
+                };
                 break;
-            case 'error': 
-                freq = 150; // Much lower frequency for error
-                duration = 0.1;
-                oscillator.type = 'sine'; // Less harsh waveform
+            case 'error':
+                config = {
+                    fundamentalFreq: 200 + Math.random() * 100, // Much lower for errors
+                    harmonics: [1, 0.8, 0.3, 0.5], // More dissonant harmonics
+                    attackTime: 0.01,
+                    decayTime: 0.06,
+                    sustainLevel: 0.4,
+                    releaseTime: 0.15,
+                    clickFreq: 1200 + Math.random() * 400,
+                    volume: 0.12 + Math.random() * 0.06
+                };
                 break;
-            case 'complete': // Test completion sound
-                freq = 800; 
-                duration = 0.15;
-                // Could also use multiple oscillators for a chord here if desired for a more 'complete' feel
+            case 'complete':
+                config = {
+                    fundamentalFreq: 523.25, // C5 note
+                    harmonics: [1, 0.5, 0.25, 0.125], // Pleasant harmonics
+                    attackTime: 0.02,
+                    decayTime: 0.1,
+                    sustainLevel: 0.6,
+                    releaseTime: 0.4,
+                    clickFreq: 2000,
+                    volume: 0.25
+                };
                 break;
         }
-        oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + duration);
+
+        // Create main harmonic oscillators
+        config.harmonics.forEach((amplitude, index) => {
+            if (amplitude > 0.05) { // Only create audible harmonics
+                const osc = this.audioContext.createOscillator();
+                const oscGain = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+
+                // Set up oscillator
+                osc.type = index === 0 ? 'triangle' : 'sine'; // Fundamental is triangle, harmonics are sine
+                osc.frequency.setValueAtTime(config.fundamentalFreq * (index + 1), now);
+
+                // Set up filter for realistic frequency shaping
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(3000 - (index * 400), now); // Progressively filter higher harmonics
+                filter.Q.setValueAtTime(1, now);
+
+                // Set up gain envelope
+                oscGain.gain.setValueAtTime(0, now);
+                oscGain.gain.linearRampToValueAtTime(amplitude * config.volume, now + config.attackTime);
+                oscGain.gain.linearRampToValueAtTime(amplitude * config.volume * config.sustainLevel, now + config.attackTime + config.decayTime);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + config.attackTime + config.decayTime + config.releaseTime);
+
+                // Connect: oscillator -> filter -> gain -> main gain
+                osc.connect(filter);
+                filter.connect(oscGain);
+                oscGain.connect(gainNode);
+
+                osc.start(now);
+                osc.stop(now + config.attackTime + config.decayTime + config.releaseTime);
+
+                oscillators.push(osc);
+                filters.push(filter);
+            }
+        });
+
+        // Add mechanical "click" component for realism
+        const clickOsc = this.audioContext.createOscillator();
+        const clickGain = this.audioContext.createGain();
+        const clickFilter = this.audioContext.createBiquadFilter();
+
+        clickOsc.type = 'square'; // Sharp attack
+        clickOsc.frequency.setValueAtTime(config.clickFreq, now);
+
+        clickFilter.type = 'highpass';
+        clickFilter.frequency.setValueAtTime(1500, now);
+        clickFilter.Q.setValueAtTime(2, now);
+
+        // Very short click envelope
+        clickGain.gain.setValueAtTime(0, now);
+        clickGain.gain.linearRampToValueAtTime(config.volume * 0.4, now + 0.002);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+
+        clickOsc.connect(clickFilter);
+        clickFilter.connect(clickGain);
+        clickGain.connect(gainNode);
+
+        clickOsc.start(now);
+        clickOsc.stop(now + 0.02);
+
+        // Add subtle noise component for mechanical texture (for keypress/space only)
+        if (type === 'keypress' || type === 'space') {
+            const noiseBuffer = this._createNoiseBuffer(0.01); // 10ms of noise
+            const noiseSource = this.audioContext.createBufferSource();
+            const noiseGain = this.audioContext.createGain();
+            const noiseFilter = this.audioContext.createBiquadFilter();
+
+            noiseSource.buffer = noiseBuffer;
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(2000 + Math.random() * 1000, now);
+            noiseFilter.Q.setValueAtTime(3, now);
+
+            noiseGain.gain.setValueAtTime(0, now);
+            noiseGain.gain.linearRampToValueAtTime(config.volume * 0.08, now + 0.001);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
+
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(gainNode);
+
+            noiseSource.start(now);
+        }
     }
-    playKeystroke(isCorrect = true, isSpace = false) { if (isSpace) this._playSound('space'); else if (isCorrect) this._playSound('keypress'); else this._playSound('error'); }
-    playWordComplete() { this._playSound('keypress'); }
-    playTestComplete() { this._playSound('complete'); }
-    toggleSound(enable) { this.enabled = enable; }
-    setVolume(volume) { this.volume = volume / 100; if (this.gainNode) this.gainNode.gain.setValueAtTime(this.volume, this.audioContext.currentTime); }
+
+    _createNoiseBuffer(duration) {
+        const sampleRate = this.audioContext.sampleRate;
+        const frameCount = sampleRate * duration;
+        const buffer = this.audioContext.createBuffer(1, frameCount, sampleRate);
+        const output = buffer.getChannelData(0);
+
+        for (let i = 0; i < frameCount; i++) {
+            output[i] = Math.random() * 2 - 1; // White noise
+        }
+
+        return buffer;
+    }
+
+    playKeystroke(isCorrect = true, isSpace = false) { 
+        if (isSpace) {
+            this._createMechanicalKeysound('space');
+        } else if (isCorrect) {
+            this._createMechanicalKeysound('keypress');
+        } else {
+            this._createMechanicalKeysound('error');
+        }
+    }
+
+    playWordComplete() { 
+        this._createMechanicalKeysound('keypress');
+    }
+
+    playTestComplete() { 
+        // Play a pleasant completion chord
+        this._createMechanicalKeysound('complete');
+        
+        // Add a second harmony note
+        setTimeout(() => {
+            if (this.enabled && this.audioContext) {
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(659.25, this.audioContext.currentTime); // E5
+                
+                gain.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gain.gain.linearRampToValueAtTime(0.15, this.audioContext.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.35);
+                
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                
+                osc.start(this.audioContext.currentTime);
+                osc.stop(this.audioContext.currentTime + 0.4);
+            }
+        }, 100);
+    }
+
+    toggleSound(enable) { 
+        this.enabled = enable; 
+    }
+
+    setVolume(volume) { 
+        this.volume = volume / 100; 
+        if (this.masterGain) {
+            this.masterGain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+        }
+    }
 }
 
 // SettingsManager Class (reverted)
@@ -380,7 +557,6 @@ function initializeCursor() {
 }
 
 function updateCursor() {
-    // If welcome screen is visible and not faded, or test completed, or no current word, hide cursor and return
     if (!cursor || gameState.isCompleted || !gameState.currentWordElement || 
         (welcomeScreen && welcomeScreen.style.display !== 'none' && parseFloat(getComputedStyle(welcomeScreen).opacity) > 0)) {
         if (cursor) cursor.style.display = 'none';
@@ -390,41 +566,39 @@ function updateCursor() {
     
     const wordElement = gameState.currentWordElement;
     const typedWord = gameState.typedWord;
-    const charSpans = Array.from(wordElement.childNodes);
+    const charSpans = Array.from(wordElement.childNodes).filter(node => node.nodeType === Node.ELEMENT_NODE); // Ensure we only get element nodes
+    const textDisplayRect = textDisplay.getBoundingClientRect();
 
-    let targetLeft = wordElement.offsetLeft;
-    let targetTop = wordElement.offsetTop;
-    let cursorHeight = wordElement.offsetHeight * 0.8;
+    let targetLeft = 0; // Relative to textDisplay
+    let targetTop = 0;  // Relative to textDisplay
+    let cursorHeight = wordElement.offsetHeight * 0.8; // Default height
 
     if (typedWord.length > 0 && charSpans.length > 0) {
-        // Find the span for the last typed character
-        // This index must be capped at charSpans.length - 1 because typedWord might be longer
-        // than the number of actual spans if updateWordDisplay hasn't run yet for an appended char
-        // (though it should have run right before updateCursor).
-        // More robustly: use the last actual span that corresponds to a typed character.
         const lastTypedCharIndex = Math.min(typedWord.length - 1, charSpans.length - 1);
         const lastCharSpan = charSpans[lastTypedCharIndex];
 
         if (lastCharSpan) {
-            targetLeft = lastCharSpan.offsetLeft + lastCharSpan.offsetWidth;
-            // Keep top and height based on the word element for consistency across line
-            targetTop = lastCharSpan.offsetTop; 
-            cursorHeight = lastCharSpan.offsetHeight * 0.8;
-        } else if (charSpans.length === 0 && typedWord.length > 0) {
-            // This case implies typedWord has content, but no spans exist in wordElement.
-            // This might happen if wordElement was cleared and updateWordDisplay is about to populate it.
-            // Default to start of wordElement. updateWordDisplay should fix this immediately after.
-            targetLeft = wordElement.offsetLeft;
-        } else if (typedWord.length === 0) {
-             targetLeft = wordElement.offsetLeft;
+            const lastCharSpanRect = lastCharSpan.getBoundingClientRect();
+            targetLeft = (lastCharSpanRect.right - textDisplayRect.left);
+            targetTop = (lastCharSpanRect.top - textDisplayRect.top);
+            cursorHeight = lastCharSpanRect.height * 0.8;
+        } else { // Fallback if lastCharSpan isn't found (should be rare)
+            const wordRect = wordElement.getBoundingClientRect();
+            targetLeft = (wordRect.left - textDisplayRect.left);
+            targetTop = (wordRect.top - textDisplayRect.top);
+            cursorHeight = wordRect.height * 0.8;
         }
     } else {
         // No typed characters or no spans, position at the start of the current word element
-        targetLeft = wordElement.offsetLeft;
+        const wordRect = wordElement.getBoundingClientRect();
+        targetLeft = (wordRect.left - textDisplayRect.left);
+        targetTop = (wordRect.top - textDisplayRect.top);
+        cursorHeight = wordRect.height * 0.8;
     }
 
+    // Add scrollTop of the textDisplay to targetTop because targetTop is relative to the visible part of textDisplay
     cursor.style.left = `${targetLeft}px`;
-    cursor.style.top = `${targetTop}px`;
+    cursor.style.top = `${targetTop + textDisplay.scrollTop}px`;
     cursor.style.height = `${cursorHeight}px`;
 }
 
