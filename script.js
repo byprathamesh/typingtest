@@ -338,8 +338,8 @@ class KeyboardSoundManager {
         const filter = this.audioContext.createBiquadFilter();
         const compressor = this.audioContext.createDynamicsCompressor();
         
-        // Perfect pentatonic scale for seamless harmony
-        const chimeFreqs = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99]; // C pentatonic
+        // MAGICAL higher frequencies for enchanting sparkle ✨
+        const chimeFreqs = [523, 659, 784, 1047, 1319, 1568]; // Restored beautiful high frequencies
         const baseFreq = chimeFreqs[variation % chimeFreqs.length];
         
         // Smooth harmonic progression for perfect blending
@@ -349,28 +349,28 @@ class KeyboardSoundManager {
         
         // Perfect timing for smooth typing flow
         if (type === 'spacebar') {
-            // Gentle spacebar chime that doesn't overwhelm
+            // Lovely spacebar chime with magical presence
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.15, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.08, now + 0.15);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.24, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.16, now + 0.15);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
         } else if (type === 'error') {
-            // Subtle dissonance for errors
-            oscillator2.frequency.setValueAtTime(baseFreq * 1.414, now); // Tritone but gentle
+            // Gentle dissonance that's still charming
+            oscillator2.frequency.setValueAtTime(baseFreq * 1.414, now); // Tritone but musical
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.14, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
         } else {
-            // Perfect smooth chimes for typing flow
+            // BEAUTIFUL chimes with lovely presence
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.12, now + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.08, now + 0.08);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.20, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(this.volume * 0.14, now + 0.12);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
         }
         
         oscillator1.type = 'sine';
         oscillator2.type = 'sine';
-        oscillator3.type = 'sine';
+        oscillator3.type = 'triangle';
         
         // Smooth filtering for seamless blending
         filter.type = 'lowpass';
@@ -452,10 +452,10 @@ class KeyboardSoundManager {
         oscillator2.type = 'sine';
         oscillator3.type = 'triangle';
         
-        // Pristine high-frequency filtering
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(600, now);
-        filter.Q.value = 3;
+        // Enchanting filtering for magical resonance  
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(3200, now); // Higher for more sparkle
+        filter.Q.value = 1.8; // More resonance for magic
         
         const gain1 = this.audioContext.createGain();
         const gain2 = this.audioContext.createGain();
