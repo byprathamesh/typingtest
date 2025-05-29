@@ -509,7 +509,7 @@ function updateStats() {
 
 // Advanced keyboard input handling
 function handleInput(event) {
-    // Handle keyboard shortcuts
+    // Handle global shortcuts first
     if (event.ctrlKey) {
         switch(event.key) {
             case ',':
@@ -538,10 +538,20 @@ function handleInput(event) {
         if (elements.textDisplay) elements.textDisplay.focus();
         return;
     }
+
+    if (event.key === 'Enter') { // Explicitly handle Enter
+        event.preventDefault(); // Stop any default browser behavior
+        return; // Do nothing further with Enter for now
+    }
     
-    // Prevent default for typing keys
-    if (event.key.length === 1 || event.key === 'Backspace' || event.key === ' ') {
+    // Prevent default for typing keys we handle for the game logic
+    const handledGameKeys = ['Backspace', ' '];
+    if (event.key.length === 1 || handledGameKeys.includes(event.key)) {
         event.preventDefault();
+    } else {
+        // Allow other keys (F5, F12, etc.) to perform their default actions
+        // if not handled as a shortcut or game key.
+        return; 
     }
 
     if (gameState.isCompleted) return;
@@ -551,10 +561,16 @@ function handleInput(event) {
     }
     
     const currentWord = gameState.words[gameState.currentWordIndex];
-    if (!currentWord) return;
+    if (!currentWord && gameState.isActive) { // Check if currentWord is undefined while test is active
+        endTest(); // End test if no more words
+        return;
+    }
+    if(!currentWord) return; // If not active and no current word, do nothing.
     
     if (event.key === ' ') {
-        handleWordCompletion();
+        if (gameState.userInput.length > 0 || gameState.difficulty === 'quotes') { // Allow space to advance if input exists or if it's quotes mode (empty words possible)
+            handleWordCompletion();
+        }
     } else if (event.key === 'Backspace') {
         if (gameState.userInput.length > 0) {
             gameState.userInput = gameState.userInput.slice(0, -1);
@@ -645,24 +661,23 @@ function startTest() {
 
 function endTest() {
     if (gameState.isCompleted) return;
-    
+
     gameState.isActive = false;
-    gameState.isCompleted = true;
-    
+
     if (gameState.timer) {
         clearInterval(gameState.timer);
         gameState.timer = null;
     }
-    
     elements.liveWpm.classList.remove('active');
-    
-    soundManager.playTestComplete();
-    
-    // Calculate final comprehensive stats
+
+    // Calculate final stats BEFORE setting isCompleted to true
     const finalWpm = calculateWPM();
     const finalAccuracy = calculateAccuracy();
-    const wordsTyped = gameState.currentWordIndex;
-    
+    const wordsTyped = gameState.currentWordIndex; 
+
+    gameState.isCompleted = true; // NOW set isCompleted
+    soundManager.playTestComplete();
+
     if (elements.results) {
         elements.finalWpm.textContent = finalWpm;
         elements.finalAccuracy.textContent = finalAccuracy + '%';
@@ -670,10 +685,9 @@ function endTest() {
         elements.finalTime.textContent = gameState.timeLimit + 's';
         elements.finalChars.textContent = gameState.totalChars;
         elements.finalWords.textContent = wordsTyped;
-        
+
         const statsBar = document.querySelector('.stats');
         if (statsBar) statsBar.style.display = 'none';
-        
         elements.results.style.display = 'block';
     }
 }
@@ -874,6 +888,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.liveWpmToggle) {
         elements.liveWpmToggle.addEventListener('change', (e) => {
             settingsManager.set('liveWpm', e.target.checked);
+            // Immediately update visibility based on new setting
+            if (elements.liveWpm) {
+                if (e.target.checked && gameState.isActive) {
+                    elements.liveWpm.classList.add('active');
+                } else {
+                    elements.liveWpm.classList.remove('active');
+                }
+            }
         });
     }
     
@@ -887,6 +909,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Welcome message
     setTimeout(() => {
-        showToast('Welcome to Premium Typing Test! 🎮');
+        showToast('Welcome to Typing Test! 🎮');
     }, 1000);
 }); 
