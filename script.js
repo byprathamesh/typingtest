@@ -174,7 +174,7 @@ const progressBar = document.getElementById('progressBar');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// Enhanced Relaxing KeyboardSoundManager Class with Adaptive Audio Intelligence
+// Enhanced Ultra-Premium KeyboardSoundManager Class with Advanced Audio Intelligence
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
@@ -185,37 +185,91 @@ class KeyboardSoundManager {
         this.lastKeypressTime = 0;
         this.typingSpeed = 0;
         this.currentScale = 'pentatonic';
+        this.rhythmPattern = 0;
+        this.accuracyBonus = 1.0;
+        this.consecutiveCorrect = 0;
         
-        // Multiple musical scales for variety
+        // Expanded musical scales for variety and emotional depth
         this.scales = {
             pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25], // C, D, E, G, A, C
             major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25], // C Major
             minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Minor
             dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25], // C Dorian
-            ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63] // Lower, more ambient
+            ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63], // Lower, more ambient
+            blues: [261.63, 311.13, 349.23, 369.99, 392.00, 466.16, 523.25], // C Blues
+            phrygian: [261.63, 277.18, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Phrygian (exotic)
+            lydian: [261.63, 293.66, 329.63, 369.99, 392.00, 440.00, 493.88, 523.25], // C Lydian (dreamy)
+            mixolydian: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 466.16, 523.25], // C Mixolydian (folk)
+            harmonic: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 493.88, 523.25], // Harmonic minor (dramatic)
+            japanese: [261.63, 277.18, 329.63, 392.00, 415.30, 523.25], // Japanese pentatonic (zen)
+            arabic: [261.63, 277.18, 329.63, 349.23, 392.00, 415.30, 466.16, 523.25], // Arabic-inspired
+            crystalline: [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98], // High crystal tones
+            cosmic: [65.41, 87.31, 130.81, 174.61, 220.00, 293.66], // Deep space frequencies
+            ethereal: [329.63, 415.30, 523.25, 659.25, 830.61, 1046.50] // Floating ethereal tones
         };
         
-        this._initAudio();
+        // Rhythm patterns for dynamic musical flow
+        this.rhythmPatterns = [
+            [1.0, 0.7, 0.9, 0.6], // Standard emphasis
+            [1.0, 0.5, 0.8, 0.5], // Strong beats
+            [0.8, 0.9, 1.0, 0.6], // Syncopated
+            [1.0, 0.6, 0.7, 0.9], // Jazz-like
+            [0.9, 0.9, 0.9, 0.9]  // Even flow
+        ];
+        
+        this._initAdvancedAudio();
     }
 
-    _initAudio() {
+    _initAdvancedAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create advanced audio processing chain
             this.masterGain = this.audioContext.createGain();
             
-            // Create a compressor for professional audio quality
+            // Multi-band compressor for professional sound
             this.compressor = this.audioContext.createDynamicsCompressor();
-            this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
-            this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
-            this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
-            this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
-            this.compressor.release.setValueAtTime(0.25, this.audioContext.currentTime);
+            this.compressor.threshold.setValueAtTime(-18, this.audioContext.currentTime);
+            this.compressor.knee.setValueAtTime(25, this.audioContext.currentTime);
+            this.compressor.ratio.setValueAtTime(8, this.audioContext.currentTime);
+            this.compressor.attack.setValueAtTime(0.002, this.audioContext.currentTime);
+            this.compressor.release.setValueAtTime(0.2, this.audioContext.currentTime);
             
-            this.masterGain.connect(this.compressor);
-            this.compressor.connect(this.audioContext.destination);
+            // Advanced EQ for tonal shaping
+            this.highShelf = this.audioContext.createBiquadFilter();
+            this.highShelf.type = 'highshelf';
+            this.highShelf.frequency.setValueAtTime(8000, this.audioContext.currentTime);
+            this.highShelf.gain.setValueAtTime(3, this.audioContext.currentTime);
+            
+            this.lowShelf = this.audioContext.createBiquadFilter();
+            this.lowShelf.type = 'lowshelf';
+            this.lowShelf.frequency.setValueAtTime(200, this.audioContext.currentTime);
+            this.lowShelf.gain.setValueAtTime(2, this.audioContext.currentTime);
+            
+            // Stereo widener for spatial dimension
+            this.stereoWidener = this.audioContext.createStereoPanner();
+            
+            // Subtle chorus for richness
+            this.chorusDelay = this.audioContext.createDelay(0.05);
+            this.chorusDelay.delayTime.setValueAtTime(0.015, this.audioContext.currentTime);
+            this.chorusGain = this.audioContext.createGain();
+            this.chorusGain.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+            
+            // Connect the audio chain
+            this.masterGain.connect(this.lowShelf);
+            this.lowShelf.connect(this.highShelf);
+            this.highShelf.connect(this.compressor);
+            this.compressor.connect(this.stereoWidener);
+            this.stereoWidener.connect(this.audioContext.destination);
+            
+            // Connect chorus
+            this.masterGain.connect(this.chorusDelay);
+            this.chorusDelay.connect(this.chorusGain);
+            this.chorusGain.connect(this.compressor);
+            
             this.masterGain.gain.value = this.volume;
         } catch (e) { 
-            console.warn('Web Audio API not supported'); 
+            console.warn('Advanced Web Audio API not supported'); 
             this.audioContext = null; 
         }
     }
@@ -224,30 +278,33 @@ class KeyboardSoundManager {
         const now = Date.now();
         if (this.lastKeypressTime > 0) {
             const timeDiff = now - this.lastKeypressTime;
-            this.typingSpeed = Math.max(0.1, Math.min(2.0, 1000 / timeDiff)); // 0.1 to 2.0 scale
+            this.typingSpeed = Math.max(0.1, Math.min(3.0, 1200 / timeDiff)); // Enhanced range
         }
         this.lastKeypressTime = now;
     }
 
     _getAdaptiveVolume(baseVolume) {
-        // Reduce volume slightly as typing speed increases for comfort
-        const speedFactor = Math.max(0.6, 1.2 - (this.typingSpeed * 0.3));
-        return baseVolume * speedFactor;
+        // More sophisticated volume adaptation
+        const speedFactor = Math.max(0.5, 1.3 - (this.typingSpeed * 0.25));
+        const accuracyFactor = Math.min(1.2, 0.8 + (this.accuracyBonus * 0.4));
+        return baseVolume * speedFactor * accuracyFactor;
     }
 
-    _createAdvancedReverb(wetness, roomSize = 0.7) {
+    _createAdvancedReverb(wetness, roomSize = 0.8, shimmer = 0.1) {
         const convolver = this.audioContext.createConvolver();
         
-        // Create impulse response for reverb
+        // Create sophisticated impulse response
         const sampleRate = this.audioContext.sampleRate;
-        const length = sampleRate * roomSize; // Room size affects reverb length
+        const length = Math.floor(sampleRate * roomSize);
         const impulse = this.audioContext.createBuffer(2, length, sampleRate);
         
         for (let channel = 0; channel < 2; channel++) {
             const channelData = impulse.getChannelData(channel);
             for (let i = 0; i < length; i++) {
-                const decay = Math.pow(1 - i / length, 2);
-                channelData[i] = (Math.random() * 2 - 1) * decay;
+                const progress = i / length;
+                const decay = Math.pow(1 - progress, 1.5);
+                const shimmerMod = 1 + shimmer * Math.sin(progress * Math.PI * 8);
+                channelData[i] = (Math.random() * 2 - 1) * decay * shimmerMod;
             }
         }
         
@@ -259,7 +316,7 @@ class KeyboardSoundManager {
         return { convolver, reverbGain };
     }
 
-    _createSoothingTone(type = 'keypress') {
+    _createUltraSoothingTone(type = 'keypress', isCorrect = true) {
         if (!this.enabled || !this.audioContext) return;
 
         this._updateTypingSpeed();
@@ -270,264 +327,388 @@ class KeyboardSoundManager {
 
         let config;
         const currentNotes = this.scales[this.currentScale];
+        const rhythmMod = this.rhythmPatterns[this.rhythmPattern % this.rhythmPatterns.length][this.noteIndex % 4];
+        
+        // Update accuracy bonus
+        if (isCorrect && type === 'keypress') {
+            this.consecutiveCorrect++;
+            this.accuracyBonus = Math.min(1.5, 1.0 + (this.consecutiveCorrect * 0.02));
+        } else if (!isCorrect) {
+            this.consecutiveCorrect = 0;
+            this.accuracyBonus = Math.max(0.7, this.accuracyBonus * 0.9);
+        }
         
         switch (type) {
             case 'keypress':
-                // Intelligent note selection with some randomness
+                // Enhanced intelligent note selection with musical progression
                 let noteFreq;
-                if (Math.random() < 0.8) {
-                    // 80% time use sequential progression
-                    noteFreq = currentNotes[this.noteIndex % currentNotes.length];
+                if (Math.random() < 0.85) {
+                    // Musical progression with occasional harmonic jumps
+                    const progression = [0, 2, 1, 3, 2, 4, 3, 5]; // More musical intervals
+                    noteFreq = currentNotes[progression[this.noteIndex % progression.length] % currentNotes.length];
                     this.noteIndex++;
                 } else {
-                    // 20% time use harmonious random note
-                    noteFreq = currentNotes[Math.floor(Math.random() * currentNotes.length)];
+                    // Harmonic chord tones for richness
+                    const chordTones = [0, 2, 4]; // Root, third, fifth
+                    noteFreq = currentNotes[chordTones[Math.floor(Math.random() * chordTones.length)]];
                 }
+                
+                // Add subtle pitch variation based on accuracy
+                const pitchVariation = isCorrect ? 1.0 : 0.95;
+                noteFreq *= pitchVariation;
                 
                 config = {
                     frequency: noteFreq,
-                    harmonics: [1, 0.4, 0.15, 0.08, 0.04], // Richer harmonics
-                    attackTime: 0.015 + (Math.random() * 0.01), // Slight variation
-                    decayTime: 0.08 + (this.typingSpeed * 0.02),
-                    sustainLevel: 0.35,
-                    releaseTime: 0.4 + (Math.random() * 0.3),
-                    volume: this._getAdaptiveVolume(0.06 + Math.random() * 0.02),
-                    reverbWet: 0.25 + (Math.random() * 0.1),
-                    roomSize: 0.6
+                    harmonics: isCorrect ? 
+                        [1, 0.5, 0.25, 0.12, 0.06, 0.03] : // Rich harmonics for correct
+                        [1, 0.3, 0.1], // Thinner harmonics for errors
+                    attackTime: 0.01 + (Math.random() * 0.01),
+                    decayTime: 0.06 + (this.typingSpeed * 0.015),
+                    sustainLevel: 0.4 * rhythmMod,
+                    releaseTime: 0.35 + (Math.random() * 0.25),
+                    volume: this._getAdaptiveVolume(0.08 + Math.random() * 0.02),
+                    reverbWet: 0.2 + (Math.random() * 0.1),
+                    roomSize: 0.7,
+                    stereoSpread: 0.3,
+                    chorusAmount: isCorrect ? 0.1 : 0.05
                 };
                 break;
                 
             case 'space':
-                // Magical spacebar with multiple frequencies
-                const baseFreq = 523.25 + Math.random() * 150;
+                // Magical enhanced spacebar with ethereal qualities
+                const baseFreq = 440 + Math.random() * 200;
                 config = {
                     frequency: baseFreq,
-                    harmonics: [1, 0.6, 0.3, 0.15, 0.08, 0.04],
-                    attackTime: 0.03 + Math.random() * 0.02,
-                    decayTime: 0.15,
-                    sustainLevel: 0.3,
-                    releaseTime: 0.8 + Math.random() * 0.4,
-                    volume: this._getAdaptiveVolume(0.05),
-                    reverbWet: 0.4 + Math.random() * 0.2,
-                    roomSize: 0.8,
-                    sparkle: true
+                    harmonics: [1, 0.7, 0.4, 0.2, 0.1, 0.05, 0.025],
+                    attackTime: 0.025 + Math.random() * 0.02,
+                    decayTime: 0.12,
+                    sustainLevel: 0.35,
+                    releaseTime: 0.8 + Math.random() * 0.5,
+                    volume: this._getAdaptiveVolume(0.06),
+                    reverbWet: 0.45 + Math.random() * 0.2,
+                    roomSize: 1.0,
+                    sparkle: true,
+                    stereoSpread: 0.6,
+                    chorusAmount: 0.2
                 };
                 break;
                 
             case 'error':
-                // Gentle, understanding error sound
+                // More empathetic error sound - supportive rather than harsh
                 config = {
-                    frequency: 196.00 + Math.random() * 50, // G3 area
-                    harmonics: [1, 0.5, 0.2],
-                    attackTime: 0.04,
-                    decayTime: 0.12,
-                    sustainLevel: 0.4,
-                    releaseTime: 0.3,
+                    frequency: 196.00 + Math.random() * 30,
+                    harmonics: [1, 0.4, 0.15],
+                    attackTime: 0.03,
+                    decayTime: 0.1,
+                    sustainLevel: 0.3,
+                    releaseTime: 0.25,
                     volume: this._getAdaptiveVolume(0.04),
-                    reverbWet: 0.15,
-                    roomSize: 0.5
+                    reverbWet: 0.1,
+                    roomSize: 0.4,
+                    stereoSpread: -0.2,
+                    chorusAmount: 0.05
                 };
                 break;
                 
             case 'complete':
-                // Triumphant yet peaceful completion
+                // Epic completion with ascending arpeggios
                 config = {
-                    frequency: 523.25, // C5
-                    harmonics: [1, 0.7, 0.4, 0.2, 0.1],
-                    attackTime: 0.05,
-                    decayTime: 0.2,
-                    sustainLevel: 0.6,
-                    releaseTime: 1.2,
-                    volume: this._getAdaptiveVolume(0.12),
-                    reverbWet: 0.5,
-                    roomSize: 1.0
+                    frequency: 523.25,
+                    harmonics: [1, 0.8, 0.5, 0.3, 0.15, 0.08],
+                    attackTime: 0.04,
+                    decayTime: 0.15,
+                    sustainLevel: 0.7,
+                    releaseTime: 1.5,
+                    volume: this._getAdaptiveVolume(0.15),
+                    reverbWet: 0.6,
+                    roomSize: 1.2,
+                    stereoSpread: 0.8,
+                    chorusAmount: 0.3
                 };
                 break;
         }
 
-        // Create main oscillators with richer harmonics
+        // Create ultra-rich oscillators with advanced synthesis
         config.harmonics.forEach((amplitude, index) => {
-            if (amplitude > 0.015) {
+            if (amplitude > 0.01) {
                 const osc = this.audioContext.createOscillator();
                 const oscGain = this.audioContext.createGain();
                 const filter = this.audioContext.createBiquadFilter();
+                const panner = this.audioContext.createStereoPanner();
 
-                // Use different waveforms for different harmonics
-                osc.type = index === 0 ? 'sine' : (index === 1 ? 'triangle' : 'sine');
-                osc.frequency.setValueAtTime(config.frequency * (index + 1), now);
+                // Advanced waveform selection
+                const waveforms = ['sine', 'triangle', 'sawtooth'];
+                osc.type = index === 0 ? 'sine' : waveforms[index % waveforms.length];
+                
+                // Sophisticated frequency relationships
+                const harmonicRatio = index === 0 ? 1 : (index + 1) * (1 + Math.random() * 0.02);
+                osc.frequency.setValueAtTime(config.frequency * harmonicRatio, now);
 
-                // Advanced filtering
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(2500 - (index * 300), now);
-                filter.Q.setValueAtTime(0.7 + (index * 0.1), now);
+                // Advanced filtering with resonance
+                filter.type = index < 2 ? 'lowpass' : 'bandpass';
+                filter.frequency.setValueAtTime(3000 - (index * 250), now);
+                filter.Q.setValueAtTime(0.8 + (index * 0.1), now);
 
-                // Sophisticated envelope
-                const finalVolume = amplitude * config.volume;
+                // Stereo positioning for spatial richness
+                const panPosition = (config.stereoSpread || 0) * (Math.random() - 0.5);
+                panner.pan.setValueAtTime(panPosition, now);
+
+                // Ultra-sophisticated envelope with micro-variations
+                const finalVolume = amplitude * config.volume * (1 + Math.random() * 0.1);
                 oscGain.gain.setValueAtTime(0, now);
                 oscGain.gain.linearRampToValueAtTime(finalVolume, now + config.attackTime);
                 oscGain.gain.linearRampToValueAtTime(finalVolume * config.sustainLevel, now + config.attackTime + config.decayTime);
                 oscGain.gain.exponentialRampToValueAtTime(0.001, now + config.attackTime + config.decayTime + config.releaseTime);
 
+                // Connect with spatial processing
                 osc.connect(filter);
                 filter.connect(oscGain);
-                oscGain.connect(gainNode);
+                oscGain.connect(panner);
+                panner.connect(gainNode);
 
                 osc.start(now);
                 osc.stop(now + config.attackTime + config.decayTime + config.releaseTime);
             }
         });
 
-        // Advanced reverb system
+        // Advanced reverb with shimmer
         if (config.reverbWet > 0) {
-            const { convolver, reverbGain } = this._createAdvancedReverb(config.reverbWet, config.roomSize);
+            const { convolver, reverbGain } = this._createAdvancedReverb(
+                config.reverbWet, 
+                config.roomSize, 
+                config.chorusAmount || 0.1
+            );
             
             gainNode.connect(convolver);
             convolver.connect(reverbGain);
             reverbGain.connect(this.masterGain);
             
-            // Add some delay for spaciousness
-            const delayNode = this.audioContext.createDelay(0.3);
-            const delayGain = this.audioContext.createGain();
-            
-            delayNode.delayTime.setValueAtTime(0.08 + Math.random() * 0.04, now);
-            delayGain.gain.setValueAtTime(config.reverbWet * 0.3, now);
-            
-            gainNode.connect(delayNode);
-            delayNode.connect(delayGain);
-            delayGain.connect(this.masterGain);
+            // Multi-tap delay for depth
+            for (let i = 0; i < 3; i++) {
+                const delayNode = this.audioContext.createDelay(0.5);
+                const delayGain = this.audioContext.createGain();
+                const delayTime = 0.05 + (i * 0.03) + Math.random() * 0.02;
+                const delayLevel = config.reverbWet * 0.2 * Math.pow(0.6, i);
+                
+                delayNode.delayTime.setValueAtTime(delayTime, now);
+                delayGain.gain.setValueAtTime(delayLevel, now);
+                
+                gainNode.connect(delayNode);
+                delayNode.connect(delayGain);
+                delayGain.connect(this.masterGain);
+            }
         }
 
-        // Sparkle effect for spacebar
+        // Enhanced sparkle effect with cascading tones
         if (config.sparkle) {
             setTimeout(() => {
                 if (this.enabled && this.audioContext) {
-                    for (let i = 0; i < 3; i++) {
+                    for (let i = 0; i < 5; i++) {
                         setTimeout(() => {
-                            const sparkleOsc = this.audioContext.createOscillator();
-                            const sparkleGain = this.audioContext.createGain();
-                            const sparkleFilter = this.audioContext.createBiquadFilter();
-
-                            sparkleOsc.type = 'sine';
-                            sparkleOsc.frequency.setValueAtTime(
-                                config.frequency * (2 + Math.random()), 
-                                this.audioContext.currentTime
-                            );
-
-                            sparkleFilter.type = 'highpass';
-                            sparkleFilter.frequency.setValueAtTime(800 + Math.random() * 400, this.audioContext.currentTime);
-
-                            sparkleGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                            sparkleGain.gain.linearRampToValueAtTime(config.volume * 0.2, this.audioContext.currentTime + 0.05);
-                            sparkleGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.6);
-
-                            sparkleOsc.connect(sparkleFilter);
-                            sparkleFilter.connect(sparkleGain);
-                            sparkleGain.connect(this.masterGain);
-
-                            sparkleOsc.start(this.audioContext.currentTime);
-                            sparkleOsc.stop(this.audioContext.currentTime + 0.7);
-                        }, i * 150);
+                            this._createSparkle(config.frequency, i);
+                        }, i * 120);
                     }
                 }
-            }, 30);
+            }, 40);
         }
     }
 
-    // Method to change musical scale
+    _createSparkle(baseFreq, index) {
+        const sparkleOsc = this.audioContext.createOscillator();
+        const sparkleGain = this.audioContext.createGain();
+        const sparkleFilter = this.audioContext.createBiquadFilter();
+        const sparklePanner = this.audioContext.createStereoPanner();
+
+        sparkleOsc.type = 'sine';
+        sparkleOsc.frequency.setValueAtTime(
+            baseFreq * (1.5 + Math.random() * 2), 
+            this.audioContext.currentTime
+        );
+
+        sparkleFilter.type = 'highpass';
+        sparkleFilter.frequency.setValueAtTime(1000 + Math.random() * 500, this.audioContext.currentTime);
+        sparkleFilter.Q.setValueAtTime(2, this.audioContext.currentTime);
+
+        sparklePanner.pan.setValueAtTime((Math.random() - 0.5) * 0.8, this.audioContext.currentTime);
+
+        const sparkleVolume = 0.03 * Math.pow(0.7, index);
+        sparkleGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        sparkleGain.gain.linearRampToValueAtTime(sparkleVolume, this.audioContext.currentTime + 0.02);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.5);
+
+        sparkleOsc.connect(sparkleFilter);
+        sparkleFilter.connect(sparkleGain);
+        sparkleGain.connect(sparklePanner);
+        sparklePanner.connect(this.masterGain);
+
+        sparkleOsc.start(this.audioContext.currentTime);
+        sparkleOsc.stop(this.audioContext.currentTime + 0.6);
+    }
+
+    // Enhanced method to change musical scale with smooth transitions
     setScale(scaleName) {
         if (this.scales[scaleName]) {
             this.currentScale = scaleName;
             this.noteIndex = 0; // Reset progression
+            this.rhythmPattern = Math.floor(Math.random() * this.rhythmPatterns.length);
+            
+            // Add scale transition sound
+            if (this.enabled && this.audioContext) {
+                setTimeout(() => {
+                    this._createScaleTransition(scaleName);
+                }, 100);
+            }
         }
+    }
+
+    _createScaleTransition(scaleName) {
+        const scale = this.scales[scaleName];
+        const arpeggio = [0, 2, 4, 2, 0]; // Simple arpeggio pattern
+        
+        arpeggio.forEach((noteIndex, i) => {
+            setTimeout(() => {
+                const freq = scale[noteIndex % scale.length];
+                this._createTransitionTone(freq, i);
+            }, i * 150);
+        });
+    }
+
+    _createTransitionTone(frequency, index) {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2500, this.audioContext.currentTime);
+
+        const volume = 0.04 * (1 - index * 0.1);
+        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gain.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 0.5);
     }
 
     playKeystroke(isCorrect = true, isSpace = false) { 
         if (isSpace) {
-            this._createSoothingTone('space');
-        } else if (isCorrect) {
-            this._createSoothingTone('keypress');
+            this._createUltraSoothingTone('space', isCorrect);
         } else {
-            this._createSoothingTone('error');
+            this._createUltraSoothingTone('keypress', isCorrect);
         }
     }
 
     playWordComplete() { 
-        // Beautiful word completion melody
+        // Enhanced word completion with harmonic bells
         if (this.enabled && this.audioContext) {
-            const melody = [392.00, 440.00, 523.25, 659.25]; // G, A, C, E - ascending
+            const melody = [392.00, 523.25, 659.25, 783.99]; // Ascending perfect fourths
             melody.forEach((freq, index) => {
                 setTimeout(() => {
-                    const osc = this.audioContext.createOscillator();
-                    const gain = this.audioContext.createGain();
-                    const filter = this.audioContext.createBiquadFilter();
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
-
-                    gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.03, this.audioContext.currentTime + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
-
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(this.masterGain);
-
-                    osc.start(this.audioContext.currentTime);
-                    osc.stop(this.audioContext.currentTime + 0.5);
-                }, index * 80);
+                    this._createWordCompletionTone(freq, index);
+                }, index * 60);
             });
         }
     }
 
+    _createWordCompletionTone(frequency, index) {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        const panner = this.audioContext.createStereoPanner();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(3000, this.audioContext.currentTime);
+        filter.Q.setValueAtTime(1.5, this.audioContext.currentTime);
+
+        panner.pan.setValueAtTime((index - 1.5) * 0.3, this.audioContext.currentTime);
+
+        const volume = 0.035 * (1 - index * 0.1);
+        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gain.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.6);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(panner);
+        panner.connect(this.masterGain);
+
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 0.7);
+    }
+
     playTestComplete() { 
-        // Epic but peaceful completion sequence
-        this._createSoothingTone('complete');
+        // Epic completion sequence with orchestral elements
+        this._createUltraSoothingTone('complete');
         
-        // Play an elaborate chord progression
         if (this.enabled && this.audioContext) {
-            const chordProgression = [
-                [523.25, 659.25, 783.99, 1046.50], // C major with octave
-                [587.33, 739.99, 880.00, 1174.66], // D major with octave
-                [659.25, 830.61, 987.77, 1318.51], // E major with octave
-                [523.25, 659.25, 783.99, 1046.50]  // Return to C major
+            // Grand finale chord progression
+            const progression = [
+                [261.63, 329.63, 392.00, 523.25], // C major
+                [293.66, 369.99, 440.00, 587.33], // D major
+                [329.63, 415.30, 493.88, 659.25], // E major
+                [349.23, 440.00, 523.25, 698.46], // F major
+                [392.00, 493.88, 587.33, 783.99]  // G major
             ];
 
-            chordProgression.forEach((chord, chordIndex) => {
+            progression.forEach((chord, chordIndex) => {
                 setTimeout(() => {
                     chord.forEach((freq, noteIndex) => {
-                        const osc = this.audioContext.createOscillator();
-                        const gain = this.audioContext.createGain();
-                        const filter = this.audioContext.createBiquadFilter();
-
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-
-                        filter.type = 'lowpass';
-                        filter.frequency.setValueAtTime(3000 - (noteIndex * 200), this.audioContext.currentTime);
-
-                        const volume = 0.06 * (1 - noteIndex * 0.15); // Softer higher notes
-                        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                        gain.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.1);
-                        gain.gain.linearRampToValueAtTime(volume * 0.8, this.audioContext.currentTime + 0.4);
-                        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.5);
-
-                        osc.connect(filter);
-                        filter.connect(gain);
-                        gain.connect(this.masterGain);
-
-                        osc.start(this.audioContext.currentTime);
-                        osc.stop(this.audioContext.currentTime + 1.6);
+                        setTimeout(() => {
+                            this._createGrandFinaleChord(freq, noteIndex, chordIndex);
+                        }, noteIndex * 80);
                     });
-                }, chordIndex * 500);
+                }, chordIndex * 400);
             });
         }
+    }
+
+    _createGrandFinaleChord(frequency, noteIndex, chordIndex) {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        const panner = this.audioContext.createStereoPanner();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(4000 - (noteIndex * 200), this.audioContext.currentTime);
+        filter.Q.setValueAtTime(0.7, this.audioContext.currentTime);
+
+        panner.pan.setValueAtTime((noteIndex - 1.5) * 0.4, this.audioContext.currentTime);
+
+        const baseVolume = 0.08 * (1 - noteIndex * 0.15);
+        const chordVolume = baseVolume * (1 - chordIndex * 0.1);
+        
+        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gain.gain.linearRampToValueAtTime(chordVolume, this.audioContext.currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(chordVolume * 0.7, this.audioContext.currentTime + 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 2.0);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(panner);
+        panner.connect(this.masterGain);
+
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + 2.2);
     }
 
     toggleSound(enable) { 
         this.enabled = enable; 
+        if (enable && this.audioContext?.state === 'suspended') {
+            this.audioContext.resume();
+        }
     }
 
     setVolume(volume) { 
