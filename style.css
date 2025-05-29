@@ -256,7 +256,7 @@ header h1 {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Changed from space-evenly to flex-start for better long word handling */
+    justify-content: center; /* Changed from flex-start to center for better text alignment */
     padding: 0 10px;
     gap: 0.8rem; /* Add consistent gap between words */
     border-radius: 3px; /* Add subtle border radius */

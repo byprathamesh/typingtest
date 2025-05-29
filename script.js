@@ -174,24 +174,25 @@ const progressBar = document.getElementById('progressBar');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// Simplified but Effective KeyboardSoundManager 
+// Enhanced Professional KeyboardSoundManager with Rich Audio
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
         this.enabled = enabled;
         this.volume = volume / 100;
         this.masterGain = null;
+        this.reverbGain = null;
         this.noteIndex = 0;
-        this.currentScale = 'pentatonic';
+        this.currentScale = 'crystal'; // Changed default to crystal for best sound
         
-        // Musical scales
+        // Enhanced musical scales with better frequency ratios
         this.scales = {
             pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25],
             major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25],
             minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25],
             dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25],
             ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63],
-            crystal: [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50],
+            crystal: [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50], // Bright, clear tones
             warm: [174.61, 196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23]
         };
         
@@ -201,46 +202,117 @@ class KeyboardSoundManager {
     _initAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create master gain node
             this.masterGain = this.audioContext.createGain();
-            this.masterGain.connect(this.audioContext.destination);
             this.masterGain.gain.value = this.volume;
-            console.log('Audio system initialized successfully');
+            
+            // Create reverb effect
+            this.reverbGain = this.audioContext.createGain();
+            this.reverbGain.gain.value = 0.3; // Subtle reverb mix
+            
+            // Connect reverb to master and master to destination
+            this.reverbGain.connect(this.masterGain);
+            this.masterGain.connect(this.audioContext.destination);
+            
+            console.log('Enhanced audio system initialized successfully');
         } catch (e) { 
             console.warn('Web Audio API not supported:', e); 
             this.audioContext = null; 
         }
     }
 
-    _createTone(frequency, duration = 0.3, volume = 0.1) {
+    _createEnhancedTone(frequency, duration = 0.3, volume = 0.08, type = 'keystroke') {
         if (!this.enabled || !this.audioContext) return;
 
         const now = this.audioContext.currentTime;
-        const oscillator = this.audioContext.createOscillator();
+        
+        // Create multiple oscillators for richer sound
+        const oscillator1 = this.audioContext.createOscillator();
+        const oscillator2 = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filter = this.audioContext.createBiquadFilter();
+        const compressor = this.audioContext.createDynamicsCompressor();
 
-        // Create nice sine wave tone
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, now);
+        // Primary oscillator - sine wave for fundamental
+        oscillator1.type = 'sine';
+        oscillator1.frequency.setValueAtTime(frequency, now);
 
-        // Add filtering for warmth
+        // Secondary oscillator - triangle wave for harmonics (quieter)
+        oscillator2.type = 'triangle';
+        oscillator2.frequency.setValueAtTime(frequency * 2.01, now); // Slightly detuned octave
+
+        // Create gain nodes for each oscillator
+        const gain1 = this.audioContext.createGain();
+        const gain2 = this.audioContext.createGain();
+        gain1.gain.value = 0.7; // Primary tone
+        gain2.gain.value = 0.3; // Harmonic
+
+        // Enhanced filtering
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(frequency * 3, now);
-        filter.Q.setValueAtTime(1, now);
+        filter.frequency.setValueAtTime(frequency * 4, now);
+        filter.Q.setValueAtTime(2, now);
 
-        // Smooth envelope
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(volume, now + 0.01);
-        gainNode.gain.linearRampToValueAtTime(volume * 0.7, now + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        // Compressor settings for professional sound
+        compressor.threshold.setValueAtTime(-24, now);
+        compressor.knee.setValueAtTime(30, now);
+        compressor.ratio.setValueAtTime(12, now);
+        compressor.attack.setValueAtTime(0.003, now);
+        compressor.release.setValueAtTime(0.25, now);
 
-        // Connect audio chain
-        oscillator.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(this.masterGain);
+        // Enhanced envelope based on sound type
+        if (type === 'spacebar') {
+            // Sparkly spacebar sound
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(volume * 1.2, now + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(volume * 0.8, now + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // Add slight vibrato to spacebar
+            const vibrato = this.audioContext.createOscillator();
+            const vibratoGain = this.audioContext.createGain();
+            vibrato.frequency.value = 4; // 4Hz vibrato
+            vibratoGain.gain.value = 3; // Subtle pitch modulation
+            vibrato.connect(vibratoGain);
+            vibratoGain.connect(oscillator1.frequency);
+            vibrato.start(now);
+            vibrato.stop(now + duration);
+        } else if (type === 'word_complete') {
+            // Satisfying word completion sound
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(volume, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(volume * 0.6, now + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        } else if (type === 'error') {
+            // Dissonant error sound
+            oscillator1.frequency.setValueAtTime(frequency * 0.9, now); // Slightly flat
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(volume * 0.8, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
+        } else {
+            // Normal keystroke with smooth envelope
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(volume, now + 0.008);
+            gainNode.gain.exponentialRampToValueAtTime(volume * 0.7, now + 0.04);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        }
 
-        oscillator.start(now);
-        oscillator.stop(now + duration);
+        // Connect audio chain: oscillators -> gains -> filter -> compressor -> gain -> reverb/master
+        oscillator1.connect(gain1);
+        oscillator2.connect(gain2);
+        gain1.connect(filter);
+        gain2.connect(filter);
+        filter.connect(compressor);
+        compressor.connect(gainNode);
+        
+        // Route to both dry and reverb paths
+        gainNode.connect(this.masterGain); // Dry signal
+        gainNode.connect(this.reverbGain); // Wet signal for subtle reverb
+
+        oscillator1.start(now);
+        oscillator2.start(now);
+        oscillator1.stop(now + duration);
+        oscillator2.stop(now + duration);
     }
 
     setScale(scaleName) {
@@ -252,42 +324,49 @@ class KeyboardSoundManager {
 
     playKeystroke(isCorrect = true, isSpace = false) {
         if (isSpace) {
-            // Special spacebar sound
+            // Enhanced spacebar sound with sparkle effect
             const notes = this.scales[this.currentScale];
-            const freq = notes[Math.floor(Math.random() * notes.length)] * 2;
-            this._createTone(freq, 0.4, 0.06);
+            const freq = notes[Math.floor(Math.random() * notes.length)] * 1.5;
+            this._createEnhancedTone(freq, 0.4, 0.06, 'spacebar');
         } else if (isCorrect) {
-            // Normal keystroke
+            // Musical keystroke progression
             const notes = this.scales[this.currentScale];
             const freq = notes[this.noteIndex % notes.length];
             this.noteIndex++;
-            this._createTone(freq, 0.3, 0.08);
+            this._createEnhancedTone(freq, 0.25, 0.08, 'keystroke');
         } else {
-            // Error sound
-            this._createTone(200, 0.2, 0.04);
+            // Enhanced error sound
+            this._createEnhancedTone(180, 0.15, 0.05, 'error');
         }
     }
 
     playWordComplete() {
-        // Play a nice chord
+        // Rich chord progression for word completion
         if (this.enabled && this.audioContext) {
             const notes = this.scales[this.currentScale];
-            [0, 2, 4].forEach((interval, index) => {
+            const baseNote = notes[this.noteIndex % notes.length];
+            
+            // Play a pleasant triad
+            [0, 0.3, 0.5].forEach((harmonic, index) => {
                 setTimeout(() => {
-                    this._createTone(notes[interval % notes.length], 0.4, 0.04);
-                }, index * 100);
+                    const freq = baseNote * (1 + harmonic);
+                    this._createEnhancedTone(freq, 0.5, 0.04, 'word_complete');
+                }, index * 80);
             });
         }
     }
 
     playTestComplete() {
-        // Celebration sound
+        // Celebration arpeggio with enhanced harmonics
         if (this.enabled && this.audioContext) {
             const notes = this.scales[this.currentScale];
-            [0, 2, 4, 5, 7].forEach((interval, index) => {
+            const celebrationNotes = [0, 2, 4, 5, 7, 9, 11, 12]; // Major scale arpeggio
+            
+            celebrationNotes.forEach((noteIndex, i) => {
                 setTimeout(() => {
-                    this._createTone(notes[interval % notes.length] * 2, 0.6, 0.06);
-                }, index * 150);
+                    const freq = notes[noteIndex % notes.length] * (noteIndex >= 7 ? 2 : 1);
+                    this._createEnhancedTone(freq, 0.8, 0.06, 'word_complete');
+                }, i * 120);
             });
         }
     }
@@ -311,7 +390,7 @@ class SettingsManager {
         this.timeLimit = 60; 
         this.soundEnabled = true; 
         this.volume = 30; 
-        this.musicScale = 'pentatonic';
+        this.musicScale = 'crystal'; // Changed default to crystal for best sound
         this.liveWpmEnabled = true;
     }
     
@@ -566,7 +645,7 @@ function displayText(words) {
     textDisplay.innerHTML = '';
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
-    gameState.currentLine = 1; // Always stay on second line (middle)
+    gameState.currentLine = 1; // Always stay on line 1 (second line, 0-indexed)
     
     // Apply hard mode class for better word spacing
     if (settingsManager.difficulty === 'hard' || settingsManager.difficulty === 'programming') {
