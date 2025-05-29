@@ -252,13 +252,47 @@ function handleInput(event) {
     const currentWord = gameState.words[gameState.currentWordIndex];
     const key = event.key;
     if (key === ' ' || key === 'Enter') { event.preventDefault(); if (gameState.typedWord.length > 0) handleWordCompletion(); }
-    else if (key === 'Backspace') { event.preventDefault(); if (gameState.typedWord.length > 0) gameState.typedWord = gameState.typedWord.slice(0, -1); if (keyboardSoundManager) keyboardSoundManager.playKeystroke(true, false); }
-    else if (key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        event.preventDefault(); gameState.typedWord += key; gameState.totalCharsTyped++;
-        if (key !== currentWord[gameState.typedWord.length - 1] && gameState.typedWord.length <= currentWord.length) { gameState.errors++; if (keyboardSoundManager) keyboardSoundManager.playKeystroke(false, false); }
-        else { if (keyboardSoundManager) keyboardSoundManager.playKeystroke(true, false); }
+    else if (key === 'Backspace') { 
+        event.preventDefault(); 
+        if (gameState.typedWord.length > 0) {
+            const originalWordLen = currentWord.length;
+            const typedLenBeforeBackspace = gameState.typedWord.length;
+            gameState.typedWord = gameState.typedWord.slice(0, -1);
+            
+            // If we backspaced an "extra" character, ensure its span is removed by updateWordDisplay
+            // No direct DOM manipulation here, updateWordDisplay will handle it.
+            // Error count should not change if backspacing a correctly typed char or an extra char that was already an error.
+            // Error count should decrement if backspacing a mistyped char within original word length.
+            // This part of error logic is complex if trying to be perfect with backspace vs error count.
+            // For now, errors are primarily counted on input, not adjusted on backspace unless it fixes a prior mis-typed char.
+            // The main goal is that updateWordDisplay correctly removes the visual span for extra chars.
+
+            if (keyboardSoundManager) keyboardSoundManager.playKeystroke(true, false); 
+        }
     }
-    updateWordDisplay(); updateCursor(); updateStats();
+    else if (key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        event.preventDefault(); 
+        const charIndexInTypedWord = gameState.typedWord.length;
+        gameState.typedWord += key;
+        gameState.totalCharsTyped++; // Always count a typed character
+
+        if (charIndexInTypedWord < currentWord.length) {
+            // Character is within the bounds of the original word
+            if (key !== currentWord[charIndexInTypedWord]) {
+                gameState.errors++;
+                if (keyboardSoundManager) keyboardSoundManager.playKeystroke(false, false);
+            } else {
+                if (keyboardSoundManager) keyboardSoundManager.playKeystroke(true, false);
+            }
+        } else {
+            // Character is an "extra" character beyond the original word's length
+            gameState.errors++; // Extra characters are always errors
+            if (keyboardSoundManager) keyboardSoundManager.playKeystroke(false, false); // Play error sound for extra chars
+        }
+    }
+    updateWordDisplay(); 
+    updateCursor(); 
+    updateStats();
 }
 
 function handleWordCompletion() {
@@ -277,11 +311,65 @@ function handleWordCompletion() {
 }
 
 function updateWordDisplay() {
-    if (!gameState.currentWordElement) return;
+    if (!gameState.currentWordElement || !gameState.words[gameState.currentWordIndex]) return;
+
     const currentWordText = gameState.words[gameState.currentWordIndex];
-    const charSpans = gameState.currentWordElement.childNodes;
-    charSpans.forEach((cs, i) => { cs.className = ''; if (i < gameState.typedWord.length) cs.className = gameState.typedWord[i] === currentWordText[i] ? 'correct' : 'incorrect'; });
-    gameState.currentWordElement.classList.toggle('error-extra', gameState.typedWord.length > currentWordText.length);
+    const typedWord = gameState.typedWord;
+    const wordElement = gameState.currentWordElement;
+    let charSpans = Array.from(wordElement.childNodes);
+
+    // Ensure wordElement has enough char spans for typedWord, add/remove as necessary
+    // First, remove any excess spans (e.g. after backspacing extra chars)
+    while (charSpans.length > typedWord.length && charSpans.length > currentWordText.length) {
+        const lastSpan = charSpans.pop();
+        if (lastSpan) wordElement.removeChild(lastSpan);
+    }
+    // If typed word is longer than original word, and we don't have enough spans for it.
+    for (let i = charSpans.length; i < typedWord.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.classList.add('char'); // Base class for all characters
+        wordElement.appendChild(charSpan);
+        charSpans.push(charSpan); // Add to our working array
+    }
+
+    // Now, style each character span based on typedWord
+    for (let i = 0; i < charSpans.length; i++) {
+        const span = charSpans[i];
+        span.className = 'char'; // Reset classes except 'char'
+
+        if (i < typedWord.length) {
+            span.textContent = typedWord[i];
+            if (i < currentWordText.length) {
+                if (typedWord[i] === currentWordText[i]) {
+                    span.classList.add('correct');
+                } else {
+                    span.classList.add('incorrect');
+                }
+            } else {
+                // This is an extra character beyond the original word's length
+                span.classList.add('incorrect'); // Or 'extra' if you have specific styling for only extra
+                span.classList.add('extra'); 
+            }
+        } else if (i < currentWordText.length) {
+            // This part of the original word hasn't been typed yet or was backspaced over
+            span.textContent = currentWordText[i]; // Show original char
+            // No 'correct' or 'incorrect' class yet
+        } else {
+            // This case should ideally not be reached if span logic above is correct
+            // It means we have a span that corresponds neither to typedWord nor currentWordText
+             if(span.parentNode) span.parentNode.removeChild(span); // defensive removal
+        }
+    }
+    // Clear any remaining original spans if typed word is shorter than original AND we are not adding extra chars
+    // This part is tricky because original spans are created by displayText
+    // The logic above should handle displaying original text if not typed / backspaced over.
+    // The crucial part is ensuring spans are added for 'extra' characters and styled.
+
+    // Visual indication for entire word if errors occurred (especially for extra chars)
+    wordElement.classList.remove('error-extra'); // remove previous state
+    if (typedWord.length > currentWordText.length) {
+        wordElement.classList.add('error-extra');
+    }
 }
 
 function initializeCursor() {
@@ -299,12 +387,45 @@ function updateCursor() {
         return;
     }
     if (cursor) cursor.style.display = 'block';
-    let charOffset = 0;
-    const charElements = gameState.currentWordElement.childNodes;
-    for (let i = 0; i < gameState.typedWord.length && i < charElements.length; i++) charOffset += charElements[i].offsetWidth;
-    cursor.style.left = `${gameState.currentWordElement.offsetLeft + charOffset}px`;
-    cursor.style.top = `${gameState.currentWordElement.offsetTop}px`;
-    cursor.style.height = `${gameState.currentWordElement.offsetHeight * 0.8}px`;
+    
+    const wordElement = gameState.currentWordElement;
+    const typedWord = gameState.typedWord;
+    const charSpans = Array.from(wordElement.childNodes);
+
+    let targetLeft = wordElement.offsetLeft;
+    let targetTop = wordElement.offsetTop;
+    let cursorHeight = wordElement.offsetHeight * 0.8;
+
+    if (typedWord.length > 0 && charSpans.length > 0) {
+        // Find the span for the last typed character
+        // This index must be capped at charSpans.length - 1 because typedWord might be longer
+        // than the number of actual spans if updateWordDisplay hasn't run yet for an appended char
+        // (though it should have run right before updateCursor).
+        // More robustly: use the last actual span that corresponds to a typed character.
+        const lastTypedCharIndex = Math.min(typedWord.length - 1, charSpans.length - 1);
+        const lastCharSpan = charSpans[lastTypedCharIndex];
+
+        if (lastCharSpan) {
+            targetLeft = lastCharSpan.offsetLeft + lastCharSpan.offsetWidth;
+            // Keep top and height based on the word element for consistency across line
+            targetTop = lastCharSpan.offsetTop; 
+            cursorHeight = lastCharSpan.offsetHeight * 0.8;
+        } else if (charSpans.length === 0 && typedWord.length > 0) {
+            // This case implies typedWord has content, but no spans exist in wordElement.
+            // This might happen if wordElement was cleared and updateWordDisplay is about to populate it.
+            // Default to start of wordElement. updateWordDisplay should fix this immediately after.
+            targetLeft = wordElement.offsetLeft;
+        } else if (typedWord.length === 0) {
+             targetLeft = wordElement.offsetLeft;
+        }
+    } else {
+        // No typed characters or no spans, position at the start of the current word element
+        targetLeft = wordElement.offsetLeft;
+    }
+
+    cursor.style.left = `${targetLeft}px`;
+    cursor.style.top = `${targetTop}px`;
+    cursor.style.height = `${cursorHeight}px`;
 }
 
 function calculateWPM() {
