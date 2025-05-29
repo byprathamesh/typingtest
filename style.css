@@ -234,16 +234,22 @@ header h1 {
     padding: 30px;
     font-size: 1.2rem;
     line-height: 1.8;
-    min-height: 150px;
+    height: calc(1.8rem * 3 + 2rem + 60px); /* Exactly 3 lines + padding */
     position: relative;
     outline: none;
     cursor: text;
-    overflow-y: auto;
-    scroll-behavior: smooth;
+    overflow: hidden; /* Hide overflow to maintain 3-line view */
 }
 
 .text-display:focus {
     border-color: #00ff00;
+}
+
+.text-line {
+    margin-bottom: 1rem;
+    height: 1.8rem;
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .word {

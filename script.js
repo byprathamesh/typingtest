@@ -574,6 +574,7 @@ let gameState = {
     words: [], currentWordIndex: 0, typedWord: '', startTime: null, timeLimit: 60,
     errors: 0, totalCharsTyped: 0, isCompleted: false, timerInterval: null,
     wordElements: [], currentWordElement: null,
+    lines: [], currentLine: 0, wordsPerLine: 10,
 };
 
 // DOMContentLoaded: Handles Welcome Screen and App Initialization
@@ -725,36 +726,12 @@ function displayText(words) {
     if (!textDisplay) return;
     textDisplay.innerHTML = '';
     gameState.wordElements = [];
+    gameState.lines = []; // Track lines of words
+    gameState.currentLine = 0;
+    gameState.wordsPerLine = 10; // Fixed number of words per line
     
-    // Display words with better line formatting
-    const wordsPerLine = Math.floor(Math.random() * 3) + 8; // 8-10 words per line for variety
-    
-    words.forEach((word, index) => {
-        const wordSpan = document.createElement('span');
-        wordSpan.classList.add('word');
-        word.split('').forEach(char => { 
-            const cs = document.createElement('span'); 
-            cs.textContent = char; 
-            cs.classList.add('char');
-            wordSpan.appendChild(cs); 
-        });
-        textDisplay.appendChild(wordSpan);
-        gameState.wordElements.push(wordSpan);
-        
-        // Add space between words, except at line breaks
-        if (index < words.length - 1) { 
-            const space = document.createElement('span'); 
-            space.innerHTML = '&nbsp;'; 
-            space.classList.add('space');
-            textDisplay.appendChild(space); 
-            
-            // Add line break every wordsPerLine words for better formatting
-            if ((index + 1) % wordsPerLine === 0) {
-                const lineBreak = document.createElement('br');
-                textDisplay.appendChild(lineBreak);
-            }
-        }
-    });
+    // Generate initial 3 lines (30 words)
+    generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
         gameState.currentWordIndex = 0; 
@@ -763,6 +740,108 @@ function displayText(words) {
     }
     updateCursor();
     textDisplay.scrollTop = 0;
+}
+
+function generateInitialLines(words) {
+    const linesToShow = 3;
+    const wordsPerLine = gameState.wordsPerLine;
+    
+    for (let line = 0; line < linesToShow; line++) {
+        const lineDiv = document.createElement('div');
+        lineDiv.classList.add('text-line');
+        lineDiv.style.marginBottom = '1rem';
+        
+        const startIndex = line * wordsPerLine;
+        const endIndex = Math.min(startIndex + wordsPerLine, words.length);
+        
+        for (let i = startIndex; i < endIndex; i++) {
+            const word = words[i];
+            const wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.setAttribute('data-line', line);
+            wordSpan.setAttribute('data-word-index', i);
+            
+            word.split('').forEach(char => { 
+                const cs = document.createElement('span'); 
+                cs.textContent = char; 
+                cs.classList.add('char');
+                wordSpan.appendChild(cs); 
+            });
+            
+            lineDiv.appendChild(wordSpan);
+            gameState.wordElements.push(wordSpan);
+            
+            // Add space between words (except last word in line)
+            if (i < endIndex - 1) {
+                const space = document.createElement('span');
+                space.innerHTML = '&nbsp;';
+                space.classList.add('space');
+                lineDiv.appendChild(space);
+            }
+        }
+        
+        textDisplay.appendChild(lineDiv);
+        if (!gameState.lines[line]) gameState.lines[line] = [];
+        gameState.lines[line] = lineDiv;
+    }
+}
+
+// New function to add a new line when needed
+async function addNewLine() {
+    const newWords = await getWords(settingsManager.difficulty);
+    const wordsPerLine = gameState.wordsPerLine;
+    const currentTotalWords = gameState.words.length;
+    
+    // Add new words to our word array
+    const startIndex = currentTotalWords;
+    for (let i = 0; i < wordsPerLine; i++) {
+        if (newWords[i]) {
+            gameState.words.push(newWords[i]);
+        }
+    }
+    
+    // Create new line div
+    const lineDiv = document.createElement('div');
+    lineDiv.classList.add('text-line');
+    lineDiv.style.marginBottom = '1rem';
+    
+    // Add words to the new line
+    for (let i = 0; i < wordsPerLine && newWords[i]; i++) {
+        const word = newWords[i];
+        const wordSpan = document.createElement('span');
+        wordSpan.classList.add('word');
+        wordSpan.setAttribute('data-word-index', startIndex + i);
+        
+        word.split('').forEach(char => { 
+            const cs = document.createElement('span'); 
+            cs.textContent = char; 
+            cs.classList.add('char');
+            wordSpan.appendChild(cs); 
+        });
+        
+        lineDiv.appendChild(wordSpan);
+        gameState.wordElements.push(wordSpan);
+        
+        // Add space between words (except last word)
+        if (i < wordsPerLine - 1 && newWords[i + 1]) {
+            const space = document.createElement('span');
+            space.innerHTML = '&nbsp;';
+            space.classList.add('space');
+            lineDiv.appendChild(space);
+        }
+    }
+    
+    // Add the new line to the bottom
+    textDisplay.appendChild(lineDiv);
+    gameState.lines.push(lineDiv);
+    
+    // Remove the top line to maintain 3 lines
+    if (gameState.lines.length > 3) {
+        const topLine = gameState.lines.shift();
+        if (topLine && topLine.parentNode) {
+            topLine.parentNode.removeChild(topLine);
+        }
+    }
 }
 
 function handleInput(event) {
@@ -833,14 +912,17 @@ function handleWordCompletion() {
     gameState.typedWord = ''; 
     gameState.currentWordIndex++;
     
-    // Check if we're near the end of words and generate more for infinite typing
-    if (gameState.currentWordIndex >= gameState.words.length - 10) { 
-        // Generate new words and append them
-        generateMoreWords();
+    // Check if we've completed a line (every 10 words)
+    const currentLineNumber = Math.floor(gameState.currentWordIndex / gameState.wordsPerLine);
+    const previousLineNumber = Math.floor((gameState.currentWordIndex - 1) / gameState.wordsPerLine);
+    
+    if (currentLineNumber > previousLineNumber) {
+        // We've moved to a new line, add new line and remove top line
+        addNewLine();
     }
     
-    // This should never happen now since we continuously generate words
-    if (gameState.currentWordIndex >= gameState.words.length) { 
+    // Check if we need more words (when approaching end)
+    if (gameState.currentWordIndex >= gameState.words.length - 5) {
         generateMoreWords();
     }
     
@@ -851,51 +933,13 @@ function handleWordCompletion() {
     
     updateWordDisplay(); 
     updateCursor();
-    
-    // Ensure the new word is visible with smooth scrolling
-    setTimeout(() => {
-        ensureCurrentWordIsVisible();
-    }, 50); // Small delay to ensure DOM updates are complete
 }
 
-// New function to generate more words for infinite typing
+// Updated function to generate more words for infinite typing (simplified for 3-line system)
 async function generateMoreWords() {
     const newWords = await getWords(settingsManager.difficulty);
-    const startIndex = gameState.words.length;
-    
-    // Add new words to the existing array
+    // Just add more words to the pool - the addNewLine function handles display
     gameState.words.push(...newWords);
-    
-    // Create and append new word elements
-    const wordsPerLine = Math.floor(Math.random() * 3) + 8; // 8-10 words per line
-    
-    newWords.forEach((word, index) => {
-        const absoluteIndex = startIndex + index;
-        const wordSpan = document.createElement('span');
-        wordSpan.classList.add('word');
-        word.split('').forEach(char => { 
-            const cs = document.createElement('span'); 
-            cs.textContent = char; 
-            cs.classList.add('char');
-            wordSpan.appendChild(cs); 
-        });
-        textDisplay.appendChild(wordSpan);
-        gameState.wordElements.push(wordSpan);
-        
-        // Add space between words, except at line breaks
-        if (index < newWords.length - 1 || absoluteIndex < gameState.words.length - 1) { 
-            const space = document.createElement('span'); 
-            space.innerHTML = '&nbsp;'; 
-            space.classList.add('space');
-            textDisplay.appendChild(space); 
-            
-            // Add line break every wordsPerLine words for better formatting
-            if ((absoluteIndex + 1) % wordsPerLine === 0) {
-                const lineBreak = document.createElement('br');
-                textDisplay.appendChild(lineBreak);
-            }
-        }
-    });
 }
 
 function updateWordDisplay() {
@@ -1091,47 +1135,6 @@ async function startTest(forceNewWords = false) {
     // Ensure focus only if main container is visible (welcome screen is done)
     if (textDisplay && mainContainer && mainContainer.style.display === 'block') {
         textDisplay.focus();
-    }
-    ensureCurrentWordIsVisible();
-}
-
-function ensureCurrentWordIsVisible() {
-    if (!textDisplay || !gameState.currentWordElement) return;
-
-    const displayRect = textDisplay.getBoundingClientRect();
-    const wordRect = gameState.currentWordElement.getBoundingClientRect();
-
-    // Calculate position of the word relative to the textDisplay container
-    const wordTopRelativeToDisplay = wordRect.top - displayRect.top;
-    const wordBottomRelativeToDisplay = wordRect.bottom - displayRect.top;
-
-    const displayVisibleHeight = textDisplay.clientHeight;
-
-    // Keep current word in the top third of the display (more aggressive scrolling)
-    const targetZoneTop = displayVisibleHeight * 0.1;  // Top 10%
-    const targetZoneBottom = displayVisibleHeight * 0.4; // Top 40%
-
-    let targetScrollTop = textDisplay.scrollTop;
-
-    // If word is below the target zone, scroll down to bring it to the top
-    if (wordTopRelativeToDisplay > targetZoneBottom) {
-        targetScrollTop = textDisplay.scrollTop + (wordTopRelativeToDisplay - targetZoneTop);
-    } 
-    // If word is above the target zone, scroll up to bring it to the top
-    else if (wordTopRelativeToDisplay < targetZoneTop) {
-        targetScrollTop = textDisplay.scrollTop + (wordTopRelativeToDisplay - targetZoneTop);
-    }
-
-    // Clamp the scroll top to valid range
-    targetScrollTop = Math.max(0, targetScrollTop);
-    targetScrollTop = Math.min(targetScrollTop, textDisplay.scrollHeight - displayVisibleHeight);
-
-    // Apply smooth scrolling
-    if (Math.abs(textDisplay.scrollTop - targetScrollTop) > 10) {
-        textDisplay.scrollTo({
-            top: targetScrollTop,
-            behavior: 'smooth'
-        });
     }
 }
 
