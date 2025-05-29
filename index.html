@@ -3,185 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Typing Test</title>
+    <title>Premium Typing Test - Master Your Speed</title>
     
-    <!-- Favicon - White "t" on black background -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='16' y='24' font-family='JetBrains Mono, monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%23ffffff'%3Et%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='16' y='24' font-family='JetBrains Mono, monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%23ffffff'%3Et%3C/text%3E%3C/svg%3E">
+    <!-- Enhanced Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='16' y='24' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%2300ff00'%3E⚡%3C/text%3E%3C/svg%3E">
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Professional typing test with realistic keyboard sounds, beautiful animations, and accurate WPM tracking. Improve your typing speed today!">
+    <meta name="keywords" content="typing test, WPM, typing speed, keyboard practice, typing skills">
     
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <!-- Progress bar -->
-        <div class="progress-bar" id="progressBar"></div>
-        
-        <!-- Floating WPM indicator -->
-        <div class="floating-wpm" id="floatingWpm" style="display: none;">
-            <span class="label">live wpm</span>
-            <span id="liveWpmValue">0</span>
-        </div>
-        
         <header>
-            <h1>typing test</h1>
-            <div class="header-controls">
-                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
-                <div class="settings-toggle" id="settingsToggle">⚙️</div>
+            <h1></h1>
+            <div class="controls">
+                <button id="themeToggle" title="Toggle Theme">🌙</button>
+                <button id="settingsBtn" title="Settings">⚙️</button>
+                <button id="shortcutsBtn" title="Keyboard Shortcuts">⌨️</button>
             </div>
         </header>
 
-        <div class="settings-panel" id="settingsPanel">
-            <div class="setting-group">
-                <label>Difficulty:</label>
-                <select id="difficultySelect">
-                    <option value="easy">Easy Words</option>
-                    <option value="mixed" selected>Mixed Words</option>
-                    <option value="normal">Normal Words</option>
-                    <option value="hard">Hard Words</option>
-                    <option value="quotes">Quotes</option>
+        <div class="settings" id="settings" style="display: none;">
+            <label>
+                Difficulty:
+                <select id="difficulty">
+                    <option value="easy">Easy (Common Words)</option>
+                    <option value="mixed" selected>Mixed (Balanced)</option>
+                    <option value="hard">Hard (Complex Words)</option>
+                    <option value="quotes">Quotes (Sentences)</option>
                     <option value="numbers">Numbers</option>
-                    <option value="punctuation">Punctuation</option>
                 </select>
-            </div>
-            <div class="setting-group">
-                <label>Sound Effects:</label>
+            </label>
+            <label>
+                Time Limit:
+                <select id="timeLimit">
+                    <option value="15">15 seconds</option>
+                    <option value="30">30 seconds</option>
+                    <option value="60" selected>1 minute</option>
+                    <option value="120">2 minutes</option>
+                    <option value="300">5 minutes</option>
+                </select>
+            </label>
+            <label>
+                Sound Effects:
                 <input type="checkbox" id="soundToggle" checked>
-            </div>
-            <div class="setting-group">
-                <label>Smooth Caret:</label>
-                <input type="checkbox" id="smoothCaretToggle" checked>
-            </div>
-            <div class="setting-group">
-                <label>Show Live WPM:</label>
+            </label>
+            <label>
+                Live WPM:
                 <input type="checkbox" id="liveWpmToggle" checked>
+            </label>
+            <label>
+                Sound Volume:
+                <input type="range" id="volumeSlider" min="0" max="100" value="30">
+            </label>
+        </div>
+
+        <div class="shortcuts" id="shortcuts">
+            <h3>⌨️ Keyboard Shortcuts</h3>
+            <div class="shortcuts-grid">
+                <div class="shortcut">
+                    <span>Restart Test</span>
+                    <span class="key">Tab</span>
+                </div>
+                <div class="shortcut">
+                    <span>Focus Test</span>
+                    <span class="key">Esc</span>
+                </div>
+                <div class="shortcut">
+                    <span>Settings</span>
+                    <span class="key">Ctrl + ,</span>
+                </div>
+                <div class="shortcut">
+                    <span>Theme Toggle</span>
+                    <span class="key">Ctrl + T</span>
+                </div>
+                <div class="shortcut">
+                    <span>Sound Toggle</span>
+                    <span class="key">Ctrl + S</span>
+                </div>
             </div>
         </div>
 
-        <div class="stats-bar" id="statsBar">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="stats">
             <div class="stat">
-                <span class="stat-label">wpm</span>
-                <span class="stat-value" id="wpm">0</span>
-            </div>
-            <div class="stat" id="rawWpmStat" style="display: block;">
-                <span class="stat-label">raw</span>
-                <span class="stat-value" id="rawWpm">0</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">accuracy</span>
-                <span class="stat-value" id="accuracy">100%</span>
+                <div class="label">WPM</div>
+                <div class="value" id="wpm">0</div>
             </div>
             <div class="stat">
-                <span class="stat-label">time</span>
-                <span class="stat-value" id="timer">60</span>
+                <div class="label">Accuracy</div>
+                <div class="value" id="accuracy">100%</div>
             </div>
             <div class="stat">
-                <span class="stat-label">errors</span>
-                <span class="stat-value" id="errors">0</span>
+                <div class="label">Time</div>
+                <div class="value" id="timer">60</div>
+            </div>
+            <div class="stat">
+                <div class="label">Errors</div>
+                <div class="value" id="errors">0</div>
             </div>
         </div>
 
-        <div class="test-area">
+        <div class="typing-area">
             <div class="text-display" id="textDisplay" tabindex="0">
-                <div class="caret" id="caret"></div>
+                <!-- Text will be generated here -->
             </div>
+            <div class="cursor" id="cursor"></div>
         </div>
 
-        <div class="controls">
-            <button class="restart-btn" id="restartBtn" title="Restart (Tab)">
-                <span class="btn-icon">↻</span>
-                restart test
-            </button>
-            <select class="time-select" id="timeSelect" title="Test Duration">
-                <option value="15">15s</option>
-                <option value="30">30s</option>
-                <option value="60" selected>60s</option>
-                <option value="120">120s</option>
-                <option value="300">300s</option>
-            </select>
-            <button class="info-btn" id="infoBtn" title="Keyboard Shortcuts">
-                <span class="btn-icon">?</span>
-            </button>
-        </div>
-
-        <div class="keyboard-shortcuts" id="keyboardShortcuts" style="display: none;">
-            <h3>Keyboard Shortcuts</h3>
-            <div class="shortcut-grid">
-                <div class="shortcut"><kbd>Tab</kbd><span>Restart test</span></div>
-                <div class="shortcut"><kbd>Esc</kbd><span>Focus input</span></div>
-                <div class="shortcut"><kbd>Ctrl + Shift + P</kbd><span>Toggle settings</span></div>
-                <div class="shortcut"><kbd>Ctrl + Shift + S</kbd><span>Toggle sound</span></div>
-            </div>
+        <div class="action-buttons">
+            <button id="restartBtn" title="Tab key">🔄 Restart Test</button>
+            <button id="newTestBtn" title="Generate new words">🎲 New Words</button>
+            <button id="shareBtn" title="Share your results">📤 Share</button>
         </div>
 
         <div class="results" id="results" style="display: none;">
-            <h2>Test Complete! 🎉</h2>
+            <h2>🎉 Test Complete!</h2>
             <div class="result-stats">
-                <div class="result-stat">
-                    <div class="result-label">wpm</div>
-                    <div class="result-value" id="finalWpm">0</div>
-                    <div class="result-subtitle">net speed</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">raw wpm</div>
-                    <div class="result-value" id="finalRawWpm">0</div>
-                    <div class="result-subtitle">total speed</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">accuracy</div>
-                    <div class="result-value" id="finalAccuracy">100%</div>
-                    <div class="result-subtitle">precision</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">consistency</div>
-                    <div class="result-value" id="consistency">95%</div>
-                    <div class="result-subtitle">stability</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">correct</div>
-                    <div class="result-value" id="correctWords">0</div>
-                    <div class="result-subtitle">words</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">incorrect</div>
-                    <div class="result-value" id="wrongWords">0</div>
-                    <div class="result-subtitle">words</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">characters</div>
-                    <div class="result-value" id="totalCharsTyped">0</div>
-                    <div class="result-subtitle">typed</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-label">time</div>
-                    <div class="result-value" id="testDuration">60s</div>
-                    <div class="result-subtitle">duration</div>
-                </div>
+                <div><strong>WPM:</strong> <span id="finalWpm">0</span></div>
+                <div><strong>Accuracy:</strong> <span id="finalAccuracy">100%</span></div>
+                <div><strong>Errors:</strong> <span id="finalErrors">0</span></div>
+                <div><strong>Time:</strong> <span id="finalTime">60s</span></div>
+                <div><strong>Chars Typed:</strong> <span id="finalChars">0</span></div>
+                <div><strong>Words Typed:</strong> <span id="finalWords">0</span></div>
             </div>
-            
-            <div class="chart-section">
-                <h3>Speed Over Time</h3>
-                <div class="chart-container">
-                    <canvas id="wpmChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="results-actions">
-                <button class="restart-btn" onclick="restartTest()">
-                    <span class="btn-icon">↻</span>
-                    try again
-                </button>
-                <button class="share-btn" id="shareBtn">
-                    <span class="btn-icon">📋</span>
-                    copy results
-                </button>
-            </div>
+            <button onclick="window.location.reload()" title="Start fresh">🚀 Try Again</button>
         </div>
 
-        <div class="toast" id="toast"></div>
+        <!-- Live WPM Indicator -->
+        <div class="live-wpm" id="liveWpm">
+            <div class="label">Live WPM</div>
+            <div class="value" id="liveWpmValue">0</div>
+        </div>
+
+        <!-- Instructions for first-time users -->
+        <div style="text-align: center; margin-top: 20px; opacity: 0.6; font-size: 0.9rem;">
+            💡 Click on the text area and start typing to begin • Use Tab to restart
+        </div>
     </div>
 
     <script src="script.js"></script>

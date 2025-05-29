@@ -1,69 +1,47 @@
-// Enhanced word lists with better algorithms
+// Enhanced word lists with more variety
 const wordLists = {
-    easy: [
-        "cat", "dog", "run", "jump", "play", "book", "car", "tree", "sun", "moon", "fish", "bird", "home", "door", "good", "bad", "big", "small", "hot", "cold", "yes", "no", "go", "stop", "fast", "slow", "up", "down", "in", "out", "red", "blue", "green", "white", "black", "one", "two", "three", "four", "five"
-    ],
-    normal: [
-        // Short common words
-        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say",
-        
-        // Medium length words
-        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "move", "means", "before", "around", "another", "through", "change", "much", "very", "well", "back", "good", "take", "came", "help", "too", "line", "turn", "cause", "same", "tell", "differ", "follow", "want", "show", "also", "live", "where", "after", "back", "little", "only", "round", "man", "year", "came", "show", "every", "good", "me", "give", "our", "under", "name", "very", "through", "just", "form", "sentence", "great", "think", "say", "help", "low", "line", "differ", "turn", "cause", "much", "mean", "before", "move", "right", "boy", "old", "too", "same", "tell", "does", "set", "three", "want", "air", "well", "also", "play", "small", "end", "put", "home", "read", "hand", "port", "large", "spell", "add", "even", "land", "here", "must", "big", "high", "such", "follow", "act", "why", "ask", "men", "change", "went", "light", "kind", "off", "need", "house", "picture", "try", "us", "again", "animal", "point", "mother", "world", "near", "build", "self", "earth", "father", "head", "stand", "own", "page", "should", "country", "found", "answer", "school", "grow", "study", "still", "learn", "plant", "cover", "food", "sun", "four", "between", "state", "keep", "eye", "never", "last", "let", "thought", "city", "tree", "cross", "farm", "hard", "start", "story", "saw", "far", "sea", "draw", "left", "late", "run", "don't", "while", "press", "close", "night", "real", "life", "few", "north", "open", "seem", "together", "next", "white", "children", "begin", "got", "walk", "example", "ease", "paper", "group", "always", "music", "those", "both", "mark", "often", "letter", "until", "mile", "river", "car", "feet", "care", "second", "book", "carry", "took", "science", "eat", "room", "friend", "began", "idea", "fish", "mountain", "stop", "once", "base", "hear", "horse", "cut", "sure", "watch", "color", "face", "wood", "main", "enough", "plain", "girl", "usual", "young", "ready", "above", "ever", "red", "list", "though", "feel", "talk", "bird", "soon", "body", "dog", "family", "direct", "leave", "song", "measure", "door", "product", "black", "short", "numeral", "class", "wind", "question", "happen", "complete", "ship", "area", "half", "rock", "order", "fire", "south", "problem", "piece", "told", "knew", "pass", "since", "top", "whole", "king", "space", "heard", "best", "hour", "better", "during", "hundred", "five", "remember", "step", "early", "hold", "west", "ground", "interest", "reach", "fast", "verb", "sing", "listen", "six", "table", "travel", "less", "morning", "ten", "simple", "several", "vowel", "toward", "war", "lay", "against", "pattern", "slow", "center", "love", "person", "money", "serve", "appear", "road", "map", "rain", "rule", "govern", "pull", "cold", "notice", "voice", "unit", "power", "town", "fine", "certain", "fly", "fall", "lead", "cry", "dark", "machine", "note", "wait", "plan", "figure", "star", "box", "noun", "field", "rest", "correct", "able", "pound", "done", "beauty", "drive", "stood", "contain", "front", "teach", "week", "final", "gave", "green", "oh", "quick", "develop", "ocean", "warm", "free", "minute", "strong", "special", "mind", "behind", "clear", "tail", "produce", "fact", "street", "inch", "multiply", "nothing", "course", "stay", "wheel", "full", "force", "blue", "object", "decide", "surface", "deep", "moon", "island", "foot", "system", "busy", "test", "record", "boat", "common", "gold", "possible", "plane", "stead", "dry", "wonder", "laugh", "thousands", "ago", "ran", "check", "game", "shape", "equate", "hot", "miss", "brought", "heat", "snow", "tire", "bring", "yes", "distant", "fill", "east", "paint", "language", "among"
-    ],
-    hard: [
-        "accommodate", "embarrass", "millennium", "restaurant", "bureaucracy", "pharmaceutical", "Massachusetts", "pronunciation", "surveillance", "conscientious", "maintenance", "necessary", "occurrence", "personnel", "privilege", "rhythm", "separate", "temperature", "vacuum", "weird", "absence", "calendar", "foreign", "government", "knowledge", "library", "received", "appreciate", "definitely", "experience", "independent", "intelligence", "leisure", "possession", "thorough", "existence", "piece", "science", "achieve", "believe", "ceiling", "neighbor", "field", "neither", "height", "eight", "ancient", "conscience", "conscious", "curiosity", "beginning", "business", "address", "occasion", "occurred", "omitted", "referred", "committed", "preferred", "benefited", "equipped", "transferred", "permitted", "submitted", "controlled", "excelled", "compelled", "propelled", "excellent", "travelled", "cancelled", "counsellor", "jewellery", "marvellous", "fascinating", "extraordinary", "responsibility", "acknowledgment", "disappointing", "congratulations", "representative", "characteristics", "simultaneously", "transformation", "understanding", "opportunities", "consequences", "administration", "recommendation", "implementation", "sophisticated", "revolutionary", "environmental", "entertainment", "international", "communication", "technological", "philosophical", "psychological", "physiological", "archaeological", "geographical", "mathematical", "automatically", "unfortunately", "uncomfortable", "unbelievable", "extraordinary", "unprecedented", "corresponding", "overwhelming", "comprehensive", "distinguished", "controversial", "fundamental", "experimental", "professional", "traditional", "educational", "operational", "organizational", "inspirational", "motivational", "exceptional", "constitutional", "institutional", "instrumental", "circumstantial", "developmental", "entrepreneurial", "interdisciplinary", "multidisciplinary", "intergenerational", "internationally", "uncharacteristically", "disproportionately", "incomprehensible", "indistinguishable", "counterproductive", "hypersensitivity", "electroencephalogram", "immunoelectrophoresis", "spectrophotometry", "deoxyribonucleic"
-    ],
+    easy: ["the", "and", "for", "are", "but", "not", "you", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "two", "oil", "sit", "set", "run", "eat", "far", "sea", "eye", "off", "old", "see", "him", "has", "his", "did", "get", "may", "own", "say", "she", "too", "any", "my", "no", "up", "by", "do", "if", "in", "it", "of", "on", "so", "to", "we"],
+    
     mixed: [
-        // Super common short words (3-4 letters)
-        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "do", "how", "if", "will", "up", "other", "about", "many", "then", "them", "these", "so", "some", "make", "like", "into", "time", "has", "look", "two", "more", "go", "no", "could", "my", "than", "first", "been", "call", "who", "its", "find", "long", "down", "did", "get", "come", "made", "part", "over", "here", "just", "also", "back", "well", "work", "life", "only", "year", "much", "good", "very", "when", "much", "know", "take", "see", "him", "two", "how", "its", "said", "each", "which", "do", "their", "time", "will", "about", "if", "up", "out", "many", "then", "them", "some", "her", "would", "make", "like", "into", "him", "has", "two", "more", "go", "no", "way", "could", "my", "than", "first", "water", "been", "call", "who", "oil", "sit", "now", "find", "long", "down", "day", "did", "get", "come", "made", "may", "part",
+        // Short common words (3-5 letters)
+        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "its", "who", "oil", "sit", "set", "time", "very", "when", "come", "here", "just", "like", "long", "make", "many", "over", "such", "take", "than", "them", "well", "were",
         
-        // Common medium words (5-8 letters)
-        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "world", "school", "thought", "number", "water", "called", "people", "between", "state", "started", "city", "earth", "eyes", "light", "head", "open", "story", "example", "begin", "life", "always", "both", "paper", "together", "group", "often", "important", "until", "children", "side", "feet", "mile", "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family", "during", "against", "nothing", "someone", "around", "today", "money", "music", "heard", "morning", "best", "change", "help", "line", "turn", "problem", "move", "trying", "told", "should", "asked", "going", "things", "looked", "need", "hand", "high", "keep", "last", "never", "start", "might", "story", "while", "here", "show", "why", "before", "turn", "too", "means", "old", "any", "same", "tell", "boy", "follow", "came", "want", "show", "also", "around", "form", "three", "small", "set", "put", "end", "why", "turned", "here", "asked", "went", "men", "read", "need", "land", "different", "home", "move", "try", "kind", "hand", "picture", "again", "change", "off", "play", "spell", "air", "away", "animal", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "should", "America", "world", "high", "every", "near", "add", "food", "between", "own", "below", "country", "plant", "last", "school", "father", "keep", "tree", "never", "start", "city", "earth", "eyes", "light", "thought", "head", "under", "story", "saw", "left", "don't", "few", "while", "along", "might", "close", "something", "seem", "next", "hard", "open", "example", "begin", "life", "always", "those", "both", "paper", "together", "got", "group", "often", "run", "important", "until", "children", "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four", "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "eat", "face", "watch", "far", "Indian", "really", "almost", "let", "above", "girl", "sometimes", "mountain", "cut", "young", "talk", "soon", "list", "song", "leave", "family",
+        // Medium words (6-8 letters)
+        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "house", "point", "letter", "mother", "answer", "found", "study", "learn", "world", "school", "thought", "number", "water", "called", "people", "between", "state", "city", "earth", "eyes", "light", "head", "open", "story", "example", "begin", "life", "always", "both", "paper", "together", "group", "often", "important", "until", "children", "side", "feet", "mile", "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family", "during", "against", "nothing", "someone", "around", "today", "money", "music", "heard", "morning", "best", "change", "help", "line", "turn", "problem", "move", "trying", "told", "should", "asked", "going", "things", "looked", "need", "hand", "high", "keep", "last", "never", "start", "might", "story", "while", "here", "show", "why", "before", "turn", "too", "means", "old", "any", "same", "tell", "boy", "follow", "came", "want", "show", "also", "around", "form", "three", "small", "set", "put", "end", "why", "turned", "here", "asked", "went", "men", "read", "need", "land", "different", "home", "move", "try", "kind", "hand", "picture", "again", "change", "off", "play", "spell", "air", "away", "animal", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "should", "America", "world", "high", "every", "near", "add", "food", "between", "own", "below", "country", "plant", "last", "school", "father", "keep", "tree", "never", "start", "city", "earth", "eyes", "light", "thought", "head", "under", "story", "saw", "left", "don't", "few", "while", "along", "might", "close", "something", "seem", "next", "hard", "open", "example", "begin", "life", "always", "those", "both", "paper", "together", "got", "group", "often", "run", "important", "until", "children", "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four", "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "eat", "face", "watch", "far", "really", "almost", "let", "above", "girl", "sometimes", "mountain", "cut", "young", "talk", "soon", "list", "song", "leave", "family",
         
-        // Everyday useful words
-        // Longer words (8+ letters)
-        "important", "children", "different", "following", "thought", "example", "another", "came", "three", "states", "himself", "few", "house", "use", "during", "without", "again", "place", "around", "however", "home", "small", "found", "Mrs", "thought", "went", "say", "great", "where", "help", "through", "much", "before", "line", "right", "too", "means", "old", "any", "same", "tell", "boy", "follow", "came", "want", "show", "also", "around", "form", "three", "small", "set", "put", "end", "why", "turned", "here", "why", "asked", "went", "men", "read", "need", "land", "different", "home", "us", "move", "try", "kind", "hand", "picture", "again", "change", "off", "play", "spell", "air", "away", "animal", "house", "point", "page", "letter", "mother", "answer", "found", "study", "still", "learn", "should", "America", "world", "high", "every", "near", "add", "food", "between", "own", "below", "country", "plant", "last", "school", "father", "keep", "tree", "never", "start", "city", "earth", "eyes", "light", "thought", "head", "under", "story", "saw", "left", "don't", "few", "while", "along", "might", "close", "something", "seem", "next", "hard", "open", "example", "begin", "life", "always", "those", "both", "paper", "together", "got", "group", "often", "run", "important", "until", "children", "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four", "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "eat", "face", "watch", "far", "Indian", "really", "almost", "let", "above", "girl", "sometimes", "mountain", "cut", "young", "talk", "soon", "list", "song", "leave", "family",
-        
-        // Challenging but common words
-        "business", "problem", "complete", "brought", "during", "special", "working", "against", "standard", "building", "nothing", "reached", "difference", "number", "part", "turned", "wanted", "beautiful", "knowledge", "machine", "usually", "money", "system", "government", "development", "information", "social", "within", "national", "support", "available", "including", "whether", "education", "experience", "individual", "particular", "remember", "important", "community", "economic", "medical", "environmental", "international", "technology", "understand", "successful", "significant", "organization", "responsibility", "opportunity", "relationship", "management", "performance", "professional", "development", "especially", "including", "following", "different", "important", "between", "through", "should", "because", "without", "before", "around", "another", "however", "something", "important", "example", "children", "together", "possible", "information", "experience", "development", "including", "different", "following", "important", "between", "through", "without", "before", "around", "another", "however", "something", "possible"
+        // Everyday vocabulary
+        "hello", "thanks", "please", "sorry", "welcome", "today", "tomorrow", "yesterday", "morning", "evening", "week", "month", "year", "minute", "hour", "early", "late", "quickly", "slowly", "happy", "sad", "tired", "hungry", "cold", "warm", "hot", "big", "small", "tall", "short", "long", "wide", "heavy", "light", "strong", "fast", "slow", "loud", "quiet", "bright", "dark", "clean", "dirty", "empty", "full", "open", "closed", "easy", "hard", "simple", "difficult", "cheap", "expensive", "free", "busy", "smart", "funny", "kind", "nice", "good", "best", "better", "same", "different", "true", "false", "right", "wrong", "sure", "maybe", "always", "never", "sometimes", "often", "usually", "here", "there", "where", "home", "work", "school", "office", "store", "bank", "hospital", "hotel", "restaurant", "park", "street", "road", "car", "bus", "train", "plane", "walk", "run", "drive", "travel", "trip", "vacation", "weekend", "birthday", "party", "meeting", "doctor", "teacher", "student", "worker", "manager", "friend", "family", "parent", "child", "brother", "sister", "mother", "father", "person", "people", "computer", "internet", "phone", "email", "music", "movie", "book", "photo", "video", "news", "information", "money", "food", "water", "coffee", "bread", "house", "room", "door", "window", "table", "chair", "bed"
     ],
+    
+    hard: ["accommodate", "embarrass", "millennium", "restaurant", "bureaucracy", "pharmaceutical", "pronunciation", "surveillance", "conscientious", "maintenance", "necessary", "occurrence", "personnel", "privilege", "rhythm", "separate", "temperature", "vacuum", "weird", "absence", "calendar", "foreign", "government", "knowledge", "library", "received", "appreciate", "definitely", "experience", "independent", "intelligence", "leisure", "possession", "thorough", "existence", "fascinating", "extraordinary", "responsibility", "acknowledgment", "disappointing", "congratulations", "representative", "characteristics", "simultaneously", "transformation", "understanding", "opportunities", "consequences", "administration", "recommendation", "implementation", "sophisticated", "revolutionary", "environmental", "entertainment", "international", "communication", "technological", "philosophical", "psychological", "automatically", "unfortunately", "uncomfortable", "unbelievable", "unprecedented", "overwhelming", "comprehensive", "distinguished", "controversial", "fundamental", "experimental", "professional", "traditional", "educational", "exceptional", "constitutional"],
+    
     quotes: [
-        "The only way to do great work is to love what you do. - Steve Jobs",
-        "Life is what happens to you while you're busy making other plans. - John Lennon", 
-        "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
-        "It is during our darkest moments that we must focus to see the light. - Aristotle",
-        "The way to get started is to quit talking and begin doing. - Walt Disney",
-        "The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. - Winston Churchill",
-        "Don't let yesterday take up too much of today. - Will Rogers",
-        "You learn more from failure than from success. Don't let it stop you. Failure builds character. - Unknown",
-        "It's not whether you get knocked down, it's whether you get up. - Vince Lombardi",
-        "If you are working on something that you really care about, you don't have to be pushed. The vision pulls you. - Steve Jobs",
-        "Believe you can and you're halfway there. - Theodore Roosevelt",
-        "The only impossible journey is the one you never begin. - Tony Robbins",
-        "In the middle of difficulty lies opportunity. - Albert Einstein",
-        "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill",
-        "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela"
+        "The only way to do great work is to love what you do.",
+        "Life is what happens while you're busy making other plans.",
+        "The future belongs to those who believe in the beauty of their dreams.",
+        "It is during our darkest moments that we must focus to see the light.",
+        "The way to get started is to quit talking and begin doing.",
+        "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+        "Innovation distinguishes between a leader and a follower.",
+        "Your time is limited, so don't waste it living someone else's life.",
+        "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+        "In the middle of difficulty lies opportunity.",
+        "Believe you can and you're halfway there.",
+        "It does not matter how slowly you go as long as you do not stop.",
+        "Everything you've ever wanted is on the other side of fear.",
+        "Limit your always and your nevers.",
+        "Nothing is impossible, the word itself says I'm possible!"
     ],
-    numbers: [
-        "1234567890", "0987654321", "1357924680", "2468013579", "9876543210", "1111111111", "2222222222", "3333333333", "4444444444", "5555555555", "6666666666", "7777777777", "8888888888", "9999999999", "0000000000", "1234", "5678", "9012", "3456", "7890", "1357", "2468", "9513", "7428", "6039", "147", "258", "369", "159", "753", "951", "357", "246", "802", "413", "576", "192", "384", "765", "938", "271", "650", "429", "816", "305", "12345", "67890", "24681", "13579", "97531", "86420", "75319", "64208", "53197", "42086", "31975", "20864", "19753", "08642", "97531", "86420"
-    ],
-    punctuation: [
-        "Hello, world!", "What's up?", "I'm fine.", "How are you?", "That's great!", "Let's go.", "Don't worry.", "It's okay.", "You're right.", "I can't.", "Won't you?", "Isn't it?", "That'll work.", "We'll see.", "I'll try.", "You've got this!", "It's not easy.", "What's wrong?", "Everything's fine.", "Nothing's perfect.", "Someone's calling.", "Nobody's here.", "Everybody's gone.", "Something's missing.", "Anything's possible.", "Here's the thing:", "There's no way.", "Who's there?", "Where's my phone?", "Why's it broken?", "Let's eat, grandma!", "Let's eat grandma!", "Time flies, doesn't it?", "Yes, sir!", "No way, José!", "Well, hello there!", "Oh my goodness!", "What the heck?", "Are you kidding me?", "I don't think so...", "Maybe, just maybe.", "Here we go again!", "That's all, folks!", "To be, or not to be?", "Once upon a time...", "The end.", "P.S. Don't forget!", "etc.", "vs.", "e.g.", "i.e.", "Mrs. Smith", "Dr. Johnson", "Mr. & Mrs. Brown"
-    ]
+    
+    numbers: ["123", "456", "789", "012", "345", "678", "901", "234", "567", "890", "1234", "5678", "9012", "3456", "7890", "12345", "67890", "13579", "24680", "97531", "147258", "369147", "258963", "741852", "963741", "159753", "753159", "951357", "357951", "123456789", "987654321", "1122334455", "5544332211", "1357913579", "2468024680", "987123654", "456789123", "789456123", "321654987", "654321987"]
 };
 
-// Advanced sound effects with Web Audio API
-class SoundManager {
+// Advanced Keyboard Sound System with enhanced effects
+class KeyboardSoundManager {
     constructor() {
         this.audioContext = null;
-        this.sounds = {
-            keypress: { frequency: 800, duration: 0.05, volume: 0.08 },
-            error: { frequency: 300, duration: 0.12, volume: 0.12 },
-            complete: { frequency: 600, duration: 0.4, volume: 0.15 },
-            wordComplete: { frequency: 1000, duration: 0.08, volume: 0.06 }
-        };
         this.enabled = true;
-        this.masterVolume = 0.3;
+        this.volume = 0.3;
         this.init();
     }
 
@@ -75,73 +53,134 @@ class SoundManager {
         }
     }
 
-    playSound(type, pitch = 1) {
+    // Create ultra-realistic mechanical keyboard sounds
+    playKeystroke(isCorrect = true, isSpace = false) {
         if (!this.enabled || !this.audioContext) return;
-        
-        const sound = this.sounds[type];
-        if (!sound) return;
-        
+
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         const filterNode = this.audioContext.createBiquadFilter();
-        
-        // Connect audio nodes
+
         oscillator.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
-        
-        // Configure oscillator
-        oscillator.frequency.value = sound.frequency * pitch;
-        oscillator.type = 'sine';
-        
-        // Configure filter for smoother sound
-        filterNode.type = 'lowpass';
-        filterNode.frequency.value = sound.frequency * 2;
-        
-        // Configure gain envelope
-        const volume = sound.volume * this.masterVolume;
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + sound.duration);
-        
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + sound.duration);
+
+        if (isSpace) {
+            // Premium space bar sound - Cherry MX Blue style
+            oscillator.frequency.setValueAtTime(150, this.audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(90, this.audioContext.currentTime + 0.1);
+            filterNode.frequency.value = 250;
+            filterNode.Q.value = 2;
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.9, this.audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.18);
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + 0.18);
+        } else if (isCorrect) {
+            // Satisfying correct keystroke - Premium tactile feel
+            oscillator.frequency.setValueAtTime(900 + Math.random() * 200, this.audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(450, this.audioContext.currentTime + 0.06);
+            filterNode.frequency.value = 1400;
+            filterNode.Q.value = 1.5;
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.7, this.audioContext.currentTime + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.09);
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + 0.09);
+        } else {
+            // Error keystroke - Distinct but not harsh
+            oscillator.frequency.setValueAtTime(350, this.audioContext.currentTime);
+            oscillator.frequency.linearRampToValueAtTime(200, this.audioContext.currentTime + 0.12);
+            filterNode.frequency.value = 800;
+            filterNode.Q.value = 6;
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(this.volume * 0.8, this.audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.15);
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + 0.15);
+        }
     }
 
-    setVolume(volume) {
-        this.masterVolume = Math.max(0, Math.min(1, volume));
+    playWordComplete() {
+        if (!this.enabled || !this.audioContext) return;
+
+        // Beautiful word completion chord
+        const frequencies = [523.25, 659.25, 783.99]; // C, E, G major chord
+        frequencies.forEach((freq, index) => {
+            setTimeout(() => {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(this.volume * 0.4, this.audioContext.currentTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.4);
+            }, index * 60);
+        });
+    }
+
+    playTestComplete() {
+        if (!this.enabled || !this.audioContext) return;
+
+        // Epic victory fanfare
+        const melody = [523.25, 659.25, 783.99, 1046.5, 1318.5]; // C, E, G, C, E (higher octave)
+        melody.forEach((freq, index) => {
+            setTimeout(() => {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'triangle';
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(this.volume * 0.6, this.audioContext.currentTime + 0.08);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.5);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.5);
+            }, index * 250);
+        });
     }
 
     toggle() {
         this.enabled = !this.enabled;
         return this.enabled;
     }
+
+    setVolume(volume) {
+        this.volume = Math.max(0, Math.min(1, volume));
+    }
 }
 
-// Advanced settings manager with validation
+// Settings Manager with Local Storage
 class SettingsManager {
     constructor() {
-        this.settings = {
+        this.defaults = {
             difficulty: 'mixed',
-            soundEnabled: true,
-            smoothCaret: true,
-            liveWpm: true,
             timeLimit: 60,
-            soundVolume: 0.3,
-            theme: 'dark',
-            fontSize: 'medium',
-            autoFocus: true
+            soundEnabled: true,
+            liveWpm: true,
+            volume: 30,
+            theme: 'dark'
         };
+        this.settings = { ...this.defaults };
         this.load();
-        this.validate();
     }
 
     load() {
         try {
             const saved = localStorage.getItem('typingTestSettings');
             if (saved) {
-                const parsed = JSON.parse(saved);
-                this.settings = { ...this.settings, ...parsed };
+                this.settings = { ...this.defaults, ...JSON.parse(saved) };
             }
         } catch (e) {
             console.warn('Failed to load settings:', e);
@@ -156,1127 +195,698 @@ class SettingsManager {
         }
     }
 
-    validate() {
-        // Validate and fix any invalid settings
-        if (!wordLists[this.settings.difficulty]) {
-            this.settings.difficulty = 'mixed';
-        }
-        if (typeof this.settings.soundEnabled !== 'boolean') {
-            this.settings.soundEnabled = true;
-        }
-        if (![15, 30, 60, 120, 300].includes(this.settings.timeLimit)) {
-            this.settings.timeLimit = 60;
-        }
-        this.save();
-    }
-
     get(key) {
         return this.settings[key];
     }
 
     set(key, value) {
         this.settings[key] = value;
-        this.validate();
         this.save();
     }
 }
 
-// Enhanced performance monitor
-class PerformanceMonitor {
-    constructor() {
-        this.metrics = {
-            renderTime: [],
-            inputLatency: [],
-            memoryUsage: []
-        };
-        this.isMonitoring = false;
-    }
-
-    start() {
-        this.isMonitoring = true;
-        this.monitorMemory();
-    }
-
-    recordRenderTime(startTime) {
-        if (!this.isMonitoring) return;
-        const renderTime = performance.now() - startTime;
-        this.metrics.renderTime.push(renderTime);
-        if (this.metrics.renderTime.length > 100) {
-            this.metrics.renderTime.shift();
-        }
-    }
-
-    recordInputLatency(startTime) {
-        if (!this.isMonitoring) return;
-        const latency = performance.now() - startTime;
-        this.metrics.inputLatency.push(latency);
-        if (this.metrics.inputLatency.length > 100) {
-            this.metrics.inputLatency.shift();
-        }
-    }
-
-    monitorMemory() {
-        if (!this.isMonitoring) return;
-        
-        if (performance.memory) {
-            this.metrics.memoryUsage.push({
-                used: performance.memory.usedJSHeapSize,
-                total: performance.memory.totalJSHeapSize,
-                timestamp: Date.now()
-            });
-            
-            if (this.metrics.memoryUsage.length > 50) {
-                this.metrics.memoryUsage.shift();
-            }
-        }
-        
-        setTimeout(() => this.monitorMemory(), 5000);
-    }
-
-    getAverageRenderTime() {
-        if (this.metrics.renderTime.length === 0) return 0;
-        return this.metrics.renderTime.reduce((a, b) => a + b, 0) / this.metrics.renderTime.length;
-    }
-
-    getAverageInputLatency() {
-        if (this.metrics.inputLatency.length === 0) return 0;
-        return this.metrics.inputLatency.reduce((a, b) => a + b, 0) / this.metrics.inputLatency.length;
-    }
-}
-
-// Minimal game state with essential tracking only
+// Enhanced game state with more tracking
 let gameState = {
     isActive: false,
-    isPaused: false,
+    isCompleted: false,
     startTime: null,
-    currentTime: 0,
     timeLimit: 60,
     currentWordIndex: 0,
     currentCharIndex: 0,
-    currentTypedWord: '',
     words: [],
+    userInput: '',
     typedWords: [],
+    errors: 0,
     correctChars: 0,
     totalChars: 0,
-    errors: 0,
-    wpmHistory: [],
-    rawWpmHistory: [],
-    difficulty: 'mixed'
+    correctWords: 0,
+    difficulty: 'mixed',
+    timer: null,
+    wpmHistory: []
 };
 
-// DOM elements with error checking
+// Initialize managers
+const soundManager = new KeyboardSoundManager();
+const settingsManager = new SettingsManager();
+
+// Enhanced DOM elements
 const elements = {
     textDisplay: document.getElementById('textDisplay'),
-    textInput: null, // No longer using separate input
-    caret: document.getElementById('caret'),
+    cursor: document.getElementById('cursor'),
     wpm: document.getElementById('wpm'),
-    rawWpm: document.getElementById('rawWpm'),
     accuracy: document.getElementById('accuracy'),
     timer: document.getElementById('timer'),
     errors: document.getElementById('errors'),
     restartBtn: document.getElementById('restartBtn'),
-    timeSelect: document.getElementById('timeSelect'),
-    results: document.getElementById('results'),
-    statsBar: document.getElementById('statsBar'),
-    settingsToggle: document.getElementById('settingsToggle'),
-    settingsPanel: document.getElementById('settingsPanel'),
-    difficultySelect: document.getElementById('difficultySelect'),
-    soundToggle: document.getElementById('soundToggle'),
-    smoothCaretToggle: document.getElementById('smoothCaretToggle'),
-    liveWpmToggle: document.getElementById('liveWpmToggle'),
-    infoBtn: document.getElementById('infoBtn'),
-    keyboardShortcuts: document.getElementById('keyboardShortcuts'),
+    newTestBtn: document.getElementById('newTestBtn'),
     shareBtn: document.getElementById('shareBtn'),
-    toast: document.getElementById('toast')
+    themeToggle: document.getElementById('themeToggle'),
+    settingsBtn: document.getElementById('settingsBtn'),
+    shortcutsBtn: document.getElementById('shortcutsBtn'),
+    settings: document.getElementById('settings'),
+    shortcuts: document.getElementById('shortcuts'),
+    difficulty: document.getElementById('difficulty'),
+    timeLimit: document.getElementById('timeLimit'),
+    soundToggle: document.getElementById('soundToggle'),
+    liveWpmToggle: document.getElementById('liveWpmToggle'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    progressBar: document.getElementById('progressBar'),
+    liveWpm: document.getElementById('liveWpm'),
+    liveWpmValue: document.getElementById('liveWpmValue'),
+    results: document.getElementById('results'),
+    finalWpm: document.getElementById('finalWpm'),
+    finalAccuracy: document.getElementById('finalAccuracy'),
+    finalErrors: document.getElementById('finalErrors'),
+    finalTime: document.getElementById('finalTime'),
+    finalChars: document.getElementById('finalChars'),
+    finalWords: document.getElementById('finalWords')
 };
 
-// Validate DOM elements
-Object.keys(elements).forEach(key => {
-    if (!elements[key] && key !== 'textInput') {
-        console.warn(`Element not found: ${key}`);
-    }
-});
-
-// Extract elements for backward compatibility
-const {
-    textDisplay, caret, wpm: wpmElement, rawWpm: rawWpmElement,
-    accuracy: accuracyElement, timer: timerElement, errors: errorsElement,
-    restartBtn, timeSelect, results: resultsDiv, statsBar, settingsToggle,
-    settingsPanel, difficultySelect, soundToggle, smoothCaretToggle,
-    liveWpmToggle, infoBtn, keyboardShortcuts, shareBtn, toast
-} = elements;
-
-// Add theme toggle element with error checking
-const themeToggle = document.getElementById('themeToggle');
-if (!themeToggle) {
-    console.warn('Theme toggle element not found');
-}
-
-// Initialize managers
-const soundManager = new SoundManager();
-const settingsManager = new SettingsManager();
-const performanceMonitor = new PerformanceMonitor();
-
-// Theme management
-class ThemeManager {
-    constructor() {
-        this.currentTheme = settingsManager.get('theme') || 'dark';
-        this.init();
-    }
-
-    init() {
-        this.applyTheme(this.currentTheme);
-    }
-
-    toggle() {
-        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-        this.applyTheme(this.currentTheme);
-        settingsManager.set('theme', this.currentTheme);
-        showToast(`Switched to ${this.currentTheme} theme`);
-    }
-
-    applyTheme(theme) {
-        const root = document.documentElement;
-        
-        if (theme === 'light') {
-            // Inverted monochrome theme
-            root.style.setProperty('--bg-primary', '#ffffff');
-            root.style.setProperty('--bg-secondary', '#ffffff');
-            root.style.setProperty('--bg-tertiary', '#ffffff');
-            root.style.setProperty('--text-primary', '#000000');
-            root.style.setProperty('--text-secondary', '#000000');
-            root.style.setProperty('--text-muted', '#000000');
-            root.style.setProperty('--accent-primary', '#000000');
-            root.style.setProperty('--error-color', '#ff0000');
-            root.style.setProperty('--success-color', '#000000');
-            root.style.setProperty('--warning-color', '#000000');
-            if (themeToggle) themeToggle.textContent = '🌞';
-        } else {
-            // Default dark monochrome theme
-            root.style.setProperty('--bg-primary', '#000000');
-            root.style.setProperty('--bg-secondary', '#000000');
-            root.style.setProperty('--bg-tertiary', '#000000');
-            root.style.setProperty('--text-primary', '#ffffff');
-            root.style.setProperty('--text-secondary', '#ffffff');
-            root.style.setProperty('--text-muted', '#ffffff');
-            root.style.setProperty('--accent-primary', '#ffffff');
-            root.style.setProperty('--error-color', '#ff0000');
-            root.style.setProperty('--success-color', '#ffffff');
-            root.style.setProperty('--warning-color', '#ffffff');
-            if (themeToggle) themeToggle.textContent = '🌙';
-        }
-    }
-}
-
-// Initialize theme manager
-const themeManager = new ThemeManager();
-
-// Advanced word generation with improved algorithms
-function generateWords(count) {
-    const difficulty = gameState.difficulty;
-    const wordPool = wordLists[difficulty] || wordLists.mixed;
+// Generate enhanced word sets
+function generateWords() {
+    const wordPool = wordLists[gameState.difficulty] || wordLists.mixed;
     const words = [];
     
-    // Generate many more words to ensure the display is always full
-    const targetWords = Math.max(count, 300); // Generate at least 300 words
+    if (gameState.difficulty === 'quotes') {
+        // Intelligent quote selection with variety
+        const selectedQuotes = [];
+        const numQuotes = Math.min(3, wordPool.length);
+        
+        for (let i = 0; i < numQuotes; i++) {
+            const randomQuote = wordPool[Math.floor(Math.random() * wordPool.length)];
+            if (!selectedQuotes.includes(randomQuote)) {
+                selectedQuotes.push(randomQuote);
+                words.push(...randomQuote.split(' '));
+            }
+        }
+        
+        return words.slice(0, 300);
+    }
     
-    if (difficulty === 'quotes') {
-        // For quotes, intelligently combine sentences
-        const sentences = wordPool.slice();
-        let wordCount = 0;
+    // Enhanced randomization with smart word distribution
+    const shuffledPool = [];
+    const copies = Math.ceil(400 / wordPool.length);
+    
+    for (let i = 0; i < copies; i++) {
+        const shuffled = [...wordPool].sort(() => Math.random() - 0.5);
+        shuffledPool.push(...shuffled);
+    }
+    
+    // Avoid immediate repetition
+    const recentWords = [];
+    const maxRecent = Math.min(15, wordPool.length / 2);
+    
+    for (let i = 0; i < 400; i++) {
+        let word;
+        let attempts = 0;
         
-        while (wordCount < targetWords && sentences.length > 0) {
-            const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
-            const sentenceWords = randomSentence.split(' ');
-            
-            for (const word of sentenceWords) {
-                if (wordCount >= targetWords) break;
-                words.push(word);
-                wordCount++;
-            }
-        }
+        do {
+            word = shuffledPool[Math.floor(Math.random() * shuffledPool.length)];
+            attempts++;
+        } while (recentWords.includes(word) && attempts < 30);
         
-        // Fill remaining with random sentence words if needed
-        while (words.length < targetWords) {
-            const randomSentence = wordPool[Math.floor(Math.random() * wordPool.length)];
-            const sentenceWords = randomSentence.split(' ');
-            const randomWord = sentenceWords[Math.floor(Math.random() * sentenceWords.length)];
-            words.push(randomWord);
-        }
-    } else {
-        // Enhanced randomization - completely shuffle the word pool multiple times
-        const shuffledPool = [];
+        words.push(word);
+        recentWords.push(word);
         
-        // Create multiple copies of the word pool for better randomization
-        for (let i = 0; i < Math.ceil(targetWords / wordPool.length) + 2; i++) {
-            shuffledPool.push(...wordPool);
-        }
-        
-        // Fisher-Yates shuffle for true randomization
-        for (let i = shuffledPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
-        }
-        
-        // Take words ensuring no immediate repetition
-        const recentWords = [];
-        const maxRecent = Math.min(10, wordPool.length / 3);
-        
-        for (let i = 0; i < targetWords; i++) {
-            let word;
-            let attempts = 0;
-            
-            do {
-                word = shuffledPool[Math.floor(Math.random() * shuffledPool.length)];
-                attempts++;
-            } while (recentWords.includes(word) && attempts < 20);
-            
-            words.push(word);
-            recentWords.push(word);
-            
-            if (recentWords.length > maxRecent) {
-                recentWords.shift();
-            }
+        if (recentWords.length > maxRecent) {
+            recentWords.shift();
         }
     }
     
-    return words.slice(0, targetWords);
+    return words;
 }
 
-// Typewriter-style text display with top-down flow
+// Enhanced display with better performance
 function displayText() {
-    if (!textDisplay) {
-        console.warn('textDisplay element not found');
-        return;
-    }
+    if (!elements.textDisplay) return;
     
-    textDisplay.innerHTML = '';
+    elements.textDisplay.innerHTML = '';
     
-    // Calculate how many words per line and which line we're currently on
-    const wordsPerLine = Math.floor((textDisplay.clientWidth - 80) / 60);
-    const currentLineIndex = Math.floor(gameState.currentWordIndex / wordsPerLine);
+    const startIndex = Math.max(0, gameState.currentWordIndex - 3);
+    const endIndex = Math.min(gameState.words.length, gameState.currentWordIndex + 35);
     
-    // Calculate which lines to show (show lines around current line)
-    const startLine = Math.max(0, currentLineIndex - 1);
-    const endLine = startLine + 7;
+    const textContainer = document.createElement('div');
+    textContainer.style.display = 'flex';
+    textContainer.style.flexWrap = 'wrap';
+    textContainer.style.gap = '0.6rem';
+    textContainer.style.lineHeight = '2.6';
     
-    // Create lines
-    for (let lineIndex = startLine; lineIndex < endLine; lineIndex++) {
-        const lineDiv = document.createElement('div');
-        lineDiv.style.height = 'calc(1.4rem * 1.8)';
-        lineDiv.style.lineHeight = '1.8';
-        lineDiv.style.marginBottom = '0';
+    for (let i = startIndex; i < endIndex; i++) {
+        const word = gameState.words[i];
+        const wordSpan = document.createElement('span');
+        wordSpan.className = 'word';
+        wordSpan.style.display = 'inline-block';
         
-        // Calculate word range for this line
-        const lineStartWord = lineIndex * wordsPerLine;
-        const lineEndWord = Math.min(gameState.words.length, lineStartWord + wordsPerLine);
-        
-        // Add words to this line
-        for (let wordIndex = lineStartWord; wordIndex < lineEndWord; wordIndex++) {
-            if (wordIndex >= gameState.words.length) break;
-            
-            const word = gameState.words[wordIndex];
-            const wordElement = document.createElement('span');
-            wordElement.className = 'word';
-            wordElement.setAttribute('data-word-index', wordIndex);
-            wordElement.style.marginRight = '0.4rem';
-            
-            // Set word state classes
-            if (wordIndex === gameState.currentWordIndex) {
-                wordElement.classList.add('current');
-            } else if (wordIndex < gameState.currentWordIndex) {
-                const typedWord = gameState.typedWords[wordIndex] || '';
-                const isCorrect = typedWord === word;
-                wordElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+        if (i === gameState.currentWordIndex) {
+            wordSpan.classList.add('current');
+        } else if (i < gameState.currentWordIndex) {
+            const typedWord = gameState.typedWords[i];
+            if (typedWord && typedWord === word) {
+                wordSpan.classList.add('correct');
+            } else {
+                wordSpan.classList.add('incorrect');
             }
+        }
+        
+        for (let j = 0; j < word.length; j++) {
+            const charSpan = document.createElement('span');
+            charSpan.className = 'char';
+            charSpan.textContent = word[j];
             
-            // Create character elements
-            word.split('').forEach((char, charIndex) => {
-                const charElement = document.createElement('span');
-                charElement.className = 'char';
-                charElement.textContent = char;
-                charElement.setAttribute('data-char-index', charIndex);
-                
-                // Apply character states
-                if (wordIndex < gameState.currentWordIndex || 
-                    (wordIndex === gameState.currentWordIndex && charIndex < gameState.currentCharIndex)) {
-                    const typedWord = gameState.typedWords[wordIndex] || '';
-                    
-                    if (wordIndex === gameState.currentWordIndex) {
-                        // Current word being typed
-                        const inputValue = gameState.currentTypedWord || '';
-                        if (charIndex < inputValue.length) {
-                            if (inputValue[charIndex] === char) {
-                                charElement.classList.add('correct');
-                            } else {
-                                charElement.classList.add('incorrect');
-                            }
-                        }
+            if (i === gameState.currentWordIndex) {
+                if (j < gameState.userInput.length) {
+                    if (gameState.userInput[j] === word[j]) {
+                        charSpan.classList.add('correct');
                     } else {
-                        // Completed word
-                        if (charIndex < typedWord.length) {
-                            if (typedWord[charIndex] === char) {
-                                charElement.classList.add('correct');
-                            } else {
-                                charElement.classList.add('incorrect');
-                            }
-                        }
+                        charSpan.classList.add('incorrect');
                     }
                 }
-                
-                wordElement.appendChild(charElement);
-            });
-            
-            // Add extra characters if typed word is longer than original
-            if (wordIndex === gameState.currentWordIndex) {
-                const inputValue = gameState.currentTypedWord || '';
-                if (inputValue.length > word.length) {
-                    for (let i = word.length; i < inputValue.length; i++) {
-                        const extraChar = document.createElement('span');
-                        extraChar.className = 'char extra';
-                        extraChar.textContent = inputValue[i];
-                        extraChar.setAttribute('data-char-index', i);
-                        wordElement.appendChild(extraChar);
-                    }
-                }
-            } else if (wordIndex < gameState.currentWordIndex) {
-                const typedWord = gameState.typedWords[wordIndex] || '';
-                if (typedWord.length > word.length) {
-                    for (let i = word.length; i < typedWord.length; i++) {
-                        const extraChar = document.createElement('span');
-                        extraChar.className = 'char extra';
-                        extraChar.textContent = typedWord[i];
-                        extraChar.setAttribute('data-char-index', i);
-                        wordElement.appendChild(extraChar);
+            } else if (i < gameState.currentWordIndex) {
+                const typedWord = gameState.typedWords[i];
+                if (typedWord && j < typedWord.length) {
+                    if (typedWord[j] === word[j]) {
+                        charSpan.classList.add('correct');
+                    } else {
+                        charSpan.classList.add('incorrect');
                     }
                 }
             }
             
-            lineDiv.appendChild(wordElement);
+            wordSpan.appendChild(charSpan);
         }
         
-        textDisplay.appendChild(lineDiv);
+        if (i === gameState.currentWordIndex && gameState.userInput.length > word.length) {
+            for (let j = word.length; j < gameState.userInput.length; j++) {
+                const extraChar = document.createElement('span');
+                extraChar.className = 'char extra';
+                extraChar.textContent = gameState.userInput[j];
+                wordSpan.appendChild(extraChar);
+            }
+        } else if (i < gameState.currentWordIndex) {
+            const typedWord = gameState.typedWords[i];
+            if (typedWord && typedWord.length > word.length) {
+                for (let j = word.length; j < typedWord.length; j++) {
+                    const extraChar = document.createElement('span');
+                    extraChar.className = 'char extra';
+                    extraChar.textContent = typedWord[j];
+                    wordSpan.appendChild(extraChar);
+                }
+            }
+        }
+        
+        textContainer.appendChild(wordSpan);
     }
     
-    if (caret) textDisplay.appendChild(caret);
-    
-    // Update caret position
-    requestAnimationFrame(() => {
-        updateCaret();
-    });
+    elements.textDisplay.appendChild(textContainer);
+    updateCursor();
+    updateProgress();
 }
 
-// Update caret position to follow current typing position
-function updateCaret() {
-    if (!caret || !textDisplay) {
-        return;
-    }
+// Smooth cursor positioning
+function updateCursor() {
+    if (!elements.cursor || !elements.textDisplay) return;
     
-    caret.style.display = 'block';
-    
-    // Find the current word element
-    const currentWordElement = textDisplay.querySelector(`[data-word-index="${gameState.currentWordIndex}"]`);
+    const currentWordElement = elements.textDisplay.querySelector('.word.current');
     if (!currentWordElement) {
-        caret.style.display = 'none';
+        elements.cursor.style.display = 'none';
         return;
     }
     
-    const displayRect = textDisplay.getBoundingClientRect();
-    let caretLeft = 0;
-    let caretTop = 0;
+    elements.cursor.style.display = 'block';
     
-    if (gameState.currentCharIndex === 0) {
-        // Position at the very beginning of the current word
-        const wordRect = currentWordElement.getBoundingClientRect();
-        caretLeft = wordRect.left - displayRect.left;
-        caretTop = wordRect.top - displayRect.top;
-    } else {
-        // Position after a specific character
+    const rect = currentWordElement.getBoundingClientRect();
+    const displayRect = elements.textDisplay.getBoundingClientRect();
+    
+    let left = rect.left - displayRect.left;
+    const top = rect.top - displayRect.top;
+    
+    if (gameState.userInput.length > 0) {
         const chars = currentWordElement.querySelectorAll('.char');
-        if (chars.length > 0 && gameState.currentCharIndex <= chars.length) {
-            const targetCharIndex = Math.min(gameState.currentCharIndex - 1, chars.length - 1);
-            const targetChar = chars[targetCharIndex];
-            if (targetChar) {
-                const charRect = targetChar.getBoundingClientRect();
-                caretLeft = charRect.right - displayRect.left;
-                caretTop = charRect.top - displayRect.top;
-            }
-        } else {
-            // Position at the end of the word
-            const wordRect = currentWordElement.getBoundingClientRect();
-            caretLeft = wordRect.right - displayRect.left;
-            caretTop = wordRect.top - displayRect.top;
+        if (chars[gameState.userInput.length - 1]) {
+            const charRect = chars[gameState.userInput.length - 1].getBoundingClientRect();
+            left = charRect.right - displayRect.left;
         }
     }
     
-    // Apply the position
-    caret.style.left = caretLeft + 'px';
-    caret.style.top = caretTop + 'px';
+    elements.cursor.style.left = left + 'px';
+    elements.cursor.style.top = top + 'px';
 }
 
-// Enhanced timer with better tracking
-function startTimer() {
-    const interval = setInterval(() => {
-        gameState.currentTime = (Date.now() - gameState.startTime) / 1000;
-        const remainingTime = Math.max(0, gameState.timeLimit - gameState.currentTime);
-        
-        timerElement.textContent = Math.ceil(remainingTime);
-        
-        // Record WPM history every second
-        if (Math.floor(gameState.currentTime) > gameState.wpmHistory.length) {
-            const currentWpm = calculateWPM();
-            const currentRawWpm = calculateRawWPM();
-            
-            gameState.wpmHistory.push({
-                time: gameState.currentTime,
-                wpm: currentWpm
-            });
-            
-            gameState.rawWpmHistory.push({
-                time: gameState.currentTime,
-                wpm: currentRawWpm
-            });
-        }
-        
-        updateStats();
-        
-        if (remainingTime <= 0) {
-            clearInterval(interval);
-            endTest();
-        }
-    }, 50); // More frequent updates for smoother experience
+// Progress tracking
+function updateProgress() {
+    if (!elements.progressBar) return;
+    
+    const progress = gameState.currentWordIndex / Math.min(gameState.words.length, 100);
+    const percentage = Math.min(100, progress * 100);
+    elements.progressBar.style.width = percentage + '%';
 }
 
-// Calculate net WPM (accounting for errors)
+// Enhanced statistics
 function calculateWPM() {
-    if (gameState.currentTime === 0) return 0;
-    const minutes = gameState.currentTime / 60;
-    const netChars = Math.max(0, gameState.correctChars - gameState.errors);
-    return Math.round((netChars / 5) / minutes);
+    if (!gameState.startTime || gameState.isCompleted) return 0;
+    const minutes = (Date.now() - gameState.startTime) / 60000;
+    return Math.round((gameState.correctChars / 5) / minutes) || 0;
 }
 
-// Calculate raw WPM (total characters typed)
-function calculateRawWPM() {
-    if (gameState.currentTime === 0) return 0;
-    const minutes = gameState.currentTime / 60;
-    return Math.round((gameState.totalChars / 5) / minutes);
-}
-
-// Calculate accuracy
 function calculateAccuracy() {
     if (gameState.totalChars === 0) return 100;
     return Math.round((gameState.correctChars / gameState.totalChars) * 100);
 }
 
-// Calculate consistency (standard deviation of WPM)
-function calculateConsistency() {
-    if (gameState.wpmHistory.length < 2) return 100;
-    
-    const wpms = gameState.wpmHistory.map(h => h.wpm);
-    const mean = wpms.reduce((a, b) => a + b, 0) / wpms.length;
-    const variance = wpms.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / wpms.length;
-    const stdDev = Math.sqrt(variance);
-    
-    // Convert to consistency percentage (lower std dev = higher consistency)
-    const consistency = Math.max(0, 100 - (stdDev * 2));
-    return Math.round(consistency);
-}
-
-// Optimized stats calculation with real-time tracking
+// Live stats updates with animations
 function updateStats() {
-    // Only recalculate for current word being typed, not all previous words
-    // (Previous words are already counted when completed)
+    const currentWpm = calculateWPM();
+    const accuracy = calculateAccuracy();
     
-    // Calculate time-based stats
-    const timeElapsed = gameState.isActive && gameState.startTime ? 
-        (Date.now() - gameState.startTime) / 1000 : gameState.currentTime;
-    const minutes = timeElapsed / 60;
-
-    // Calculate total characters typed so far
-    let totalCharsTyped = 0;
-    let correctCharsTyped = 0;
-    let errorsCount = 0;
-    
-    // Count completed words
-    for (let i = 0; i < gameState.currentWordIndex; i++) {
-        const typedWord = gameState.typedWords[i] || '';
-        const originalWord = gameState.words[i] || '';
-        
-        // Count all characters in both typed and original word
-        const maxLength = Math.max(typedWord.length, originalWord.length);
-        for (let j = 0; j < maxLength; j++) {
-            totalCharsTyped++;
-            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
-                correctCharsTyped++;
-            } else {
-                errorsCount++;
-            }
+    if (elements.wpm) {
+        elements.wpm.textContent = currentWpm;
+        if (currentWpm > 0 && gameState.isActive) {
+            elements.wpm.style.animation = 'none';
+            elements.wpm.offsetHeight;
+            elements.wpm.style.animation = 'typingPop 0.3s ease-out';
         }
     }
     
-    // Add current word being typed
-    const currentWord = gameState.words[gameState.currentWordIndex] || '';
-    const currentTyped = gameState.currentTypedWord || '';
-    for (let i = 0; i < currentTyped.length; i++) {
-        totalCharsTyped++;
-        if (i < currentWord.length && currentTyped[i] === currentWord[i]) {
-            correctCharsTyped++;
+    if (elements.accuracy) elements.accuracy.textContent = accuracy + '%';
+    if (elements.errors) elements.errors.textContent = gameState.errors;
+    
+    // Live WPM indicator
+    if (elements.liveWpmValue && gameState.isActive) {
+        elements.liveWpmValue.textContent = currentWpm;
+        if (elements.liveWpmToggle && elements.liveWpmToggle.checked) {
+            elements.liveWpm.classList.add('active');
         } else {
-            errorsCount++;
+            elements.liveWpm.classList.remove('active');
         }
     }
-
-    // Calculate WPM properly (net WPM = correct chars only)
-    const netWpm = minutes > 0 ? Math.round((correctCharsTyped / 5) / minutes) : 0;
     
-    // Calculate raw WPM (all characters typed)
-    const rawWpm = minutes > 0 ? Math.round((totalCharsTyped / 5) / minutes) : 0;
-
-    // Calculate accuracy
-    const accuracy = totalCharsTyped > 0 ? 
-        Math.round((correctCharsTyped / totalCharsTyped) * 100) : 100;
-
-    // Update global state
-    gameState.totalChars = totalCharsTyped;
-    gameState.correctChars = correctCharsTyped;
-    gameState.errors = errorsCount;
-
-    // Update display elements
-    if (wpmElement) wpmElement.textContent = netWpm;
-    if (rawWpmElement) rawWpmElement.textContent = rawWpm;
-    if (accuracyElement) accuracyElement.textContent = accuracy + '%';
-    if (errorsElement) errorsElement.textContent = errorsCount;
-
-    // Update live WPM indicator
-    const floatingWpm = document.getElementById('floatingWpm');
-    const liveWpmValue = document.getElementById('liveWpmValue');
-    if (floatingWpm && liveWpmValue && gameState.isActive) {
-        liveWpmValue.textContent = netWpm;
-        floatingWpm.style.display = (liveWpmToggle && liveWpmToggle.checked) ? 'block' : 'none';
-    }
-
-    // Store WPM history for charts (but not every update, only every second)
-    if (gameState.isActive && timeElapsed > 0) {
-        const currentSecond = Math.floor(timeElapsed);
-        if (gameState.wpmHistory.length < currentSecond) {
-            gameState.wpmHistory.push({
-                time: timeElapsed,
-                wpm: netWpm
-            });
-            gameState.rawWpmHistory.push({
-                time: timeElapsed,
-                wpm: rawWpm
-            });
-        }
-    }
-}
-
-// Enhanced test completion with detailed results
-function endTest() {
-    gameState.isActive = false;
-    if (textDisplay) textDisplay.classList.remove('focused');
-    
-    soundManager.playSound('complete');
-    
-    // Calculate final statistics using the same methods as updateStats
-    const timeElapsed = gameState.currentTime > 0 ? gameState.currentTime : 
-        (Date.now() - gameState.startTime) / 1000;
-    const minutes = timeElapsed / 60;
-    
-    // Final character count
-    let totalCharsTyped = 0;
-    let correctCharsTyped = 0;
-    let errorsCount = 0;
-    
-    // Count all completed words
-    for (let i = 0; i < gameState.currentWordIndex; i++) {
-        const typedWord = gameState.typedWords[i] || '';
-        const originalWord = gameState.words[i] || '';
+    if (elements.timer && gameState.startTime && !gameState.isCompleted) {
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        const remaining = Math.max(0, gameState.timeLimit - elapsed);
+        elements.timer.textContent = remaining;
         
-        const maxLength = Math.max(typedWord.length, originalWord.length);
-        for (let j = 0; j < maxLength; j++) {
-            totalCharsTyped++;
-            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
-                correctCharsTyped++;
-            } else {
-                errorsCount++;
-            }
-        }
-    }
-    
-    // Final calculations
-    const finalNetWpm = minutes > 0 ? Math.round((correctCharsTyped / 5) / minutes) : 0;
-    const finalRawWpm = minutes > 0 ? Math.round((totalCharsTyped / 5) / minutes) : 0;
-    const finalAccuracy = totalCharsTyped > 0 ? 
-        Math.round((correctCharsTyped / totalCharsTyped) * 100) : 100;
-    const consistency = calculateConsistency();
-    
-    let correctWords = 0;
-    let wrongWords = 0;
-    
-    for (let i = 0; i < gameState.currentWordIndex; i++) {
-        if (gameState.typedWords[i] === gameState.words[i]) {
-            correctWords++;
+        if (remaining <= 10) {
+            elements.timer.style.color = '#ff0000';
+            elements.timer.style.animation = 'pulse 0.5s infinite';
         } else {
-            wrongWords++;
+            elements.timer.style.color = '';
+            elements.timer.style.animation = '';
         }
-    }
-    
-    // Display results
-    document.getElementById('finalWpm').textContent = finalNetWpm;
-    document.getElementById('finalRawWpm').textContent = finalRawWpm;
-    document.getElementById('finalAccuracy').textContent = finalAccuracy + '%';
-    document.getElementById('consistency').textContent = consistency + '%';
-    document.getElementById('correctWords').textContent = correctWords;
-    document.getElementById('wrongWords').textContent = wrongWords;
-    document.getElementById('totalCharsTyped').textContent = totalCharsTyped;
-    document.getElementById('testDuration').textContent = gameState.timeLimit + 's';
-    
-    // Create enhanced speed chart
-    createSpeedChart();
-    
-    // Show results with animation
-    if (statsBar) statsBar.style.display = 'none';
-    if (resultsDiv) {
-        resultsDiv.style.display = 'block';
-        resultsDiv.classList.add('fade-in');
-    }
-}
-
-// Enhanced chart with dual WPM tracking
-function createSpeedChart() {
-    const ctx = document.getElementById('wpmChart');
-    if (!ctx) return;
-    
-    // Clear any existing chart
-    if (window.typingChart) {
-        window.typingChart.destroy();
-    }
-    
-    const chartCtx = ctx.getContext('2d');
-    
-    // Create labels and data arrays from history
-    const labels = [];
-    const netWpmData = [];
-    const rawWpmData = [];
-    
-    for (let i = 0; i < gameState.wpmHistory.length; i++) {
-        const historyPoint = gameState.wpmHistory[i];
-        const rawHistoryPoint = gameState.rawWpmHistory[i];
         
-        if (historyPoint && typeof historyPoint === 'object') {
-            labels.push((i + 1) + 's');
-            netWpmData.push(historyPoint.wpm || 0);
-            rawWpmData.push(rawHistoryPoint ? (rawHistoryPoint.wpm || 0) : 0);
-        } else {
-            // Fallback for old format
-            labels.push((i + 1) + 's');
-            netWpmData.push(historyPoint || 0);
-            rawWpmData.push(gameState.rawWpmHistory[i] || 0);
+        if (remaining === 0) {
+            endTest();
         }
     }
     
-    window.typingChart = new Chart(chartCtx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Net WPM',
-                    data: netWpmData,
-                    borderColor: '#ffffff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: 3,
-                    fill: false,
-                    tension: 0.3,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#ffffff',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Raw WPM',
-                    data: rawWpmData,
-                    borderColor: '#ffffff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.3,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#ffffff',
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    borderDash: [5, 5]
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: 1000,
-                easing: 'easeInOutQuart'
-            },
-            scales: {
-                x: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.2)'
-                    },
-                    ticks: {
-                        color: '#ffffff',
-                        font: {
-                            family: 'JetBrains Mono, monospace'
-                        }
-                    }
-                },
-                y: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.2)'
-                    },
-                    ticks: {
-                        color: '#ffffff',
-                        font: {
-                            family: 'JetBrains Mono, monospace'
-                        }
-                    },
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#ffffff',
-                        font: {
-                            family: 'JetBrains Mono, monospace'
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                    titleColor: '#ffffff',
-                    bodyColor: '#ffffff',
-                    borderColor: '#ffffff',
-                    borderWidth: 1
-                }
-            }
+    // Store WPM history for potential charts
+    if (gameState.isActive && gameState.startTime) {
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        if (elapsed > 0 && (gameState.wpmHistory.length === 0 || elapsed > gameState.wpmHistory[gameState.wpmHistory.length - 1].time)) {
+            gameState.wpmHistory.push({ time: elapsed, wpm: currentWpm });
         }
-    });
-}
-
-// Share results functionality
-function shareResults() {
-    const finalWpm = calculateWPM();
-    const finalAccuracy = calculateAccuracy();
-    const consistency = calculateConsistency();
-    
-    const resultsText = `🎯 Typing Test Results 🎯
-⚡ WPM: ${finalWpm}
-🎯 Accuracy: ${finalAccuracy}%
-📊 Consistency: ${consistency}%
-⏱️ Time: ${gameState.timeLimit}s
-📝 Difficulty: ${gameState.difficulty}
-
-Try it yourself at: ${window.location.href}`;
-    
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(resultsText).then(() => {
-            showToast('Results copied to clipboard!');
-        }).catch(() => {
-            showToast('Failed to copy results');
-        });
-    } else {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = resultsText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showToast('Results copied to clipboard!');
     }
 }
 
-// Show toast notification
-function showToast(message) {
-    if (!toast) {
-        console.warn('Toast element not found');
+// Advanced keyboard input handling
+function handleInput(event) {
+    // Handle keyboard shortcuts
+    if (event.ctrlKey) {
+        switch(event.key) {
+            case ',':
+                event.preventDefault();
+                toggleSettings();
+                return;
+            case 't':
+                event.preventDefault();
+                toggleTheme();
+                return;
+            case 's':
+                event.preventDefault();
+                toggleSound();
+                return;
+        }
+    }
+    
+    if (event.key === 'Tab') {
+        event.preventDefault();
+        initTest();
         return;
     }
     
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-// Restart the test
-function restartTest() {
-    // Save current settings
-    settingsManager.set('timeLimit', parseInt(timeSelect.value));
-    settingsManager.set('difficulty', difficultySelect.value);
-    settingsManager.set('soundEnabled', soundToggle.checked);
-    settingsManager.set('smoothCaret', smoothCaretToggle.checked);
-    settingsManager.set('liveWpm', liveWpmToggle.checked);
-    
-    soundManager.enabled = soundToggle.checked;
-    
-    initializeTest();
-}
-
-// Enhanced event listeners with comprehensive keyboard shortcuts
-function setupEventListeners() {
-    // Direct keyboard input on text display
-    if (textDisplay) {
-        textDisplay.addEventListener('click', () => {
-            textDisplay.focus();
-        });
-        
-        textDisplay.addEventListener('focus', () => {
-            textDisplay.classList.add('focused');
-        });
-        
-        textDisplay.addEventListener('blur', () => {
-            textDisplay.classList.remove('focused');
-        });
-    }
-
-    // Global keyboard event listener
-    document.addEventListener('keydown', (event) => {
-        // Check if user is typing in an input field
-        const isTypingInInput = event.target.tagName === 'INPUT' || 
-                               event.target.tagName === 'TEXTAREA' || 
-                               event.target.tagName === 'SELECT';
-        
-        // Handle keyboard shortcuts
-        if (event.key === 'Tab') {
-            event.preventDefault();
-            restartTest();
-            return;
-        }
-        
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            if (textDisplay) {
-                textDisplay.focus();
-            }
-            return;
-        }
-        
-        if (event.ctrlKey && event.shiftKey && event.key === 'P') {
-            event.preventDefault();
-            if (settingsPanel) {
-                settingsPanel.classList.toggle('active');
-            }
-            return;
-        }
-        
-        if (event.ctrlKey && event.shiftKey && event.key === 'S') {
-            event.preventDefault();
-            if (soundToggle) {
-                soundToggle.checked = !soundToggle.checked;
-                soundToggle.dispatchEvent(new Event('change'));
-            }
-            return;
-        }
-        
-        // If not typing in an input field, handle typing
-        if (!isTypingInInput) {
-            handleKeyboard(event);
-        }
-    });
-
-    // Restart button
-    if (restartBtn) {
-        restartBtn.addEventListener('click', restartTest);
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        if (elements.textDisplay) elements.textDisplay.focus();
+        return;
     }
     
-    // Time selection
-    if (timeSelect) {
-        timeSelect.addEventListener('change', (event) => {
-            gameState.timeLimit = parseInt(event.target.value);
-            initializeTest();
-        });
-    }
-    
-    // Settings toggle
-    if (settingsToggle) {
-        settingsToggle.addEventListener('click', () => {
-            if (settingsPanel) {
-                settingsPanel.classList.toggle('active');
-            }
-        });
-    }
-    
-    // Theme toggle
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            themeManager.toggle();
-        });
-    }
-    
-    // Difficulty change
-    if (difficultySelect) {
-        difficultySelect.addEventListener('change', (event) => {
-            gameState.difficulty = event.target.value;
-            initializeTest();
-        });
-    }
-    
-    // Sound toggle
-    if (soundToggle) {
-        soundToggle.addEventListener('change', (event) => {
-            soundManager.enabled = event.target.checked;
-            localStorage.setItem('soundEnabled', event.target.checked);
-        });
-    }
-    
-    // Smooth caret toggle
-    if (smoothCaretToggle) {
-        smoothCaretToggle.addEventListener('change', (event) => {
-            const smoothEnabled = event.target.checked;
-            if (caret) {
-                caret.classList.toggle('smooth', smoothEnabled);
-            }
-            localStorage.setItem('smoothCaret', smoothEnabled);
-        });
-    }
-    
-    // Live WPM toggle
-    if (liveWpmToggle) {
-        liveWpmToggle.addEventListener('change', (event) => {
-            const liveWpmEnabled = event.target.checked;
-            const floatingWpm = document.getElementById('floatingWpm');
-            if (floatingWpm) {
-                floatingWpm.style.display = liveWpmEnabled ? 'block' : 'none';
-            }
-            localStorage.setItem('liveWpmEnabled', liveWpmEnabled);
-        });
-    }
-    
-    // Info button for keyboard shortcuts
-    if (infoBtn && keyboardShortcuts) {
-        infoBtn.addEventListener('click', () => {
-            keyboardShortcuts.style.display = keyboardShortcuts.style.display === 'none' ? 'block' : 'none';
-        });
-    }
-    
-    // Share button
-    if (shareBtn) {
-        shareBtn.addEventListener('click', shareResults);
-    }
-}
-
-// Initialize the test and set up the game state
-function initializeTest() {
-    // Reset game state
-    Object.assign(gameState, {
-        isActive: false,
-        isPaused: false,
-        startTime: null,
-        currentTime: 0,
-        timeLimit: parseInt((timeSelect && timeSelect.value) || '60'),
-        currentWordIndex: 0,
-        currentCharIndex: 0,
-        currentTypedWord: '',
-        words: [],
-        typedWords: [],
-        correctChars: 0,
-        totalChars: 0,
-        errors: 0,
-        wpmHistory: [],
-        rawWpmHistory: [],
-        difficulty: (difficultySelect && difficultySelect.value) || 'mixed'
-    });
-
-    // Generate plenty of words to completely fill the larger display area
-    gameState.words = generateWords(300);
-
-    // Update UI
-    if (resultsDiv) resultsDiv.style.display = 'none';
-    if (statsBar) statsBar.style.display = 'flex';
-    if (textDisplay) {
-        textDisplay.classList.remove('focused');
-        textDisplay.focus(); // Auto-focus the text display
-    }
-    
-    // Update timer display
-    if (timerElement) timerElement.textContent = gameState.timeLimit;
-    
-    displayText();
-    updateStats();
-}
-
-// Initialize everything when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    initializeTest();
-});
-
-// Enhanced keyboard input handler for direct text display interaction
-function handleKeyboard(event) {
-    // Prevent default browser behavior for typing keys
+    // Prevent default for typing keys
     if (event.key.length === 1 || event.key === 'Backspace' || event.key === ' ') {
         event.preventDefault();
     }
 
-    if (!gameState.isActive && (event.key.length === 1 || event.key === ' ')) {
-        gameState.isActive = true;
-        gameState.startTime = Date.now();
-        startTimer();
-        if (textDisplay) textDisplay.classList.add('focused');
-    }
+    if (gameState.isCompleted) return;
 
+    if (!gameState.isActive && (event.key.length === 1 || event.key === ' ')) {
+        startTest();
+    }
+    
     const currentWord = gameState.words[gameState.currentWordIndex];
     if (!currentWord) return;
-
-    // Handle regular character input
-    if (event.key.length === 1 && event.key !== ' ') {
-        gameState.currentTypedWord += event.key;
-        gameState.currentCharIndex = gameState.currentTypedWord.length;
+    
+    if (event.key === ' ') {
+        handleWordCompletion();
+    } else if (event.key === 'Backspace') {
+        if (gameState.userInput.length > 0) {
+            gameState.userInput = gameState.userInput.slice(0, -1);
+            displayText();
+            soundManager.playKeystroke(true, false);
+        }
+    } else if (event.key.length === 1) {
+        gameState.userInput += event.key;
         
-        // Play sound for keystrokes
-        const expectedChar = currentWord[gameState.currentTypedWord.length - 1];
-        if (event.key === expectedChar) {
-            soundManager.playSound('keypress');
+        const charIndex = gameState.userInput.length - 1;
+        const isCorrect = charIndex < currentWord.length && event.key === currentWord[charIndex];
+        
+        gameState.totalChars++;
+        if (isCorrect) {
+            gameState.correctChars++;
         } else {
-            soundManager.playSound('error');
+            gameState.errors++;
+        }
+        
+        soundManager.playKeystroke(isCorrect, false);
+        
+        const currentWordElement = elements.textDisplay.querySelector('.word.current');
+        if (currentWordElement) {
+            currentWordElement.classList.add('typing-effect');
+            setTimeout(() => {
+                currentWordElement.classList.remove('typing-effect');
+            }, 100);
         }
         
         displayText();
         updateStats();
     }
+}
+
+// Enhanced word completion
+function handleWordCompletion() {
+    const currentWord = gameState.words[gameState.currentWordIndex];
     
-    // Handle backspace
-    else if (event.key === 'Backspace') {
-        if (gameState.currentTypedWord.length > 0) {
-            gameState.currentTypedWord = gameState.currentTypedWord.slice(0, -1);
-            gameState.currentCharIndex = gameState.currentTypedWord.length;
-            displayText();
-            updateStats();
+    gameState.typedWords[gameState.currentWordIndex] = gameState.userInput;
+    
+    if (gameState.userInput === currentWord) {
+        gameState.correctWords++;
+        soundManager.playWordComplete();
+    } else {
+        const remainingChars = currentWord.length - gameState.userInput.length;
+        if (remainingChars > 0) {
+            gameState.totalChars += remainingChars;
+            gameState.errors += remainingChars;
         }
     }
     
-    // Handle space (word completion)
-    else if (event.key === ' ') {
-        if (gameState.currentTypedWord.length > 0) {
-            // Store the completed word
-            gameState.typedWords[gameState.currentWordIndex] = gameState.currentTypedWord;
-            
-            // Move to next word
-            gameState.currentWordIndex++;
-            gameState.currentCharIndex = 0;
-            gameState.currentTypedWord = '';
-            
-            // Check if test is complete
-            if (gameState.currentWordIndex >= gameState.words.length) {
-                endTest();
-                return;
-            }
-            
-            displayText();
-            updateStats();
+    soundManager.playKeystroke(true, true);
+    
+    gameState.currentWordIndex++;
+    gameState.userInput = '';
+    
+    if (gameState.currentWordIndex >= gameState.words.length) {
+        endTest();
+        return;
+    }
+    
+    displayText();
+    updateStats();
+}
+
+// Enhanced test management
+function startTest() {
+    if (gameState.isCompleted) return;
+    
+    gameState.isActive = true;
+    gameState.startTime = Date.now();
+    
+    if (gameState.timer) clearInterval(gameState.timer);
+    
+    gameState.timer = setInterval(() => {
+        if (gameState.isCompleted) {
+            clearInterval(gameState.timer);
+            return;
         }
+        updateStats();
+        
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        if (elapsed >= gameState.timeLimit) {
+            endTest();
+        }
+    }, 50);
+}
+
+function endTest() {
+    if (gameState.isCompleted) return;
+    
+    gameState.isActive = false;
+    gameState.isCompleted = true;
+    
+    if (gameState.timer) {
+        clearInterval(gameState.timer);
+        gameState.timer = null;
+    }
+    
+    elements.liveWpm.classList.remove('active');
+    
+    soundManager.playTestComplete();
+    
+    // Calculate final comprehensive stats
+    const finalWpm = calculateWPM();
+    const finalAccuracy = calculateAccuracy();
+    const wordsTyped = gameState.currentWordIndex;
+    
+    if (elements.results) {
+        elements.finalWpm.textContent = finalWpm;
+        elements.finalAccuracy.textContent = finalAccuracy + '%';
+        elements.finalErrors.textContent = gameState.errors;
+        elements.finalTime.textContent = gameState.timeLimit + 's';
+        elements.finalChars.textContent = gameState.totalChars;
+        elements.finalWords.textContent = wordsTyped;
+        
+        const statsBar = document.querySelector('.stats');
+        if (statsBar) statsBar.style.display = 'none';
+        
+        elements.results.style.display = 'block';
     }
 }
+
+// Settings functions
+function toggleSettings() {
+    if (elements.settings) {
+        const isVisible = elements.settings.style.display !== 'none';
+        elements.settings.style.display = isVisible ? 'none' : 'block';
+        if (!isVisible) elements.shortcuts.style.display = 'none';
+    }
+}
+
+function toggleShortcuts() {
+    if (elements.shortcuts) {
+        const isVisible = elements.shortcuts.classList.contains('show');
+        if (isVisible) {
+            elements.shortcuts.classList.remove('show');
+            setTimeout(() => elements.shortcuts.style.display = 'none', 300);
+        } else {
+            elements.shortcuts.style.display = 'block';
+            setTimeout(() => elements.shortcuts.classList.add('show'), 10);
+        }
+        elements.settings.style.display = 'none';
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    if (elements.themeToggle) elements.themeToggle.textContent = isLight ? '☀️' : '🌙';
+    settingsManager.set('theme', isLight ? 'light' : 'dark');
+}
+
+function toggleSound() {
+    const enabled = soundManager.toggle();
+    if (elements.soundToggle) elements.soundToggle.checked = enabled;
+    settingsManager.set('soundEnabled', enabled);
+}
+
+// Share functionality
+function shareResults() {
+    const finalWpm = calculateWPM();
+    const finalAccuracy = calculateAccuracy();
+    
+    const resultsText = `🚀 Just completed a typing test!
+⚡ WPM: ${finalWpm}
+🎯 Accuracy: ${finalAccuracy}%
+❌ Errors: ${gameState.errors}
+⏱️ Time: ${gameState.timeLimit}s
+📝 Difficulty: ${gameState.difficulty}
+
+Try it yourself! 🎮`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Typing Test Results',
+            text: resultsText,
+            url: window.location.href
+        });
+    } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(resultsText).then(() => {
+            showToast('Results copied to clipboard! 📋');
+        });
+    }
+}
+
+// Toast notification system
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 255, 0, 0.9);
+        color: black;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+// Enhanced initialization
+function initTest() {
+    if (gameState.timer) clearInterval(gameState.timer);
+    
+    gameState = {
+        isActive: false,
+        isCompleted: false,
+        startTime: null,
+        timeLimit: parseInt(elements.timeLimit.value) || 60,
+        currentWordIndex: 0,
+        currentCharIndex: 0,
+        words: generateWords(),
+        userInput: '',
+        typedWords: [],
+        errors: 0,
+        correctChars: 0,
+        totalChars: 0,
+        correctWords: 0,
+        difficulty: elements.difficulty.value || 'mixed',
+        timer: null,
+        wpmHistory: []
+    };
+    
+    // Apply saved settings
+    gameState.timeLimit = settingsManager.get('timeLimit');
+    gameState.difficulty = settingsManager.get('difficulty');
+    
+    if (elements.results) elements.results.style.display = 'none';
+    const statsBar = document.querySelector('.stats');
+    if (statsBar) statsBar.style.display = 'grid';
+    
+    if (elements.timer) {
+        elements.timer.textContent = gameState.timeLimit;
+        elements.timer.style.color = '';
+        elements.timer.style.animation = '';
+    }
+    
+    if (elements.progressBar) elements.progressBar.style.width = '0%';
+    elements.liveWpm.classList.remove('active');
+    
+    displayText();
+    updateStats();
+    
+    if (elements.textDisplay) elements.textDisplay.focus();
+}
+
+// Enhanced event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved settings
+    if (elements.difficulty) elements.difficulty.value = settingsManager.get('difficulty');
+    if (elements.timeLimit) elements.timeLimit.value = settingsManager.get('timeLimit');
+    if (elements.soundToggle) elements.soundToggle.checked = settingsManager.get('soundEnabled');
+    if (elements.liveWpmToggle) elements.liveWpmToggle.checked = settingsManager.get('liveWpm');
+    if (elements.volumeSlider) elements.volumeSlider.value = settingsManager.get('volume');
+    
+    // Apply theme
+    const savedTheme = settingsManager.get('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        if (elements.themeToggle) elements.themeToggle.textContent = '☀️';
+    }
+    
+    // Apply sound settings
+    soundManager.enabled = settingsManager.get('soundEnabled');
+    soundManager.setVolume(settingsManager.get('volume') / 100);
+    
+    initTest();
+    
+    // Global keyboard events
+    document.addEventListener('keydown', handleInput);
+    
+    // Text display events
+    if (elements.textDisplay) {
+        elements.textDisplay.addEventListener('click', () => elements.textDisplay.focus());
+    }
+    
+    // Button events
+    if (elements.restartBtn) elements.restartBtn.addEventListener('click', initTest);
+    if (elements.newTestBtn) elements.newTestBtn.addEventListener('click', initTest);
+    if (elements.shareBtn) elements.shareBtn.addEventListener('click', shareResults);
+    if (elements.settingsBtn) elements.settingsBtn.addEventListener('click', toggleSettings);
+    if (elements.shortcutsBtn) elements.shortcutsBtn.addEventListener('click', toggleShortcuts);
+    if (elements.themeToggle) elements.themeToggle.addEventListener('click', toggleTheme);
+    
+    // Settings events
+    if (elements.difficulty) {
+        elements.difficulty.addEventListener('change', (e) => {
+            settingsManager.set('difficulty', e.target.value);
+            initTest();
+        });
+    }
+    
+    if (elements.timeLimit) {
+        elements.timeLimit.addEventListener('change', (e) => {
+            settingsManager.set('timeLimit', parseInt(e.target.value));
+            initTest();
+        });
+    }
+    
+    if (elements.soundToggle) {
+        elements.soundToggle.addEventListener('change', (e) => {
+            soundManager.enabled = e.target.checked;
+            settingsManager.set('soundEnabled', e.target.checked);
+        });
+    }
+    
+    if (elements.liveWpmToggle) {
+        elements.liveWpmToggle.addEventListener('change', (e) => {
+            settingsManager.set('liveWpm', e.target.checked);
+        });
+    }
+    
+    if (elements.volumeSlider) {
+        elements.volumeSlider.addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            soundManager.setVolume(volume / 100);
+            settingsManager.set('volume', volume);
+        });
+    }
+    
+    // Welcome message
+    setTimeout(() => {
+        showToast('Welcome to Premium Typing Test! 🎮');
+    }, 1000);
+}); 
