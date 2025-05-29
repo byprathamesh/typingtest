@@ -800,7 +800,7 @@ function displayText(words) {
     textDisplay.innerHTML = '';
     gameState.wordElements = [];
     gameState.lines = []; // Track lines of words
-    gameState.currentLine = 1; // Always stay on second line (middle)
+    gameState.currentLine = 0; // Start on first line when there are only 2 lines initially
     
     // Apply hard mode class for better word spacing
     if (settingsManager.difficulty === 'hard' || settingsManager.difficulty === 'programming') {
@@ -809,32 +809,34 @@ function displayText(words) {
         textDisplay.classList.remove('hard-mode');
     }
     
-    // Generate initial 3 lines 
+    // Generate initial 2 lines (will expand to 3 when scrolling begins)
     generateInitialLines(words);
     
     if (gameState.wordElements.length > 0) { 
         gameState.currentWordIndex = 0; 
-        // Start on the second line (index 1) - middle line
-        const secondLine = gameState.lines[1];
-        if (secondLine && secondLine.children.length > 0) {
-            gameState.currentWordElement = secondLine.children[0];
-            // Update current word index to match the first word on second line
-            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
-            if (!isNaN(elementIndex)) {
-                gameState.currentWordIndex = elementIndex;
-            }
+        // Start on the first line (index 0) since we only have 2 lines initially
+        const firstLine = gameState.lines[0];
+        if (firstLine && firstLine.children.length > 0) {
+            gameState.currentWordElement = firstLine.children[0];
+            // Current word index should be 0 for the first word
+            gameState.currentWordIndex = 0;
         } else {
             // Fallback to first word
             gameState.currentWordElement = gameState.wordElements[0]; 
+            gameState.currentWordIndex = 0;
         }
         gameState.currentWordElement.classList.add('current'); 
     }
+    
+    // Update line highlighting for initial state
+    updateLineHighlighting();
+    
     updateCursor();
     textDisplay.scrollTop = 0;
 }
 
 function generateInitialLines(words) {
-    const linesToShow = 3;
+    const linesToShow = 2; // Start with only 2 lines instead of 3
     
     // Initialize the pool index
     gameState.poolIndex = 0;
@@ -1077,44 +1079,80 @@ function handleWordCompletion() {
         });
     }
     
-    // Check if we completed the last word on the second line (where user always types)
     const currentLineElement = gameState.currentWordElement.parentElement;
     const currentLineIndex = gameState.lines.indexOf(currentLineElement);
     const isLastWordInLine = gameState.currentWordElement === currentLineElement.lastElementChild;
-    const isSecondLine = currentLineIndex === 1; // Second line (middle line, 0-indexed)
     
-    if (isLastWordInLine && isSecondLine) {
-        // Completed last word on middle line - scroll up and add new line
-        console.log('Completed middle line, scrolling up...');
-        addNewLine();
-        
-        // After scrolling, user should stay on the second line (index 1)
-        // Find the first word on the current second line
-        const secondLine = gameState.lines[1];
-        if (secondLine && secondLine.children.length > 0) {
-            gameState.currentWordElement = secondLine.children[0];
-            // Update current word index to match this element's index
-            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
-            if (!isNaN(elementIndex)) {
-                gameState.currentWordIndex = elementIndex;
+    // Handle different states: initial 2-line state vs 3-line scrolling state
+    if (gameState.lines.length === 2) {
+        // Initial state with 2 lines
+        if (isLastWordInLine && currentLineIndex === 0) {
+            // Completed first line in 2-line state - move to second line
+            console.log('Completed first line, moving to second line...');
+            const secondLine = gameState.lines[1];
+            if (secondLine && secondLine.children.length > 0) {
+                gameState.currentWordElement = secondLine.children[0];
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
             }
+        } else if (isLastWordInLine && currentLineIndex === 1) {
+            // Completed second line in 2-line state - start scrolling behavior
+            console.log('Completed second line, starting scroll mode...');
+            addNewLine(); // This adds the third line
+            // Now we transition to 3-line scrolling mode
+            // User should be on the middle line (index 1) now
+            const middleLine = gameState.lines[1];
+            if (middleLine && middleLine.children.length > 0) {
+                gameState.currentWordElement = middleLine.children[0];
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            }
+            // Update highlighting to 3-line mode
+            updateLineHighlighting();
         } else {
-            console.error('Second line has no words after scrolling!');
+            // Normal progression within the same line in 2-line state
+            const nextSibling = gameState.currentWordElement.nextElementSibling;
+            if (nextSibling) {
+                gameState.currentWordElement = nextSibling;
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            }
         }
     } else {
-        // Normal progression within the same line
-        // Find the next word element on the same line
-        const nextSibling = gameState.currentWordElement.nextElementSibling;
-        if (nextSibling) {
-            gameState.currentWordElement = nextSibling;
-            // Update current word index to match this element's index  
-            const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
-            if (!isNaN(elementIndex)) {
-                gameState.currentWordIndex = elementIndex;
+        // 3-line scrolling state - user always types on middle line (index 1)
+        if (isLastWordInLine && currentLineIndex === 1) {
+            // Completed middle line in 3-line state - scroll up
+            console.log('Completed middle line, scrolling up...');
+            addNewLine();
+            // After scrolling, user should stay on the middle line (index 1)
+            const middleLine = gameState.lines[1];
+            if (middleLine && middleLine.children.length > 0) {
+                gameState.currentWordElement = middleLine.children[0];
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            } else {
+                console.error('Middle line has no words after scrolling!');
             }
         } else {
-            // This shouldn't happen if we're properly detecting end of line above
-            console.error('No next word found on current line');
+            // Normal progression within the middle line in 3-line state
+            const nextSibling = gameState.currentWordElement.nextElementSibling;
+            if (nextSibling) {
+                gameState.currentWordElement = nextSibling;
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
+            } else {
+                console.error('No next word found on current line');
+            }
         }
     }
     
@@ -1418,5 +1456,24 @@ function calculateMaxCharsPerLine() {
 function updateMaxCharsPerLine() {
     gameState.maxCharsPerLine = calculateMaxCharsPerLine();
     console.log('Updated max chars per line to:', gameState.maxCharsPerLine);
+}
+
+// Update line styling to highlight active line
+function updateLineHighlighting() {
+    // Clear all line classes first
+    gameState.lines.forEach(line => {
+        line.classList.remove('active', 'inactive');
+    });
+    
+    if (gameState.lines.length === 2) {
+        // 2-line state: highlight first line, dim second
+        gameState.lines[0].classList.add('active');
+        gameState.lines[1].classList.add('inactive');
+    } else if (gameState.lines.length === 3) {
+        // 3-line state: highlight middle line, dim first and third
+        gameState.lines[0].classList.add('inactive');
+        gameState.lines[1].classList.add('active');
+        gameState.lines[2].classList.add('inactive');
+    }
 }
 // End of script. Ensure no duplicated/old functions below this line. 
