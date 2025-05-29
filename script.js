@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
     keyboardSoundManager = new KeyboardSoundManager(settingsManager.soundEnabled, settingsManager.volume);
 
     const welcomeTextElement = document.querySelector('#welcomeScreen .welcome-text');
-    const welcomeString = "Welcome to Typing Test!";
+    const welcomeString = "Welcome to Infinite Typing Test!";
     const typingSpeed = 100; // Milliseconds per character
     const postTypingDelay = 500; // Milliseconds to wait after typing before fading
     const fadeOutDuration = 1000; // Milliseconds for the fade-out animation
@@ -833,9 +833,15 @@ function handleWordCompletion() {
     gameState.typedWord = ''; 
     gameState.currentWordIndex++;
     
+    // Check if we're near the end of words and generate more for infinite typing
+    if (gameState.currentWordIndex >= gameState.words.length - 10) { 
+        // Generate new words and append them
+        generateMoreWords();
+    }
+    
+    // This should never happen now since we continuously generate words
     if (gameState.currentWordIndex >= gameState.words.length) { 
-        endTest(); 
-        return; 
+        generateMoreWords();
     }
     
     gameState.currentWordElement = gameState.wordElements[gameState.currentWordIndex];
@@ -850,6 +856,46 @@ function handleWordCompletion() {
     setTimeout(() => {
         ensureCurrentWordIsVisible();
     }, 50); // Small delay to ensure DOM updates are complete
+}
+
+// New function to generate more words for infinite typing
+async function generateMoreWords() {
+    const newWords = await getWords(settingsManager.difficulty);
+    const startIndex = gameState.words.length;
+    
+    // Add new words to the existing array
+    gameState.words.push(...newWords);
+    
+    // Create and append new word elements
+    const wordsPerLine = Math.floor(Math.random() * 3) + 8; // 8-10 words per line
+    
+    newWords.forEach((word, index) => {
+        const absoluteIndex = startIndex + index;
+        const wordSpan = document.createElement('span');
+        wordSpan.classList.add('word');
+        word.split('').forEach(char => { 
+            const cs = document.createElement('span'); 
+            cs.textContent = char; 
+            cs.classList.add('char');
+            wordSpan.appendChild(cs); 
+        });
+        textDisplay.appendChild(wordSpan);
+        gameState.wordElements.push(wordSpan);
+        
+        // Add space between words, except at line breaks
+        if (index < newWords.length - 1 || absoluteIndex < gameState.words.length - 1) { 
+            const space = document.createElement('span'); 
+            space.innerHTML = '&nbsp;'; 
+            space.classList.add('space');
+            textDisplay.appendChild(space); 
+            
+            // Add line break every wordsPerLine words for better formatting
+            if ((absoluteIndex + 1) % wordsPerLine === 0) {
+                const lineBreak = document.createElement('br');
+                textDisplay.appendChild(lineBreak);
+            }
+        }
+    });
 }
 
 function updateWordDisplay() {
@@ -1019,7 +1065,7 @@ function startTimer() {
         if(timerDisplay) timerDisplay.textContent = remaining;
         
         if (remaining <= 0) {
-            endTest();
+            endTest(); // Only end when timer reaches 0
         } else if (!gameState.isCompleted) {
             updateStats();
         }
@@ -1094,8 +1140,13 @@ function endTest() {
     gameState.isCompleted = true;
     if (gameState.timerInterval) clearInterval(gameState.timerInterval);
     if (keyboardSoundManager) keyboardSoundManager.playTestComplete();
-    const finalWpm = calculateWPM(), finalAcc = calculateAccuracy();
-    const wordsTypedCount = gameState.wordElements.filter(w => w.classList.contains('correct')).length;
+    
+    const finalWpm = calculateWPM();
+    const finalAcc = calculateAccuracy();
+    
+    // Count all completed words (both correct and incorrect)
+    const wordsTypedCount = gameState.currentWordIndex; // Since we completed up to this index
+    
     if(finalWpmDisplay) finalWpmDisplay.textContent = finalWpm;
     if(finalAccuracyDisplay) finalAccuracyDisplay.textContent = `${finalAcc}%`;
     if(finalErrorsDisplay) finalErrorsDisplay.textContent = gameState.errors;
