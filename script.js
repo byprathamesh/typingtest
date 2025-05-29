@@ -1,29 +1,125 @@
-// Enhanced word lists with more variety
+// Enhanced word lists with more variety and categories
 const wordLists = {
-    easy: ["the", "and", "for", "are", "but", "not", "you", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "two", "oil", "sit", "set", "run", "eat", "far", "sea", "eye", "off", "old", "see", "him", "has", "his", "did", "get", "may", "own", "say", "she", "too", "any", "my", "no", "up", "by", "do", "if", "in", "it", "of", "on", "so", "to", "we"],
-    
-    mixed: [
-        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "its", "who", "oil", "sit", "set", "time", "very", "when", "come", "here", "just", "like", "long", "make", "many", "over", "such", "take", "than", "them", "well", "were",
-        
-        "about", "other", "which", "their", "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", "small", "large", "spell", "house", "point", "letter", "mother", "answer", "found", "study", "learn", "world", "school", "thought", "number", "water", "called", "people", "between", "state", "city", "earth", "eyes", "light", "head", "open", "story", "example", "begin", "life", "always", "both", "paper", "together", "group", "often", "important", "until", "children", "side", "feet", "mile", "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family"
+    easy: [
+        "the", "and", "for", "are", "but", "not", "you", "can", "had", "her", "was", "one", "our", "out", 
+        "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "two", "oil", 
+        "sit", "set", "run", "eat", "far", "sea", "eye", "off", "old", "see", "him", "has", "his", "did", 
+        "may", "own", "too", "any", "my", "no", "up", "by", "do", "if", "in", "it", "of", "on", "so", "to", 
+        "we", "go", "be", "at", "me", "he", "is", "am", "or", "us", "an", "as", "be", "we", "me", "go", "so"
     ],
     
-    hard: ["accommodate", "embarrass", "millennium", "restaurant", "bureaucracy", "pharmaceutical", "pronunciation", "surveillance", "conscientious", "maintenance", "necessary", "occurrence", "personnel", "privilege", "rhythm", "separate", "temperature", "vacuum", "weird"],
+    mixed: [
+        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", 
+        "out", "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "its", 
+        "who", "oil", "sit", "set", "time", "very", "when", "come", "here", "just", "like", "long", "make", 
+        "many", "over", "such", "take", "than", "them", "well", "were", "about", "other", "which", "their", 
+        "would", "there", "could", "after", "first", "never", "these", "think", "where", "being", "every", 
+        "great", "might", "shall", "still", "those", "under", "while", "sound", "again", "place", "right", 
+        "small", "large", "spell", "house", "point", "letter", "mother", "answer", "found", "study", "learn", 
+        "world", "school", "thought", "number", "water", "called", "people", "between", "state", "city", 
+        "earth", "eyes", "light", "head", "open", "story", "example", "begin", "life", "always", "both", 
+        "paper", "together", "group", "often", "important", "until", "children", "side", "feet", "mile", 
+        "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", 
+        "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", 
+        "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family", "body", 
+        "music", "color", "stand", "questions", "fish", "area", "mark", "horse", "birds", "problem", "complete"
+    ],
+    
+    hard: [
+        "accommodate", "embarrass", "millennium", "restaurant", "bureaucracy", "pharmaceutical", "pronunciation", 
+        "surveillance", "conscientious", "maintenance", "necessary", "occurrence", "personnel", "privilege", 
+        "rhythm", "separate", "temperature", "vacuum", "weird", "acknowledgment", "acquaintance", "algorithm", 
+        "analysis", "anesthesia", "anonymous", "appreciate", "architecture", "assessment", "asynchronous", 
+        "authentication", "beginning", "belligerent", "beneficiary", "catastrophe", "cemetery", "chauffeur", 
+        "colleague", "committed", "committee", "communication", "conceivable", "conscience", "consciousness", 
+        "correspondence", "counselor", "curiosity", "definitely", "description", "development", "dilemma", 
+        "disappoint", "discipline", "embarrassed", "environment", "exaggerate", "excellent", "existence", 
+        "experience", "explanation", "extraordinary", "fluorescent", "government", "guarantee", "harassment", 
+        "hierarchy", "immediately", "independent", "intelligence", "interesting", "interrupt", "knowledge", 
+        "laboratory", "license", "lieutenant", "maintenance", "mathematics", "millennium", "miniature", 
+        "mischievous", "necessary", "occasionally", "occurrence", "opportunity", "parallel", "particularly", 
+        "permanent", "persistent", "personnel", "possession", "possible", "preceding", "preferred", "privilege", 
+        "probably", "procedure", "proceed", "pronunciation", "psychology", "pursue", "questionnaire", "receipt", 
+        "receive", "recommend", "referred", "relevant", "religious", "repetition", "restaurant", "rhythm", 
+        "schedule", "scientific", "separate", "similar", "sophisticated", "succeed", "successful", "sufficient", 
+        "surprise", "technique", "technology", "temperature", "thorough", "thought", "throughout", "transferred", 
+        "truly", "unnecessary", "until", "unusual", "vacuum", "village", "whether", "writing", "written"
+    ],
+    
+    programming: [
+        "function", "variable", "array", "object", "string", "number", "boolean", "undefined", "null", "class", 
+        "method", "property", "constructor", "prototype", "callback", "promise", "async", "await", "import", 
+        "export", "module", "component", "interface", "abstract", "extends", "implements", "override", "static", 
+        "private", "public", "protected", "const", "let", "var", "return", "break", "continue", "switch", 
+        "case", "default", "if", "else", "elif", "while", "for", "foreach", "do", "try", "catch", "finally", 
+        "throw", "throws", "exception", "error", "debug", "console", "log", "print", "stdout", "stdin", 
+        "stderr", "file", "directory", "path", "url", "http", "https", "api", "json", "xml", "html", "css", 
+        "javascript", "typescript", "python", "java", "cpp", "rust", "golang", "kotlin", "swift", "dart", 
+        "react", "angular", "vue", "svelte", "node", "express", "django", "flask", "spring", "laravel", 
+        "database", "sql", "mongodb", "redis", "firebase", "postgresql", "mysql", "sqlite", "orm", "migration", 
+        "schema", "table", "column", "row", "index", "foreign", "primary", "key", "join", "select", "insert", 
+        "update", "delete", "where", "order", "group", "having", "limit", "offset", "union", "intersection", 
+        "git", "commit", "push", "pull", "branch", "merge", "rebase", "clone", "fork", "repository", "remote", 
+        "local", "staging", "production", "development", "testing", "deployment", "docker", "container", 
+        "kubernetes", "cloud", "aws", "azure", "gcp", "serverless", "microservices", "monolith", "architecture", 
+        "algorithm", "datastructure", "complexity", "optimization", "performance", "scalability", "security", 
+        "authentication", "authorization", "encryption", "hashing", "token", "session", "cookie", "cors", 
+        "csrf", "xss", "injection", "vulnerability", "patch", "update", "version", "semantic", "major", 
+        "minor", "stable", "beta", "alpha", "release", "build", "compile", "transpile", "bundle", "minify", 
+        "compress", "cache", "memory", "storage", "bandwidth", "latency", "throughput", "concurrent", "parallel", 
+        "synchronous", "asynchronous", "blocking", "nonblocking", "thread", "process", "mutex", "semaphore", 
+        "deadlock", "race", "condition", "atomic", "volatile", "immutable", "mutable", "functional", "imperative", 
+        "declarative", "procedural", "oriented", "paradigm", "inheritance", "polymorphism", "encapsulation", 
+        "abstraction", "composition", "aggregation", "association", "dependency", "injection", "inversion", 
+        "singleton", "factory", "observer", "strategy", "decorator", "facade", "adapter", "proxy", "bridge", 
+        "command", "state", "template", "visitor", "iterator", "mediator", "memento", "flyweight", "builder", 
+        "prototype", "chain", "responsibility", "interpreter", "composite", "abstract", "factory"
+    ],
     
     quotes: [
         "The only way to do great work is to love what you do.",
         "Life is what happens while you're busy making other plans.",
-        "The future belongs to those who believe in the beauty of their dreams."
+        "The future belongs to those who believe in the beauty of their dreams.",
+        "It is during our darkest moments that we must focus to see the light.",
+        "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+        "The way to get started is to quit talking and begin doing.",
+        "Innovation distinguishes between a leader and a follower.",
+        "Your time is limited, so don't waste it living someone else's life.",
+        "Stay hungry, stay foolish.",
+        "The only impossible journey is the one you never begin.",
+        "In the middle of difficulty lies opportunity.",
+        "Believe you can and you're halfway there.",
+        "Code is like humor. When you have to explain it, it's bad.",
+        "First, solve the problem. Then, write the code.",
+        "Experience is the name everyone gives to their mistakes.",
+        "The best error message is the one that never shows up.",
+        "Programming isn't about what you know; it's about what you can figure out.",
+        "The most important property of a program is whether it accomplishes the intention of its user.",
+        "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+        "Programs must be written for people to read, and only incidentally for machines to execute.",
+        "Simplicity is the ultimate sophistication.",
+        "Make it work, make it right, make it fast.",
+        "The function of good software is to make the complex appear to be simple.",
+        "Software is a great combination between artistry and engineering.",
+        "Technology is best when it brings people together."
     ],
     
-    numbers: ["123", "456", "789", "012", "345", "678", "901", "234", "567", "890"]
+    numbers: [
+        "123", "456", "789", "012", "345", "678", "901", "234", "567", "890", "1234", "5678", "9012", 
+        "3456", "7890", "2468", "1357", "9753", "8642", "0987", "6543", "2109", "8765", "4321", "1111", 
+        "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "1010", "2020", "3030", 
+        "4040", "5050", "6060", "7070", "8080", "9090", "1100", "2200", "3300", "4400", "5500", "6600", 
+        "7700", "8800", "9900", "1001", "2002", "3003", "4004", "5005", "6006", "7007", "8008", "9009"
+    ]
 };
 
 // DOM Elements Cache
 const difficultySelect = document.getElementById('difficulty');
 const timeSelect = document.getElementById('timeLimit');
+const musicScaleSelect = document.getElementById('musicScale');
 const soundToggle = document.getElementById('soundToggle');
 const volumeSlider = document.getElementById('volumeSlider');
+const volumeDisplay = document.getElementById('volumeDisplay');
 const themeToggleBtn = document.getElementById('themeToggle');
 const settingsBtn = document.getElementById('settingsBtn');
 const shortcutsBtn = document.getElementById('shortcutsBtn');
@@ -45,12 +141,15 @@ const finalCharsDisplay = document.getElementById('finalChars');
 const finalWordsDisplay = document.getElementById('finalWords');
 const settingsPanel = document.getElementById('settings');
 const shortcutsPanel = document.getElementById('shortcuts');
+const liveWpmDisplay = document.getElementById('liveWpm');
+const liveWpmValue = document.getElementById('liveWpmValue');
+const progressBar = document.getElementById('progressBar');
 
 // Welcome Screen elements
 const welcomeScreen = document.getElementById('welcomeScreen');
 const mainContainer = document.querySelector('.container');
 
-// Relaxing KeyboardSoundManager Class with Beautiful, Soothing Sounds
+// Enhanced Relaxing KeyboardSoundManager Class with Adaptive Audio Intelligence
 class KeyboardSoundManager {
     constructor(enabled, volume) {
         this.audioContext = null;
@@ -58,7 +157,19 @@ class KeyboardSoundManager {
         this.volume = volume / 100;
         this.masterGain = null;
         this.noteIndex = 0;
-        this.pentatonicScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // C, D, E, G, A, C (pentatonic)
+        this.lastKeypressTime = 0;
+        this.typingSpeed = 0;
+        this.currentScale = 'pentatonic';
+        
+        // Multiple musical scales for variety
+        this.scales = {
+            pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25], // C, D, E, G, A, C
+            major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25], // C Major
+            minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Minor
+            dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25], // C Dorian
+            ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63] // Lower, more ambient
+        };
+        
         this._initAudio();
     }
 
@@ -66,7 +177,17 @@ class KeyboardSoundManager {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.masterGain = this.audioContext.createGain();
-            this.masterGain.connect(this.audioContext.destination);
+            
+            // Create a compressor for professional audio quality
+            this.compressor = this.audioContext.createDynamicsCompressor();
+            this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
+            this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
+            this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
+            this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
+            this.compressor.release.setValueAtTime(0.25, this.audioContext.currentTime);
+            
+            this.masterGain.connect(this.compressor);
+            this.compressor.connect(this.audioContext.destination);
             this.masterGain.gain.value = this.volume;
         } catch (e) { 
             console.warn('Web Audio API not supported'); 
@@ -74,91 +195,152 @@ class KeyboardSoundManager {
         }
     }
 
+    _updateTypingSpeed() {
+        const now = Date.now();
+        if (this.lastKeypressTime > 0) {
+            const timeDiff = now - this.lastKeypressTime;
+            this.typingSpeed = Math.max(0.1, Math.min(2.0, 1000 / timeDiff)); // 0.1 to 2.0 scale
+        }
+        this.lastKeypressTime = now;
+    }
+
+    _getAdaptiveVolume(baseVolume) {
+        // Reduce volume slightly as typing speed increases for comfort
+        const speedFactor = Math.max(0.6, 1.2 - (this.typingSpeed * 0.3));
+        return baseVolume * speedFactor;
+    }
+
+    _createAdvancedReverb(wetness, roomSize = 0.7) {
+        const convolver = this.audioContext.createConvolver();
+        
+        // Create impulse response for reverb
+        const sampleRate = this.audioContext.sampleRate;
+        const length = sampleRate * roomSize; // Room size affects reverb length
+        const impulse = this.audioContext.createBuffer(2, length, sampleRate);
+        
+        for (let channel = 0; channel < 2; channel++) {
+            const channelData = impulse.getChannelData(channel);
+            for (let i = 0; i < length; i++) {
+                const decay = Math.pow(1 - i / length, 2);
+                channelData[i] = (Math.random() * 2 - 1) * decay;
+            }
+        }
+        
+        convolver.buffer = impulse;
+        
+        const reverbGain = this.audioContext.createGain();
+        reverbGain.gain.setValueAtTime(wetness, this.audioContext.currentTime);
+        
+        return { convolver, reverbGain };
+    }
+
     _createSoothingTone(type = 'keypress') {
         if (!this.enabled || !this.audioContext) return;
 
+        this._updateTypingSpeed();
+        
         const now = this.audioContext.currentTime;
         const gainNode = this.audioContext.createGain();
         gainNode.connect(this.masterGain);
 
         let config;
+        const currentNotes = this.scales[this.currentScale];
+        
         switch (type) {
             case 'keypress':
-                // Soft bell-like tones in pentatonic scale
-                const noteFreq = this.pentatonicScale[this.noteIndex % this.pentatonicScale.length];
-                this.noteIndex++;
+                // Intelligent note selection with some randomness
+                let noteFreq;
+                if (Math.random() < 0.8) {
+                    // 80% time use sequential progression
+                    noteFreq = currentNotes[this.noteIndex % currentNotes.length];
+                    this.noteIndex++;
+                } else {
+                    // 20% time use harmonious random note
+                    noteFreq = currentNotes[Math.floor(Math.random() * currentNotes.length)];
+                }
+                
                 config = {
                     frequency: noteFreq,
-                    harmonics: [1, 0.3, 0.1, 0.05], // Soft harmonics
-                    attackTime: 0.02,
-                    decayTime: 0.1,
-                    sustainLevel: 0.4,
-                    releaseTime: 0.6,
-                    volume: 0.08,
-                    reverbWet: 0.3
+                    harmonics: [1, 0.4, 0.15, 0.08, 0.04], // Richer harmonics
+                    attackTime: 0.015 + (Math.random() * 0.01), // Slight variation
+                    decayTime: 0.08 + (this.typingSpeed * 0.02),
+                    sustainLevel: 0.35,
+                    releaseTime: 0.4 + (Math.random() * 0.3),
+                    volume: this._getAdaptiveVolume(0.06 + Math.random() * 0.02),
+                    reverbWet: 0.25 + (Math.random() * 0.1),
+                    roomSize: 0.6
                 };
                 break;
+                
             case 'space':
-                // Gentle wind chime sound
+                // Magical spacebar with multiple frequencies
+                const baseFreq = 523.25 + Math.random() * 150;
                 config = {
-                    frequency: 523.25 + Math.random() * 100, // High C with slight variation
-                    harmonics: [1, 0.5, 0.2, 0.1, 0.05],
-                    attackTime: 0.05,
-                    decayTime: 0.2,
-                    sustainLevel: 0.3,
-                    releaseTime: 1.0,
-                    volume: 0.06,
-                    reverbWet: 0.5
-                };
-                break;
-            case 'error':
-                // Very gentle, lower tone - not harsh
-                config = {
-                    frequency: 220, // A3 - warm, not alarming
-                    harmonics: [1, 0.4, 0.1],
-                    attackTime: 0.03,
+                    frequency: baseFreq,
+                    harmonics: [1, 0.6, 0.3, 0.15, 0.08, 0.04],
+                    attackTime: 0.03 + Math.random() * 0.02,
                     decayTime: 0.15,
-                    sustainLevel: 0.5,
-                    releaseTime: 0.4,
-                    volume: 0.05,
-                    reverbWet: 0.2
+                    sustainLevel: 0.3,
+                    releaseTime: 0.8 + Math.random() * 0.4,
+                    volume: this._getAdaptiveVolume(0.05),
+                    reverbWet: 0.4 + Math.random() * 0.2,
+                    roomSize: 0.8,
+                    sparkle: true
                 };
                 break;
+                
+            case 'error':
+                // Gentle, understanding error sound
+                config = {
+                    frequency: 196.00 + Math.random() * 50, // G3 area
+                    harmonics: [1, 0.5, 0.2],
+                    attackTime: 0.04,
+                    decayTime: 0.12,
+                    sustainLevel: 0.4,
+                    releaseTime: 0.3,
+                    volume: this._getAdaptiveVolume(0.04),
+                    reverbWet: 0.15,
+                    roomSize: 0.5
+                };
+                break;
+                
             case 'complete':
-                // Beautiful ascending arpeggio
+                // Triumphant yet peaceful completion
                 config = {
                     frequency: 523.25, // C5
-                    harmonics: [1, 0.6, 0.3, 0.1],
+                    harmonics: [1, 0.7, 0.4, 0.2, 0.1],
                     attackTime: 0.05,
                     decayTime: 0.2,
-                    sustainLevel: 0.7,
-                    releaseTime: 1.5,
-                    volume: 0.15,
-                    reverbWet: 0.6
+                    sustainLevel: 0.6,
+                    releaseTime: 1.2,
+                    volume: this._getAdaptiveVolume(0.12),
+                    reverbWet: 0.5,
+                    roomSize: 1.0
                 };
                 break;
         }
 
-        // Create main oscillators with soft harmonics
+        // Create main oscillators with richer harmonics
         config.harmonics.forEach((amplitude, index) => {
-            if (amplitude > 0.02) {
+            if (amplitude > 0.015) {
                 const osc = this.audioContext.createOscillator();
                 const oscGain = this.audioContext.createGain();
                 const filter = this.audioContext.createBiquadFilter();
 
-                // Use sine waves for pure, soft tones
-                osc.type = 'sine';
+                // Use different waveforms for different harmonics
+                osc.type = index === 0 ? 'sine' : (index === 1 ? 'triangle' : 'sine');
                 osc.frequency.setValueAtTime(config.frequency * (index + 1), now);
 
-                // Gentle low-pass filter for warmth
+                // Advanced filtering
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(2000 - (index * 200), now);
-                filter.Q.setValueAtTime(0.5, now); // Gentle filtering
+                filter.frequency.setValueAtTime(2500 - (index * 300), now);
+                filter.Q.setValueAtTime(0.7 + (index * 0.1), now);
 
-                // Soft envelope
+                // Sophisticated envelope
+                const finalVolume = amplitude * config.volume;
                 oscGain.gain.setValueAtTime(0, now);
-                oscGain.gain.linearRampToValueAtTime(amplitude * config.volume, now + config.attackTime);
-                oscGain.gain.linearRampToValueAtTime(amplitude * config.volume * config.sustainLevel, now + config.attackTime + config.decayTime);
+                oscGain.gain.linearRampToValueAtTime(finalVolume, now + config.attackTime);
+                oscGain.gain.linearRampToValueAtTime(finalVolume * config.sustainLevel, now + config.attackTime + config.decayTime);
                 oscGain.gain.exponentialRampToValueAtTime(0.001, now + config.attackTime + config.decayTime + config.releaseTime);
 
                 osc.connect(filter);
@@ -170,50 +352,67 @@ class KeyboardSoundManager {
             }
         });
 
-        // Add subtle reverb effect with delay
+        // Advanced reverb system
         if (config.reverbWet > 0) {
+            const { convolver, reverbGain } = this._createAdvancedReverb(config.reverbWet, config.roomSize);
+            
+            gainNode.connect(convolver);
+            convolver.connect(reverbGain);
+            reverbGain.connect(this.masterGain);
+            
+            // Add some delay for spaciousness
             const delayNode = this.audioContext.createDelay(0.3);
             const delayGain = this.audioContext.createGain();
-            const feedbackGain = this.audioContext.createGain();
-
-            delayNode.delayTime.setValueAtTime(0.1 + Math.random() * 0.1, now);
-            delayGain.gain.setValueAtTime(config.reverbWet * config.volume, now);
-            feedbackGain.gain.setValueAtTime(0.2, now);
-
-            // Create reverb chain
+            
+            delayNode.delayTime.setValueAtTime(0.08 + Math.random() * 0.04, now);
+            delayGain.gain.setValueAtTime(config.reverbWet * 0.3, now);
+            
             gainNode.connect(delayNode);
             delayNode.connect(delayGain);
             delayGain.connect(this.masterGain);
-            delayNode.connect(feedbackGain);
-            feedbackGain.connect(delayNode);
         }
 
-        // For spacebar, add a gentle shimmer effect
-        if (type === 'space') {
+        // Sparkle effect for spacebar
+        if (config.sparkle) {
             setTimeout(() => {
                 if (this.enabled && this.audioContext) {
-                    const shimmerOsc = this.audioContext.createOscillator();
-                    const shimmerGain = this.audioContext.createGain();
-                    const shimmerFilter = this.audioContext.createBiquadFilter();
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const sparkleOsc = this.audioContext.createOscillator();
+                            const sparkleGain = this.audioContext.createGain();
+                            const sparkleFilter = this.audioContext.createBiquadFilter();
 
-                    shimmerOsc.type = 'triangle';
-                    shimmerOsc.frequency.setValueAtTime(config.frequency * 2, this.audioContext.currentTime);
+                            sparkleOsc.type = 'sine';
+                            sparkleOsc.frequency.setValueAtTime(
+                                config.frequency * (2 + Math.random()), 
+                                this.audioContext.currentTime
+                            );
 
-                    shimmerFilter.type = 'highpass';
-                    shimmerFilter.frequency.setValueAtTime(800, this.audioContext.currentTime);
+                            sparkleFilter.type = 'highpass';
+                            sparkleFilter.frequency.setValueAtTime(800 + Math.random() * 400, this.audioContext.currentTime);
 
-                    shimmerGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                    shimmerGain.gain.linearRampToValueAtTime(config.volume * 0.3, this.audioContext.currentTime + 0.1);
-                    shimmerGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.8);
+                            sparkleGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+                            sparkleGain.gain.linearRampToValueAtTime(config.volume * 0.2, this.audioContext.currentTime + 0.05);
+                            sparkleGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.6);
 
-                    shimmerOsc.connect(shimmerFilter);
-                    shimmerFilter.connect(shimmerGain);
-                    shimmerGain.connect(this.masterGain);
+                            sparkleOsc.connect(sparkleFilter);
+                            sparkleFilter.connect(sparkleGain);
+                            sparkleGain.connect(this.masterGain);
 
-                    shimmerOsc.start(this.audioContext.currentTime);
-                    shimmerOsc.stop(this.audioContext.currentTime + 0.9);
+                            sparkleOsc.start(this.audioContext.currentTime);
+                            sparkleOsc.stop(this.audioContext.currentTime + 0.7);
+                        }, i * 150);
+                    }
                 }
-            }, 50);
+            }, 30);
+        }
+    }
+
+    // Method to change musical scale
+    setScale(scaleName) {
+        if (this.scales[scaleName]) {
+            this.currentScale = scaleName;
+            this.noteIndex = 0; // Reset progression
         }
     }
 
@@ -228,10 +427,10 @@ class KeyboardSoundManager {
     }
 
     playWordComplete() { 
-        // Play a gentle ascending tone for word completion
+        // Beautiful word completion melody
         if (this.enabled && this.audioContext) {
-            const frequencies = [392.00, 440.00, 523.25]; // G, A, C - pleasant progression
-            frequencies.forEach((freq, index) => {
+            const melody = [392.00, 440.00, 523.25, 659.25]; // G, A, C, E - ascending
+            melody.forEach((freq, index) => {
                 setTimeout(() => {
                     const osc = this.audioContext.createOscillator();
                     const gain = this.audioContext.createGain();
@@ -241,10 +440,10 @@ class KeyboardSoundManager {
                     osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
 
                     filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(1500, this.audioContext.currentTime);
+                    filter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
 
                     gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.04, this.audioContext.currentTime + 0.02);
+                    gain.gain.linearRampToValueAtTime(0.03, this.audioContext.currentTime + 0.02);
                     gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
 
                     osc.connect(filter);
@@ -253,21 +452,22 @@ class KeyboardSoundManager {
 
                     osc.start(this.audioContext.currentTime);
                     osc.stop(this.audioContext.currentTime + 0.5);
-                }, index * 100);
+                }, index * 80);
             });
         }
     }
 
     playTestComplete() { 
-        // Beautiful completion melody
+        // Epic but peaceful completion sequence
         this._createSoothingTone('complete');
         
-        // Play a soothing chord progression
+        // Play an elaborate chord progression
         if (this.enabled && this.audioContext) {
             const chordProgression = [
-                [523.25, 659.25, 783.99], // C major
-                [587.33, 739.99, 880.00], // D major  
-                [659.25, 830.61, 987.77]  // E major
+                [523.25, 659.25, 783.99, 1046.50], // C major with octave
+                [587.33, 739.99, 880.00, 1174.66], // D major with octave
+                [659.25, 830.61, 987.77, 1318.51], // E major with octave
+                [523.25, 659.25, 783.99, 1046.50]  // Return to C major
             ];
 
             chordProgression.forEach((chord, chordIndex) => {
@@ -281,22 +481,22 @@ class KeyboardSoundManager {
                         osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
 
                         filter.type = 'lowpass';
-                        filter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
+                        filter.frequency.setValueAtTime(3000 - (noteIndex * 200), this.audioContext.currentTime);
 
-                        const volume = 0.08 * (1 - noteIndex * 0.2); // Softer higher notes
+                        const volume = 0.06 * (1 - noteIndex * 0.15); // Softer higher notes
                         gain.gain.setValueAtTime(0, this.audioContext.currentTime);
                         gain.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.1);
-                        gain.gain.linearRampToValueAtTime(volume * 0.7, this.audioContext.currentTime + 0.3);
-                        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.2);
+                        gain.gain.linearRampToValueAtTime(volume * 0.8, this.audioContext.currentTime + 0.4);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.5);
 
                         osc.connect(filter);
                         filter.connect(gain);
                         gain.connect(this.masterGain);
 
                         osc.start(this.audioContext.currentTime);
-                        osc.stop(this.audioContext.currentTime + 1.3);
+                        osc.stop(this.audioContext.currentTime + 1.6);
                     });
-                }, chordIndex * 400);
+                }, chordIndex * 500);
             });
         }
     }
@@ -313,19 +513,57 @@ class KeyboardSoundManager {
     }
 }
 
-// SettingsManager Class (reverted)
+// Enhanced SettingsManager Class with Musical Scale Support
 class SettingsManager {
     constructor() {
-        this.difficulty = 'mixed'; this.timeLimit = 60; this.soundEnabled = true; this.volume = 30; this.currentTheme = 'dark';
+        this.difficulty = 'mixed'; 
+        this.timeLimit = 60; 
+        this.soundEnabled = true; 
+        this.volume = 30; 
+        this.currentTheme = 'dark';
+        this.musicScale = 'pentatonic';
+        this.liveWpmEnabled = true;
     }
+    
     load() {
-        const s = JSON.parse(localStorage.getItem('typingTestSettings'));
-        if (s) { this.difficulty = s.difficulty||this.difficulty; this.timeLimit = s.timeLimit||this.timeLimit; this.soundEnabled = s.soundEnabled!==undefined?s.soundEnabled:this.soundEnabled; this.volume = s.volume||this.volume; this.currentTheme = s.theme||this.currentTheme; }
+        try {
+            const s = JSON.parse(localStorage.getItem('typingTestSettings'));
+            if (s) { 
+                this.difficulty = s.difficulty || this.difficulty; 
+                this.timeLimit = s.timeLimit || this.timeLimit; 
+                this.soundEnabled = s.soundEnabled !== undefined ? s.soundEnabled : this.soundEnabled; 
+                this.volume = s.volume || this.volume; 
+                this.currentTheme = s.theme || this.currentTheme; 
+                this.musicScale = s.musicScale || this.musicScale;
+                this.liveWpmEnabled = s.liveWpmEnabled !== undefined ? s.liveWpmEnabled : this.liveWpmEnabled;
+            }
+        } catch (e) {
+            console.warn('Failed to load settings:', e);
+            // Use defaults if loading fails
+        }
     }
+    
     save() {
-        localStorage.setItem('typingTestSettings', JSON.stringify({ difficulty: this.difficulty, timeLimit: this.timeLimit, soundEnabled: this.soundEnabled, volume: this.volume, theme: this.currentTheme }));
+        try {
+            const settings = {
+                difficulty: this.difficulty,
+                timeLimit: this.timeLimit,
+                soundEnabled: this.soundEnabled,
+                volume: this.volume,
+                theme: this.currentTheme,
+                musicScale: this.musicScale,
+                liveWpmEnabled: this.liveWpmEnabled
+            };
+            localStorage.setItem('typingTestSettings', JSON.stringify(settings));
+        } catch (e) {
+            console.warn('Failed to save settings:', e);
+        }
     }
-    applyCurrentTheme() { document.body.classList.toggle('light-theme', this.currentTheme === 'light'); if (themeToggleBtn) themeToggleBtn.textContent = this.currentTheme === 'light' ? '☀️' : '🌙'; }
+    
+    applyCurrentTheme() { 
+        document.body.classList.toggle('light-theme', this.currentTheme === 'light'); 
+        if (themeToggleBtn) themeToggleBtn.textContent = this.currentTheme === 'light' ? '☀️' : '🌙'; 
+    }
 }
 
 let keyboardSoundManager;
@@ -402,28 +640,71 @@ function initializeApp() {
 function updateUIFromSettings() {
     if (difficultySelect) difficultySelect.value = settingsManager.difficulty;
     if (timeSelect) timeSelect.value = settingsManager.timeLimit;
+    if (musicScaleSelect) musicScaleSelect.value = settingsManager.musicScale;
     if (soundToggle) soundToggle.checked = settingsManager.soundEnabled;
     if (volumeSlider) volumeSlider.value = settingsManager.volume;
-    if (keyboardSoundManager) { keyboardSoundManager.toggleSound(settingsManager.soundEnabled); keyboardSoundManager.setVolume(settingsManager.volume); }
+    if (volumeDisplay) volumeDisplay.textContent = `${settingsManager.volume}%`;
+    if (liveWpmDisplay) liveWpmDisplay.style.display = settingsManager.liveWpmEnabled ? 'block' : 'none';
+    if (keyboardSoundManager) { 
+        keyboardSoundManager.toggleSound(settingsManager.soundEnabled); 
+        keyboardSoundManager.setVolume(settingsManager.volume);
+        keyboardSoundManager.setScale(settingsManager.musicScale);
+    }
     if (timerDisplay) timerDisplay.textContent = settingsManager.timeLimit;
 }
 
 function setupEventListeners() {
-    if (difficultySelect) difficultySelect.addEventListener('change', (e)=>{ settingsManager.difficulty = e.target.value; settingsManager.save(); startTest(true); });
-    if (timeSelect) timeSelect.addEventListener('change', (e)=>{ settingsManager.timeLimit = parseInt(e.target.value); settingsManager.save(); startTest(true); });
-    if (soundToggle) soundToggle.addEventListener('change', (e)=>{ settingsManager.soundEnabled = e.target.checked; settingsManager.save(); if (keyboardSoundManager) keyboardSoundManager.toggleSound(settingsManager.soundEnabled); });
-    if (volumeSlider) volumeSlider.addEventListener('input', (e)=>{ settingsManager.volume = parseInt(e.target.value); settingsManager.save(); if (keyboardSoundManager) keyboardSoundManager.setVolume(settingsManager.volume); });
-    if (themeToggleBtn) themeToggleBtn.addEventListener('click', ()=>{ settingsManager.currentTheme = settingsManager.currentTheme === 'light' ? 'dark' : 'light'; settingsManager.save(); settingsManager.applyCurrentTheme(); });
+    if (difficultySelect) difficultySelect.addEventListener('change', (e) => { 
+        settingsManager.difficulty = e.target.value; 
+        settingsManager.save(); 
+        startTest(true); 
+    });
+    
+    if (timeSelect) timeSelect.addEventListener('change', (e) => { 
+        settingsManager.timeLimit = parseInt(e.target.value); 
+        settingsManager.save(); 
+        startTest(true); 
+    });
+    
+    if (musicScaleSelect) musicScaleSelect.addEventListener('change', (e) => {
+        settingsManager.musicScale = e.target.value;
+        settingsManager.save();
+        if (keyboardSoundManager) keyboardSoundManager.setScale(settingsManager.musicScale);
+        showToast(`Musical scale changed to ${e.target.options[e.target.selectedIndex].text}`);
+    });
+    
+    if (soundToggle) soundToggle.addEventListener('change', (e) => { 
+        settingsManager.soundEnabled = e.target.checked; 
+        settingsManager.save(); 
+        if (keyboardSoundManager) keyboardSoundManager.toggleSound(settingsManager.soundEnabled); 
+    });
+    
+    if (volumeSlider) volumeSlider.addEventListener('input', (e) => { 
+        settingsManager.volume = parseInt(e.target.value); 
+        if (volumeDisplay) volumeDisplay.textContent = `${settingsManager.volume}%`;
+        settingsManager.save(); 
+        if (keyboardSoundManager) keyboardSoundManager.setVolume(settingsManager.volume); 
+    });
+    
+    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => { 
+        settingsManager.currentTheme = settingsManager.currentTheme === 'light' ? 'dark' : 'light'; 
+        settingsManager.save(); 
+        settingsManager.applyCurrentTheme(); 
+    });
+    
     if (settingsBtn) settingsBtn.addEventListener('click', toggleSettingsPanel);
     if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcutsPanel);
+    
     if (textDisplay) {
         textDisplay.addEventListener('keydown', handleInput);
         textDisplay.addEventListener('focus', () => { if (cursor) cursor.style.visibility = 'visible'; });
         textDisplay.addEventListener('blur', () => { if (cursor) cursor.style.visibility = 'hidden'; });
     }
+    
     if (restartBtn) restartBtn.addEventListener('click', () => startTest(true));
     if (newTestBtn) newTestBtn.addEventListener('click', () => startTest(true));
     if (shareBtn) shareBtn.addEventListener('click', shareResults);
+    
     document.addEventListener('keydown', handleGlobalKeyDown);
 }
 
@@ -645,25 +926,50 @@ function calculateAccuracy() {
     return Math.round((correctChars / gameState.totalCharsTyped) * 100);
 }
 
+function updateProgress() {
+    if (!progressBar || !gameState.startTime) return;
+    
+    const elapsed = (Date.now() - gameState.startTime) / 1000;
+    const progress = Math.min((elapsed / gameState.timeLimit) * 100, 100);
+    
+    progressBar.style.width = `${progress}%`;
+}
+
 function updateStats() {
     if (gameState.isCompleted) return;
-    const wpm = calculateWPM(); const acc = calculateAccuracy();
+    
+    const wpm = calculateWPM(); 
+    const acc = calculateAccuracy();
+    
     if (wpmDisplay) wpmDisplay.textContent = wpm;
     if (accuracyDisplay) accuracyDisplay.textContent = `${acc}%`;
     if (errorsDisplay) errorsDisplay.textContent = gameState.errors;
+    
+    // Update live WPM if enabled
+    if (settingsManager.liveWpmEnabled && liveWpmValue) {
+        liveWpmValue.textContent = wpm;
+    }
+    
+    // Update progress bar
+    updateProgress();
 }
 
 function startTimer() {
     gameState.startTime = Date.now();
     if(timerDisplay) timerDisplay.textContent = gameState.timeLimit;
     if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+    
     gameState.timerInterval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
         const remaining = gameState.timeLimit - elapsed;
         if(timerDisplay) timerDisplay.textContent = remaining;
-        if (remaining <= 0) endTest();
-        if(!gameState.isCompleted) updateStats();
-    }, 1000);
+        
+        if (remaining <= 0) {
+            endTest();
+        } else if (!gameState.isCompleted) {
+            updateStats();
+        }
+    }, 100); // Update more frequently for smoother animations
 }
 
 async function startTest(forceNewWords = false) {

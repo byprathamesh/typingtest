@@ -57,6 +57,16 @@
                 </select>
             </label>
             <label>
+                Musical Scale:
+                <select id="musicScale">
+                    <option value="pentatonic" selected>Pentatonic (Peaceful)</option>
+                    <option value="major">Major (Happy)</option>
+                    <option value="minor">Minor (Melancholic)</option>
+                    <option value="dorian">Dorian (Mystical)</option>
+                    <option value="ambient">Ambient (Deep & Low)</option>
+                </select>
+            </label>
+            <label>
                 Sound Effects:
                 <input type="checkbox" id="soundToggle" checked>
             </label>
@@ -67,6 +77,7 @@
             <label>
                 Sound Volume:
                 <input type="range" id="volumeSlider" min="0" max="100" value="30">
+                <span class="volume-display" id="volumeDisplay">30%</span>
             </label>
         </div>
 
