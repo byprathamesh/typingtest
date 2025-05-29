@@ -271,6 +271,8 @@ header h1 {
     max-width: 12rem; /* Prevent extremely long words from breaking layout */
     overflow: hidden;
     text-overflow: ellipsis; /* Show ellipsis for very long words */
+    word-break: break-word; /* Allow breaking of very long words */
+    overflow-wrap: break-word; /* Modern CSS property for word breaking */
 }
 
 .word:not(:last-child) {
@@ -476,7 +478,8 @@ header h1 {
     }
     
     .word {
-        max-width: 8rem; /* Smaller max width on mobile */
+        max-width: 8rem; /* Smaller max width on mobile for ALL modes */
+        font-size: 0.95em;
     }
 
     .settings {
@@ -497,6 +500,16 @@ header h1 {
     header h1 {
         font-size: 2rem;
     }
+    
+    /* Hard mode adjustments for mobile */
+    .text-display.hard-mode .word {
+        max-width: 10rem;
+        font-size: 0.9em;
+    }
+    
+    .text-display.hard-mode .text-line {
+        gap: 0.4rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -515,7 +528,18 @@ header h1 {
     }
     
     .word {
-        max-width: 6rem; /* Even smaller on very small screens */
+        max-width: 6rem; /* Even smaller on very small screens for ALL modes */
+        font-size: 0.9em;
+    }
+    
+    /* Hard mode adjustments for very small screens */
+    .text-display.hard-mode .word {
+        max-width: 8rem;
+        font-size: 0.85em;
+    }
+    
+    .text-display.hard-mode .text-line {
+        gap: 0.3rem;
     }
 }
 
@@ -614,8 +638,6 @@ div[style*="text-align: center"]:last-child {
 .text-display.hard-mode .word {
     max-width: 15rem; /* Larger max width for hard mode */
     font-size: 0.95em; /* Slightly smaller font for long words */
-    word-break: break-word; /* Allow breaking of very long words */
-    overflow-wrap: break-word; /* Modern CSS property for word breaking */
 }
 
 .text-display.hard-mode .text-line {

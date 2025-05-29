@@ -5,7 +5,12 @@ const wordLists = {
         "day", "get", "use", "man", "new", "now", "way", "may", "say", "each", "she", "how", "two", "oil", 
         "sit", "set", "run", "eat", "far", "sea", "eye", "off", "old", "see", "him", "has", "his", "did", 
         "may", "own", "too", "any", "my", "no", "up", "by", "do", "if", "in", "it", "of", "on", "so", "to", 
-        "we", "go", "be", "at", "me", "he", "is", "am", "or", "us", "an", "as", "be", "we", "me", "go", "so"
+        "we", "go", "be", "at", "me", "he", "is", "am", "or", "us", "an", "as", "be", "we", "me", "go", "so",
+        "cat", "dog", "big", "red", "hot", "bad", "good", "nice", "kind", "help", "work", "play", "food", "home",
+        "time", "year", "back", "give", "most", "very", "much", "call", "well", "also", "just", "find", "know",
+        "take", "look", "come", "will", "make", "like", "into", "than", "them", "only", "many", "some", "what",
+        "word", "long", "down", "side", "been", "does", "part", "even", "turn", "here", "want", "show", "went",
+        "came", "every", "don't", "while", "great", "where", "right", "think", "little", "still", "might", "saw"
     ],
     
     mixed: [
@@ -22,7 +27,13 @@ const wordLists = {
         "night", "walk", "white", "began", "grow", "took", "river", "carry", "once", "book", "hear", "stop", 
         "without", "second", "later", "miss", "idea", "enough", "face", "watch", "really", "almost", "above", 
         "girl", "sometimes", "mountain", "young", "talk", "soon", "list", "song", "leave", "family", "body", 
-        "music", "color", "stand", "questions", "fish", "area", "mark", "horse", "birds", "problem", "complete"
+        "music", "color", "stand", "questions", "fish", "area", "mark", "horse", "birds", "problem", "complete",
+        "during", "follow", "around", "close", "something", "seem", "next", "hard", "example", "begin", "life",
+        "always", "those", "both", "paper", "together", "group", "often", "run", "important", "until", "children",
+        "side", "feet", "car", "mile", "night", "walk", "white", "sea", "began", "grow", "took", "river", "four",
+        "carry", "state", "once", "book", "hear", "stop", "without", "second", "later", "miss", "idea", "enough",
+        "eat", "face", "watch", "far", "Indian", "really", "almost", "let", "above", "girl", "sometimes", "mountain",
+        "cut", "young", "talk", "soon", "list", "song", "being", "leave", "family", "it's", "system", "program"
     ],
     
     hard: [
@@ -43,7 +54,12 @@ const wordLists = {
         "receive", "recommend", "referred", "relevant", "religious", "repetition", "restaurant", "rhythm", 
         "schedule", "scientific", "separate", "similar", "sophisticated", "succeed", "successful", "sufficient", 
         "surprise", "technique", "technology", "temperature", "thorough", "thought", "throughout", "transferred", 
-        "truly", "unnecessary", "until", "unusual", "vacuum", "village", "whether", "writing", "written"
+        "truly", "unnecessary", "until", "unusual", "vacuum", "village", "whether", "writing", "written",
+        "entrepreneurship", "infrastructure", "implementation", "characteristics", "responsibilities", 
+        "comprehensiveness", "internationalization", "incomprehensible", "disproportionately", "recommendations",
+        "accomplishments", "circumstances", "representative", "simultaneously", "unfortunately", "approximately",
+        "automatically", "controversial", "demonstration", "fundamentally", "philosophical", "psychological",
+        "revolutionary", "traditionally", "constitutional", "organizational", "environmental", "experimental"
     ],
     
     programming: [
@@ -73,7 +89,9 @@ const wordLists = {
         "abstraction", "composition", "aggregation", "association", "dependency", "injection", "inversion", 
         "singleton", "factory", "observer", "strategy", "decorator", "facade", "adapter", "proxy", "bridge", 
         "command", "state", "template", "visitor", "iterator", "mediator", "memento", "flyweight", "builder", 
-        "prototype", "chain", "responsibility", "interpreter", "composite", "abstract", "factory"
+        "prototype", "chain", "responsibility", "interpreter", "composite", "abstract", "factory",
+        "framework", "library", "package", "dependency", "namespace", "scope", "closure", "recursion", "loop",
+        "iteration", "condition", "operator", "expression", "statement", "declaration", "initialization", "assignment"
     ],
     
     quotes: [
@@ -101,7 +119,12 @@ const wordLists = {
         "Make it work, make it right, make it fast.",
         "The function of good software is to make the complex appear to be simple.",
         "Software is a great combination between artistry and engineering.",
-        "Technology is best when it brings people together."
+        "Technology is best when it brings people together.",
+        "The best time to plant a tree was twenty years ago. The second best time is now.",
+        "Whether you think you can or you think you can't, you're right.",
+        "The only person you are destined to become is the person you decide to be.",
+        "Don't be afraid to give up the good to go for the great.",
+        "Dreams don't work unless you do."
     ],
     
     numbers: [
@@ -109,7 +132,10 @@ const wordLists = {
         "3456", "7890", "2468", "1357", "9753", "8642", "0987", "6543", "2109", "8765", "4321", "1111", 
         "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "1010", "2020", "3030", 
         "4040", "5050", "6060", "7070", "8080", "9090", "1100", "2200", "3300", "4400", "5500", "6600", 
-        "7700", "8800", "9900", "1001", "2002", "3003", "4004", "5005", "6006", "7007", "8008", "9009"
+        "7700", "8800", "9900", "1001", "2002", "3003", "4004", "5005", "6006", "7007", "8008", "9009",
+        "192.168.1.1", "255.255.255.0", "127.0.0.1", "10.0.0.1", "172.16.0.1", "8.8.8.8", "1.1.1.1",
+        "2023", "2024", "2025", "1990", "1985", "2000", "1776", "1969", "1991", "2001", "2008", "2010",
+        "100%", "50%", "25%", "75%", "90%", "10%", "33%", "66%", "80%", "20%", "95%", "5%"
     ]
 };
 
@@ -707,19 +733,58 @@ function setupEventListeners() {
 }
 
 async function getWords(difficulty) {
-    // Create a large, consistent pool of words for the entire session
+    // Create a large, varied pool of words for better typing practice
     let pool = wordLists[difficulty] || wordLists.mixed;
     
-    // Create a much larger pool by repeating and shuffling
+    // Create a more varied pool by combining different word sources
     let extendedPool = [];
-    for (let i = 0; i < 10; i++) { // Create 10x the original pool size
+    
+    if (difficulty === 'mixed') {
+        // For mixed mode, combine different difficulties for variety
+        extendedPool.push(...wordLists.easy);
+        extendedPool.push(...wordLists.mixed);
+        extendedPool.push(...wordLists.hard.slice(0, 20)); // Add some hard words
+        extendedPool.push(...wordLists.programming.slice(0, 15)); // Add some programming terms
+    } else if (difficulty === 'easy') {
+        // For easy mode, mostly easy words with some mixed
+        extendedPool.push(...wordLists.easy);
+        extendedPool.push(...wordLists.easy); // Double easy words
+        extendedPool.push(...wordLists.mixed.slice(0, 30)); // Add some mixed words
+    } else if (difficulty === 'hard') {
+        // For hard mode, focus on difficult words with some variety
+        extendedPool.push(...wordLists.hard);
+        extendedPool.push(...wordLists.mixed.slice(0, 20)); // Add some mixed words for transition
+        extendedPool.push(...wordLists.programming.slice(0, 25)); // Add programming terms
+    } else if (difficulty === 'programming') {
+        // For programming mode, focus on code terms with some mixed words
+        extendedPool.push(...wordLists.programming);
+        extendedPool.push(...wordLists.mixed.slice(0, 15)); // Add some common words
+        extendedPool.push(...wordLists.hard.slice(0, 10)); // Add some complex words
+    } else {
+        // For quotes and numbers, use the specific pool with some mixed words
         extendedPool.push(...pool);
+        if (pool.length < 50) {
+            extendedPool.push(...wordLists.mixed.slice(0, 30)); // Add variety if pool is small
+        }
     }
     
-    // Shuffle the extended pool once at the beginning
-    extendedPool.sort(() => 0.5 - Math.random());
+    // Remove duplicates while preserving some repetition for practice
+    const uniqueWords = [...new Set(extendedPool)];
     
-    return extendedPool;
+    // Create final pool with controlled repetition (max 3 times per word)
+    let finalPool = [];
+    for (let i = 0; i < 3; i++) {
+        finalPool.push(...uniqueWords);
+    }
+    
+    // Shuffle the final pool thoroughly
+    for (let i = finalPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [finalPool[i], finalPool[j]] = [finalPool[j], finalPool[i]];
+    }
+    
+    console.log(`Generated ${finalPool.length} words with ${uniqueWords.length} unique words for difficulty: ${difficulty}`);
+    return finalPool;
 }
 
 function displayText(words) {
@@ -1008,7 +1073,6 @@ function updateWordDisplay() {
             } else {
                 // This is an extra character beyond the original word's length
                 span.classList.add('incorrect'); // Or 'extra' if you have specific styling for only extra
-                span.classList.add('extra'); 
             }
         } else if (i < currentWordText.length) {
             // This part of the original word hasn't been typed yet or was backspaced over
