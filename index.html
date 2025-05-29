@@ -9,8 +9,8 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='16' y='24' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%2300ff00'%3E⚡%3C/text%3E%3C/svg%3E">
     
     <!-- Meta Tags for SEO -->
-    <meta name="description" content="Improve your typing speed with this fun and interactive typing test. Features various difficulty levels, sound effects, and performance tracking.">
-    <meta name="keywords" content="typing test, wpm, speed typing, keyboard practice">
+    <meta name="description" content="Improve your typing speed with this clean and minimal typing test. Features various difficulty levels and performance tracking using only black, white, green, and red colors.">
+    <meta name="keywords" content="typing test, wpm, speed typing, keyboard practice, minimal design">
     
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,11 +27,11 @@
 
     <div class="container" style="display: none;"> <!-- Initially hidden -->
         <header>
-            <h1></h1>
+            <h1><span class="title-typing">Typing</span> <span class="title-test">Test</span></h1>
             <div class="controls">
-                <button id="themeToggle" title="Toggle Theme (Ctrl+T)">🌙</button>
-                <button id="settingsBtn" title="Settings (Ctrl+,)">⚙️</button>
-                <button id="shortcutsBtn" title="Keyboard Shortcuts">⌨️</button>
+                <button id="themeToggle" title="Toggle Theme">🌙</button>
+                <button id="settingsBtn" title="Settings">⚙️</button>
+                <button id="shortcutsBtn" title="Shortcuts">⌨️</button>
             </div>
         </header>
 
@@ -138,9 +138,9 @@
         </div>
 
         <div class="action-buttons">
-            <button id="restartBtn" title="Restart Test (Tab)">🔄 Restart Test</button>
+            <button id="restartBtn" title="Restart Test (Tab)">🔄 Restart</button>
             <button id="newTestBtn" title="Generate new words">🎲 New Words</button>
-            <button id="shareBtn" title="Share your results">🔗 Share</button>
+            <button id="shareBtn" title="Share results">🔗 Share</button>
         </div>
 
         <div class="results" id="results" style="display: none;">
@@ -150,8 +150,8 @@
                 <div><strong>Accuracy:</strong> <span id="finalAccuracy">100%</span></div>
                 <div><strong>Errors:</strong> <span id="finalErrors">0</span></div>
                 <div><strong>Time:</strong> <span id="finalTime">60s</span></div>
-                <div><strong>Chars Typed:</strong> <span id="finalChars">0</span></div>
-                <div><strong>Words Typed:</strong> <span id="finalWords">0</span></div>
+                <div><strong>Characters:</strong> <span id="finalChars">0</span></div>
+                <div><strong>Words:</strong> <span id="finalWords">0</span></div>
             </div>
             <button onclick="window.location.reload()" title="Start fresh">🚀 Try Again</button>
         </div>
@@ -162,9 +162,9 @@
             <div class="value" id="liveWpmValue">0</div>
         </div>
 
-        <!-- Instructions for first-time users -->
-        <div style="text-align: center; margin-top: 20px; opacity: 0.6; font-size: 0.9rem;">
-            💡 Click the text area & start typing! Use Tab to restart. Press Space to advance words.
+        <!-- Instructions for users -->
+        <div style="text-align: center; margin-top: 20px; opacity: 0.7; font-size: 0.9rem; color: #ffffff;">
+            💡 Click the text area and start typing! Use Tab to restart.
         </div>
     </div>
 

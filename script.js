@@ -633,7 +633,6 @@ function initializeApp() {
     if (textDisplay && mainContainer && mainContainer.style.display === 'block') {
         setTimeout(() => textDisplay.focus(), 50); // Ensure focus after potential layout shifts
     }
-    updateTitleColors();
     initializeCursor();
 }
 
@@ -642,6 +641,8 @@ function updateUIFromSettings() {
     if (timeSelect) timeSelect.value = settingsManager.timeLimit;
     if (musicScaleSelect) musicScaleSelect.value = settingsManager.musicScale;
     if (soundToggle) soundToggle.checked = settingsManager.soundEnabled;
+    const liveWpmToggle = document.getElementById('liveWpmToggle');
+    if (liveWpmToggle) liveWpmToggle.checked = settingsManager.liveWpmEnabled;
     if (volumeSlider) volumeSlider.value = settingsManager.volume;
     if (volumeDisplay) volumeDisplay.textContent = `${settingsManager.volume}%`;
     if (liveWpmDisplay) liveWpmDisplay.style.display = settingsManager.liveWpmEnabled ? 'block' : 'none';
@@ -684,6 +685,13 @@ function setupEventListeners() {
         if (volumeDisplay) volumeDisplay.textContent = `${settingsManager.volume}%`;
         settingsManager.save(); 
         if (keyboardSoundManager) keyboardSoundManager.setVolume(settingsManager.volume); 
+    });
+    
+    const liveWpmToggle = document.getElementById('liveWpmToggle');
+    if (liveWpmToggle) liveWpmToggle.addEventListener('change', (e) => {
+        settingsManager.liveWpmEnabled = e.target.checked;
+        settingsManager.save();
+        if (liveWpmDisplay) liveWpmDisplay.style.display = settingsManager.liveWpmEnabled ? 'block' : 'none';
     });
     
     if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => { 
@@ -1081,7 +1089,7 @@ function handleGlobalKeyDown(e) {
 }
 
 function updateTitleColors() {
-    const h1 = document.querySelector('header h1');
-    if (h1) { h1.innerHTML = `<span class="title-typing">Typing</span><span class="title-test"> Test</span>`; }
+    // Title is now set in HTML, no need to manipulate it here
+    return;
 }
 // End of script. Ensure no duplicated/old functions below this line. 
