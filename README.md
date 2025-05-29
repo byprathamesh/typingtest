@@ -18,6 +18,7 @@ A beautiful, feature-rich typing test application with realistic keyboard sounds
 - **Theme Support**: Light and dark modes with smooth transitions
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Glassmorphism UI**: Modern blur effects and gradients
+- **Animated Welcome Screen**: Engaging full-screen introduction on first visit
 
 ### 🔊 Audio Experience
 - **Realistic Keyboard Sounds**: Cherry MX Blue inspired mechanical sounds
