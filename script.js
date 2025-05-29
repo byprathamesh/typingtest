@@ -274,7 +274,7 @@ const elements = {
 // Validate DOM elements
 Object.keys(elements).forEach(key => {
     if (!elements[key]) {
-        console.error(`Element not found: ${key}`);
+        console.warn(`Element not found: ${key}`);
     }
 });
 
@@ -287,8 +287,11 @@ const {
     liveWpmToggle, infoBtn, keyboardShortcuts, shareBtn, toast
 } = elements;
 
-// Add theme toggle element
+// Add theme toggle element with error checking
 const themeToggle = document.getElementById('themeToggle');
+if (!themeToggle) {
+    console.warn('Theme toggle element not found');
+}
 
 // Initialize managers
 const soundManager = new SoundManager();
@@ -328,7 +331,7 @@ class ThemeManager {
             root.style.setProperty('--error-color', '#ff0000');
             root.style.setProperty('--success-color', '#000000');
             root.style.setProperty('--warning-color', '#000000');
-            themeToggle.textContent = '🌞';
+            if (themeToggle) themeToggle.textContent = '🌞';
         } else {
             // Default dark monochrome theme
             root.style.setProperty('--bg-primary', '#000000');
@@ -341,7 +344,7 @@ class ThemeManager {
             root.style.setProperty('--error-color', '#ff0000');
             root.style.setProperty('--success-color', '#ffffff');
             root.style.setProperty('--warning-color', '#ffffff');
-            themeToggle.textContent = '🌙';
+            if (themeToggle) themeToggle.textContent = '🌙';
         }
     }
 }
@@ -406,6 +409,11 @@ function generateWords(count) {
 
 // Enhanced text display with better visual feedback
 function displayText() {
+    if (!textDisplay) {
+        console.warn('textDisplay element not found');
+        return;
+    }
+    
     textDisplay.innerHTML = '';
     const fragment = document.createDocumentFragment();
     
@@ -442,7 +450,7 @@ function displayText() {
                 
                 if (wordIndex === gameState.currentWordIndex) {
                     // Current word being typed
-                    const inputValue = textInput.value || '';
+                    const inputValue = (textInput && textInput.value) || '';
                     if (charIndex < inputValue.length) {
                         if (inputValue[charIndex] === char) {
                             charElement.classList.add('correct');
@@ -467,7 +475,7 @@ function displayText() {
         
         // Add extra characters if typed word is longer than original
         if (wordIndex === gameState.currentWordIndex) {
-            const inputValue = textInput.value || '';
+            const inputValue = (textInput && textInput.value) || '';
             if (inputValue.length > word.length) {
                 for (let i = word.length; i < inputValue.length; i++) {
                     const extraChar = document.createElement('span');
@@ -494,7 +502,7 @@ function displayText() {
     }
     
     textDisplay.appendChild(fragment);
-    textDisplay.appendChild(caret);
+    if (caret) textDisplay.appendChild(caret);
     
     // Update caret position after DOM changes
     requestAnimationFrame(() => {
@@ -504,6 +512,10 @@ function displayText() {
 
 // Update smooth caret position
 function updateCaret() {
+    if (!caret || !textDisplay) {
+        return;
+    }
+    
     if (!settingsManager.get('smoothCaret')) {
         caret.style.display = 'none';
         return;
@@ -551,14 +563,6 @@ function updateCaret() {
     // Apply the position with smooth transition
     caret.style.left = caretLeft + 'px';
     caret.style.top = caretTop + 'px';
-    
-    // Ensure caret is visible by scrolling if needed
-    const caretRect = {
-        left: caretLeft,
-        top: caretTop,
-        right: caretLeft + 2,
-        bottom: caretTop + 26
-    };
     
     // Auto-scroll if caret goes out of view
     if (caretTop < 10) {
@@ -658,17 +662,17 @@ function updateStats() {
     }
     
     // Simple value updates without flashy animations
-    if (wpmElement.textContent !== newWpm.toString()) {
+    if (wpmElement && wpmElement.textContent !== newWpm.toString()) {
         wpmElement.textContent = newWpm;
     }
     
-    if (settingsManager.get('liveWpm')) {
+    if (rawWpmElement && settingsManager.get('liveWpm')) {
         rawWpmElement.textContent = newRawWpm;
     }
     
-    accuracyElement.textContent = newAccuracy + '%';
-    timerElement.textContent = Math.max(0, gameState.timeLimit - Math.floor(gameState.currentTime));
-    errorsElement.textContent = gameState.errors;
+    if (accuracyElement) accuracyElement.textContent = newAccuracy + '%';
+    if (timerElement) timerElement.textContent = Math.max(0, gameState.timeLimit - Math.floor(gameState.currentTime));
+    if (errorsElement) errorsElement.textContent = gameState.errors;
 }
 
 // Enhanced test completion with detailed results
@@ -850,6 +854,11 @@ Try it yourself at: ${window.location.href}`;
 
 // Show toast notification
 function showToast(message) {
+    if (!toast) {
+        console.warn('Toast element not found');
+        return;
+    }
+    
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => {
@@ -919,40 +928,54 @@ function toggleKeyboardShortcuts() {
     }
 }
 
-// Event listeners
-textInput.addEventListener('input', handleInput);
-restartBtn.addEventListener('click', restartTest);
-timeSelect.addEventListener('change', () => {
-    settingsManager.set('timeLimit', parseInt(timeSelect.value));
-});
+// Event listeners with error checking
+if (textInput) textInput.addEventListener('input', handleInput);
+if (restartBtn) restartBtn.addEventListener('click', restartTest);
+if (timeSelect) {
+    timeSelect.addEventListener('change', () => {
+        settingsManager.set('timeLimit', parseInt(timeSelect.value));
+    });
+}
 
 // Settings event listeners
-settingsToggle.addEventListener('click', toggleSettings);
-difficultySelect.addEventListener('change', () => {
-    settingsManager.set('difficulty', difficultySelect.value);
-});
-soundToggle.addEventListener('change', () => {
-    soundManager.enabled = soundToggle.checked;
-    settingsManager.set('soundEnabled', soundToggle.checked);
-});
-smoothCaretToggle.addEventListener('change', () => {
-    settingsManager.set('smoothCaret', smoothCaretToggle.checked);
-    updateCaret();
-});
-liveWpmToggle.addEventListener('change', () => {
-    settingsManager.set('liveWpm', liveWpmToggle.checked);
-    document.getElementById('rawWpmStat').style.display = 
-        liveWpmToggle.checked ? 'block' : 'none';
-});
+if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
+if (difficultySelect) {
+    difficultySelect.addEventListener('change', () => {
+        settingsManager.set('difficulty', difficultySelect.value);
+    });
+}
+if (soundToggle) {
+    soundToggle.addEventListener('change', () => {
+        soundManager.enabled = soundToggle.checked;
+        settingsManager.set('soundEnabled', soundToggle.checked);
+    });
+}
+if (smoothCaretToggle) {
+    smoothCaretToggle.addEventListener('change', () => {
+        settingsManager.set('smoothCaret', smoothCaretToggle.checked);
+        updateCaret();
+    });
+}
+if (liveWpmToggle) {
+    liveWpmToggle.addEventListener('change', () => {
+        settingsManager.set('liveWpm', liveWpmToggle.checked);
+        const rawWpmStat = document.getElementById('rawWpmStat');
+        if (rawWpmStat) {
+            rawWpmStat.style.display = liveWpmToggle.checked ? 'block' : 'none';
+        }
+    });
+}
 
 // Theme toggle event listener
-themeToggle.addEventListener('click', () => {
-    themeManager.toggle();
-});
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        themeManager.toggle();
+    });
+}
 
 // Other event listeners
-infoBtn.addEventListener('click', toggleKeyboardShortcuts);
-shareBtn.addEventListener('click', shareResults);
+if (infoBtn) infoBtn.addEventListener('click', toggleKeyboardShortcuts);
+if (shareBtn) shareBtn.addEventListener('click', shareResults);
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', handleKeyboardShortcuts);
@@ -961,9 +984,11 @@ document.addEventListener('keydown', handleKeyboardShortcuts);
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 // Focus input when clicking on text display
-textDisplay.addEventListener('click', () => {
-    textInput.focus();
-});
+if (textDisplay) {
+    textDisplay.addEventListener('click', () => {
+        if (textInput) textInput.focus();
+    });
+}
 
 // Handle window resize for caret positioning
 window.addEventListener('resize', () => {
@@ -978,7 +1003,7 @@ function initializeTest() {
         isPaused: false,
         startTime: null,
         currentTime: 0,
-        timeLimit: parseInt(timeSelect.value),
+        timeLimit: (timeSelect ? parseInt(timeSelect.value) : 60),
         currentWordIndex: 0,
         currentCharIndex: 0,
         words: [],
@@ -988,7 +1013,7 @@ function initializeTest() {
         errors: 0,
         wpmHistory: [],
         rawWpmHistory: [],
-        difficulty: difficultySelect.value
+        difficulty: (difficultySelect ? difficultySelect.value : 'normal')
     };
     
     // Load settings from settings manager
@@ -996,42 +1021,48 @@ function initializeTest() {
     gameState.difficulty = settingsManager.get('difficulty');
     
     // Update UI elements with current settings
-    timeSelect.value = gameState.timeLimit;
-    difficultySelect.value = gameState.difficulty;
-    soundToggle.checked = settingsManager.get('soundEnabled');
-    smoothCaretToggle.checked = settingsManager.get('smoothCaret');
-    liveWpmToggle.checked = settingsManager.get('liveWpm');
+    if (timeSelect) timeSelect.value = gameState.timeLimit;
+    if (difficultySelect) difficultySelect.value = gameState.difficulty;
+    if (soundToggle) soundToggle.checked = settingsManager.get('soundEnabled');
+    if (smoothCaretToggle) smoothCaretToggle.checked = settingsManager.get('smoothCaret');
+    if (liveWpmToggle) liveWpmToggle.checked = settingsManager.get('liveWpm');
     
     // Apply sound setting
     soundManager.enabled = settingsManager.get('soundEnabled');
     
     // Show/hide raw WPM based on setting
-    document.getElementById('rawWpmStat').style.display = 
-        settingsManager.get('liveWpm') ? 'block' : 'none';
+    const rawWpmStat = document.getElementById('rawWpmStat');
+    if (rawWpmStat) {
+        rawWpmStat.style.display = settingsManager.get('liveWpm') ? 'block' : 'none';
+    }
     
     // Generate words based on difficulty
     const wordCount = Math.max(50, Math.ceil(gameState.timeLimit * 2.5));
     gameState.words = generateWords(wordCount);
     
     // Reset UI elements
-    textInput.disabled = false;
-    textInput.value = '';
-    textInput.focus();
+    if (textInput) {
+        textInput.disabled = false;
+        textInput.value = '';
+        textInput.focus();
+    }
     
     // Reset display
-    textDisplay.classList.remove('focused');
+    if (textDisplay) textDisplay.classList.remove('focused');
     
     // Hide results and show stats bar
-    resultsDiv.style.display = 'none';
-    resultsDiv.classList.remove('fade-in');
-    statsBar.style.display = 'flex';
+    if (resultsDiv) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.classList.remove('fade-in');
+    }
+    if (statsBar) statsBar.style.display = 'flex';
     
     // Reset statistics display
-    wpmElement.textContent = '0';
-    rawWpmElement.textContent = '0';
-    accuracyElement.textContent = '100%';
-    timerElement.textContent = gameState.timeLimit;
-    errorsElement.textContent = '0';
+    if (wpmElement) wpmElement.textContent = '0';
+    if (rawWpmElement) rawWpmElement.textContent = '0';
+    if (accuracyElement) accuracyElement.textContent = '100%';
+    if (timerElement) timerElement.textContent = gameState.timeLimit;
+    if (errorsElement) errorsElement.textContent = '0';
     
     // Reset visual elements
     const progressBar = document.getElementById('progressBar');
@@ -1047,7 +1078,7 @@ function initializeTest() {
     
     // Focus on input
     setTimeout(() => {
-        textInput.focus();
+        if (textInput) textInput.focus();
     }, 100);
     
     console.log(`Test initialized: ${gameState.difficulty} difficulty, ${gameState.timeLimit}s, ${gameState.words.length} words`);
