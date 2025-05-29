@@ -23,10 +23,11 @@ A professional-grade, minimalistic typing test inspired by Monkeytype with pure 
   - Punctuation: Special characters and symbols
 
 ### 🎵 Audio & Visual
-- **Web Audio API** - Professional sound effects with pitch variation
+- **Web Audio API** - Professional sound effects
 - **Smooth caret tracking** - Animated cursor with auto-scrolling
-- **Pure monochrome design** - Strict black (#000000) and white (#ffffff) palette
+- **Pure monochrome design** - Strict black (#000000) and white (#ffffff) palette with red (#ff0000) for errors
 - **Responsive layout** - Mobile and desktop optimized
+- **Theme toggle** - Switch between dark and light monochrome themes
 
 ### ⚙️ Customization
 - **Settings persistence** - LocalStorage saves preferences
