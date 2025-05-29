@@ -214,10 +214,12 @@ header h1 {
     background-color: var(--bg-primary);
     padding: 2rem;
     border-radius: var(--border-radius);
-    font-size: 1.3rem;
-    line-height: 2;
+    font-size: 1.4rem;
+    line-height: 1.8;
     margin-bottom: 1rem;
-    min-height: 200px;
+    height: calc(1.4rem * 1.8 * 6 + 4rem);
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 2px solid var(--text-primary);
     transition: var(--transition-medium);
     position: relative;
@@ -225,6 +227,8 @@ header h1 {
     word-spacing: 0.1em;
     user-select: none;
     cursor: text;
+    outline: none;
+    scroll-behavior: smooth;
 }
 
 .text-display:hover {
@@ -306,13 +310,12 @@ header h1 {
 .caret {
     position: absolute;
     width: 2px;
-    height: 1.6rem;
+    height: calc(1.4rem * 1.8);
     background-color: var(--text-primary);
     border-radius: 1px;
     animation: caretBlink 1s infinite;
-    transition: all 0.1s ease-out;
     z-index: 10;
-    top: 0.2rem;
+    transition: all 0.1s ease-out;
 }
 
 .caret.smooth {
@@ -322,32 +325,6 @@ header h1 {
 @keyframes caretBlink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0.3; }
-}
-
-.input-area {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.3rem;
-    font-family: var(--font-mono);
-    background-color: var(--bg-primary);
-    border: 2px solid var(--text-primary);
-    border-radius: var(--border-radius);
-    color: transparent;
-    resize: none;
-    height: 80px;
-    transition: var(--transition-fast);
-    caret-color: transparent;
-}
-
-.input-area:focus {
-    outline: none;
-    border-color: var(--text-primary);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
-}
-
-.input-area::placeholder {
-    color: var(--text-primary);
-    opacity: 0.6;
 }
 
 .controls {
@@ -563,11 +540,7 @@ header h1 {
         font-size: 1.1rem;
         padding: 1rem;
         line-height: 1.8;
-    }
-    
-    .input-area {
-        font-size: 1.1rem;
-        height: 60px;
+        min-height: 300px;
     }
     
     .controls {

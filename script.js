@@ -235,6 +235,7 @@ let gameState = {
     timeLimit: 60,
     currentWordIndex: 0,
     currentCharIndex: 0,
+    currentTypedWord: '',
     words: [],
     typedWords: [],
     correctChars: 0,
@@ -248,7 +249,7 @@ let gameState = {
 // DOM elements with error checking
 const elements = {
     textDisplay: document.getElementById('textDisplay'),
-    textInput: document.getElementById('textInput'),
+    textInput: null, // No longer using separate input
     caret: document.getElementById('caret'),
     wpm: document.getElementById('wpm'),
     rawWpm: document.getElementById('rawWpm'),
@@ -273,14 +274,14 @@ const elements = {
 
 // Validate DOM elements
 Object.keys(elements).forEach(key => {
-    if (!elements[key]) {
+    if (!elements[key] && key !== 'textInput') {
         console.warn(`Element not found: ${key}`);
     }
 });
 
 // Extract elements for backward compatibility
 const {
-    textDisplay, textInput, caret, wpm: wpmElement, rawWpm: rawWpmElement,
+    textDisplay, caret, wpm: wpmElement, rawWpm: rawWpmElement,
     accuracy: accuracyElement, timer: timerElement, errors: errorsElement,
     restartBtn, timeSelect, results: resultsDiv, statsBar, settingsToggle,
     settingsPanel, difficultySelect, soundToggle, smoothCaretToggle,
@@ -358,42 +359,59 @@ function generateWords(count) {
     const wordPool = wordLists[difficulty] || wordLists.normal;
     const words = [];
     
+    // Generate many more words to ensure the display is always full
+    const targetWords = Math.max(count, 300); // Generate at least 300 words
+    
     if (difficulty === 'quotes') {
         // For quotes, intelligently combine sentences
         const sentences = wordPool.slice();
         let wordCount = 0;
         
-        while (wordCount < count && sentences.length > 0) {
+        while (wordCount < targetWords && sentences.length > 0) {
             const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
             const sentenceWords = randomSentence.split(' ');
             
             for (const word of sentenceWords) {
-                if (wordCount >= count) break;
+                if (wordCount >= targetWords) break;
                 words.push(word);
                 wordCount++;
             }
         }
         
         // Fill remaining with random sentence words if needed
-        while (words.length < count) {
+        while (words.length < targetWords) {
             const randomSentence = wordPool[Math.floor(Math.random() * wordPool.length)];
             const sentenceWords = randomSentence.split(' ');
             const randomWord = sentenceWords[Math.floor(Math.random() * sentenceWords.length)];
             words.push(randomWord);
         }
     } else {
-        // Advanced word selection to avoid repetition
-        const recentWords = [];
-        const maxRecent = Math.min(20, wordPool.length / 2);
+        // Enhanced randomization - completely shuffle the word pool multiple times
+        const shuffledPool = [];
         
-        for (let i = 0; i < count; i++) {
-            let attempts = 0;
+        // Create multiple copies of the word pool for better randomization
+        for (let i = 0; i < Math.ceil(targetWords / wordPool.length) + 2; i++) {
+            shuffledPool.push(...wordPool);
+        }
+        
+        // Fisher-Yates shuffle for true randomization
+        for (let i = shuffledPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
+        }
+        
+        // Take words ensuring no immediate repetition
+        const recentWords = [];
+        const maxRecent = Math.min(10, wordPool.length / 3);
+        
+        for (let i = 0; i < targetWords; i++) {
             let word;
+            let attempts = 0;
             
             do {
-                word = wordPool[Math.floor(Math.random() * wordPool.length)];
+                word = shuffledPool[Math.floor(Math.random() * shuffledPool.length)];
                 attempts++;
-            } while (recentWords.includes(word) && attempts < 10);
+            } while (recentWords.includes(word) && attempts < 20);
             
             words.push(word);
             recentWords.push(word);
@@ -404,10 +422,10 @@ function generateWords(count) {
         }
     }
     
-    return words.slice(0, count);
+    return words.slice(0, targetWords);
 }
 
-// Enhanced text display with better visual feedback
+// Enhanced text display with flowing lines and auto-scroll
 function displayText() {
     if (!textDisplay) {
         console.warn('textDisplay element not found');
@@ -415,17 +433,26 @@ function displayText() {
     }
     
     textDisplay.innerHTML = '';
-    const fragment = document.createDocumentFragment();
     
-    // Show words around current position for better performance
-    const startIndex = Math.max(0, gameState.currentWordIndex - 15);
-    const endIndex = Math.min(gameState.words.length, gameState.currentWordIndex + 25);
+    // Calculate words to show around current position
+    const wordsToShow = 80; // Total words to render
+    const startIndex = Math.max(0, gameState.currentWordIndex - 10);
+    const endIndex = Math.min(gameState.words.length, startIndex + wordsToShow);
+    
+    // Create a container for all words
+    const wordsContainer = document.createElement('div');
+    wordsContainer.style.position = 'relative';
+    wordsContainer.style.width = '100%';
+    wordsContainer.style.lineHeight = '1.8';
+    wordsContainer.style.fontSize = '1.4rem';
     
     for (let wordIndex = startIndex; wordIndex < endIndex; wordIndex++) {
         const word = gameState.words[wordIndex];
         const wordElement = document.createElement('span');
         wordElement.className = 'word';
         wordElement.setAttribute('data-word-index', wordIndex);
+        wordElement.style.marginRight = '0.4rem';
+        wordElement.style.display = 'inline';
         
         // Set word state classes
         if (wordIndex === gameState.currentWordIndex) {
@@ -450,7 +477,7 @@ function displayText() {
                 
                 if (wordIndex === gameState.currentWordIndex) {
                     // Current word being typed
-                    const inputValue = (textInput && textInput.value) || '';
+                    const inputValue = gameState.currentTypedWord || '';
                     if (charIndex < inputValue.length) {
                         if (inputValue[charIndex] === char) {
                             charElement.classList.add('correct');
@@ -475,7 +502,7 @@ function displayText() {
         
         // Add extra characters if typed word is longer than original
         if (wordIndex === gameState.currentWordIndex) {
-            const inputValue = (textInput && textInput.value) || '';
+            const inputValue = gameState.currentTypedWord || '';
             if (inputValue.length > word.length) {
                 for (let i = word.length; i < inputValue.length; i++) {
                     const extraChar = document.createElement('span');
@@ -498,36 +525,30 @@ function displayText() {
             }
         }
         
-        fragment.appendChild(wordElement);
+        wordsContainer.appendChild(wordElement);
     }
     
-    textDisplay.appendChild(fragment);
+    textDisplay.appendChild(wordsContainer);
     if (caret) textDisplay.appendChild(caret);
     
-    // Update caret position after DOM changes
+    // Update caret position and auto-scroll
     requestAnimationFrame(() => {
         updateCaret();
+        autoScrollToKeepCurrentWordVisible();
     });
 }
 
-// Update smooth caret position
+// Update caret position to follow current typing position
 function updateCaret() {
     if (!caret || !textDisplay) {
         return;
     }
     
-    if (!settingsManager.get('smoothCaret')) {
-        caret.style.display = 'none';
-        return;
-    }
-    
     caret.style.display = 'block';
-    caret.classList.toggle('smooth', settingsManager.get('smoothCaret'));
     
     // Find the current word element
     const currentWordElement = textDisplay.querySelector(`[data-word-index="${gameState.currentWordIndex}"]`);
     if (!currentWordElement) {
-        // If we can't find the current word, hide the caret
         caret.style.display = 'none';
         return;
     }
@@ -560,15 +581,37 @@ function updateCaret() {
         }
     }
     
-    // Apply the position with smooth transition
+    // Apply the position
     caret.style.left = caretLeft + 'px';
     caret.style.top = caretTop + 'px';
+}
+
+// Auto-scroll to keep current word visible in the 6-line display
+function autoScrollToKeepCurrentWordVisible() {
+    if (!textDisplay) return;
     
-    // Auto-scroll if caret goes out of view
-    if (caretTop < 10) {
-        textDisplay.scrollTop -= 50;
-    } else if (caretTop > textDisplay.clientHeight - 40) {
-        textDisplay.scrollTop += 50;
+    const currentWordElement = textDisplay.querySelector(`[data-word-index="${gameState.currentWordIndex}"]`);
+    if (!currentWordElement) return;
+    
+    const displayRect = textDisplay.getBoundingClientRect();
+    const wordRect = currentWordElement.getBoundingClientRect();
+    
+    const lineHeight = 1.4 * 1.8; // font-size * line-height in rem
+    const lineHeightPx = lineHeight * 16; // Convert to pixels (assuming 1rem = 16px)
+    
+    // Calculate which line the current word is on relative to the display
+    const relativeTop = wordRect.top - displayRect.top;
+    const currentLine = Math.floor(relativeTop / lineHeightPx);
+    
+    // If current word is on line 4 or beyond (0-indexed), scroll up to keep it visible
+    if (currentLine >= 4) {
+        const scrollAmount = (currentLine - 3) * lineHeightPx;
+        textDisplay.scrollTop += scrollAmount;
+    }
+    // If current word is above the visible area, scroll up
+    else if (currentLine < 0) {
+        const scrollAmount = Math.abs(currentLine) * lineHeightPx;
+        textDisplay.scrollTop -= scrollAmount;
     }
 }
 
@@ -640,39 +683,77 @@ function calculateConsistency() {
     return Math.round(consistency);
 }
 
-// Update live statistics with minimal animations
+// Optimized stats calculation with real-time tracking
 function updateStats() {
-    const newWpm = calculateWPM();
-    const newRawWpm = calculateRawWPM();
-    const newAccuracy = calculateAccuracy();
+    // Recalculate character counts
+    gameState.totalChars = 0;
+    gameState.correctChars = 0;
+    gameState.errors = 0;
     
-    // Update progress bar
-    const progress = Math.min(100, (gameState.currentTime / gameState.timeLimit) * 100);
-    const progressBar = document.getElementById('progressBar');
-    if (progressBar) {
-        progressBar.style.width = progress + '%';
+    // Count previous complete words
+    for (let i = 0; i < gameState.currentWordIndex; i++) {
+        const typedWord = gameState.typedWords[i] || '';
+        const originalWord = gameState.words[i] || '';
+        for (let j = 0; j < Math.max(typedWord.length, originalWord.length); j++) {
+            gameState.totalChars++;
+            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
+                gameState.correctChars++;
+            } else {
+                gameState.errors++;
+            }
+        }
     }
     
-    // Update floating WPM indicator (minimal)
+    // Count current word being typed
+    const currentWord = gameState.words[gameState.currentWordIndex] || '';
+    const currentTyped = gameState.currentTypedWord || '';
+    for (let i = 0; i < Math.max(currentTyped.length, currentWord.length); i++) {
+        if (i < currentTyped.length) {
+            gameState.totalChars++;
+            if (i < currentWord.length && currentTyped[i] === currentWord[i]) {
+                gameState.correctChars++;
+            } else {
+                gameState.errors++;
+            }
+        }
+    }
+
+    // Calculate time-based stats
+    const timeElapsed = gameState.isActive && gameState.startTime ? 
+        (Date.now() - gameState.startTime) / 1000 : gameState.currentTime;
+    const minutes = timeElapsed / 60;
+
+    // Calculate WPM (words per minute)
+    const wordsTyped = gameState.correctChars / 5; // Standard: 5 chars = 1 word
+    const wpm = minutes > 0 ? Math.round(wordsTyped / minutes) : 0;
+
+    // Calculate raw WPM (includes incorrect characters)
+    const rawWordsTyped = gameState.totalChars / 5;
+    const rawWpm = minutes > 0 ? Math.round(rawWordsTyped / minutes) : 0;
+
+    // Calculate accuracy
+    const accuracy = gameState.totalChars > 0 ? 
+        Math.round((gameState.correctChars / gameState.totalChars) * 100) : 100;
+
+    // Update display elements
+    if (wpmElement) wpmElement.textContent = wpm;
+    if (rawWpmElement) rawWpmElement.textContent = rawWpm;
+    if (accuracyElement) accuracyElement.textContent = accuracy + '%';
+    if (errorsElement) errorsElement.textContent = gameState.errors;
+
+    // Update live WPM indicator
     const floatingWpm = document.getElementById('floatingWpm');
     const liveWpmValue = document.getElementById('liveWpmValue');
     if (floatingWpm && liveWpmValue && gameState.isActive) {
-        floatingWpm.style.display = 'block';
-        liveWpmValue.textContent = newWpm;
+        liveWpmValue.textContent = wpm;
+        floatingWpm.style.display = (liveWpmToggle && liveWpmToggle.checked) ? 'block' : 'none';
     }
-    
-    // Simple value updates without flashy animations
-    if (wpmElement && wpmElement.textContent !== newWpm.toString()) {
-        wpmElement.textContent = newWpm;
+
+    // Store WPM history for charts
+    if (gameState.isActive && timeElapsed > 0) {
+        gameState.wpmHistory.push(wpm);
+        gameState.rawWpmHistory.push(rawWpm);
     }
-    
-    if (rawWpmElement && settingsManager.get('liveWpm')) {
-        rawWpmElement.textContent = newRawWpm;
-    }
-    
-    if (accuracyElement) accuracyElement.textContent = newAccuracy + '%';
-    if (timerElement) timerElement.textContent = Math.max(0, gameState.timeLimit - Math.floor(gameState.currentTime));
-    if (errorsElement) errorsElement.textContent = gameState.errors;
 }
 
 // Enhanced test completion with detailed results
@@ -880,132 +961,162 @@ function restartTest() {
     initializeTest();
 }
 
-// Keyboard shortcuts handler
-function handleKeyboardShortcuts(event) {
-    // Tab - Restart test
-    if (event.key === 'Tab' && !gameState.isActive) {
-        event.preventDefault();
-        restartTest();
-        return;
+// Enhanced event listeners with comprehensive keyboard shortcuts
+function setupEventListeners() {
+    // Direct keyboard input on text display
+    if (textDisplay) {
+        textDisplay.addEventListener('click', () => {
+            textDisplay.focus();
+        });
+        
+        textDisplay.addEventListener('focus', () => {
+            textDisplay.classList.add('focused');
+        });
+        
+        textDisplay.addEventListener('blur', () => {
+            textDisplay.classList.remove('focused');
+        });
     }
-    
-    // Escape - Focus input
-    if (event.key === 'Escape') {
-        event.preventDefault();
-        textInput.focus();
-        return;
-    }
-    
-    // Ctrl+Shift+P - Toggle settings
-    if (event.ctrlKey && event.shiftKey && event.key === 'P') {
-        event.preventDefault();
-        toggleSettings();
-        return;
-    }
-    
-    // Ctrl+Shift+S - Toggle sound
-    if (event.ctrlKey && event.shiftKey && event.key === 'S') {
-        event.preventDefault();
-        soundToggle.checked = !soundToggle.checked;
-        soundManager.enabled = soundToggle.checked;
-        settingsManager.set('soundEnabled', soundToggle.checked);
-        showToast(`Sound ${soundToggle.checked ? 'enabled' : 'disabled'}`);
-        return;
-    }
-}
 
-// Toggle settings panel
-function toggleSettings() {
-    settingsPanel.classList.toggle('active');
-}
-
-// Toggle keyboard shortcuts info
-function toggleKeyboardShortcuts() {
-    const isVisible = keyboardShortcuts.style.display !== 'none';
-    keyboardShortcuts.style.display = isVisible ? 'none' : 'block';
-    if (!isVisible) {
-        keyboardShortcuts.classList.add('slide-up');
-    }
-}
-
-// Event listeners with error checking
-if (textInput) textInput.addEventListener('input', handleInput);
-if (restartBtn) restartBtn.addEventListener('click', restartTest);
-if (timeSelect) {
-    timeSelect.addEventListener('change', () => {
-        settingsManager.set('timeLimit', parseInt(timeSelect.value));
-    });
-}
-
-// Settings event listeners
-if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
-if (difficultySelect) {
-    difficultySelect.addEventListener('change', () => {
-        settingsManager.set('difficulty', difficultySelect.value);
-    });
-}
-if (soundToggle) {
-    soundToggle.addEventListener('change', () => {
-        soundManager.enabled = soundToggle.checked;
-        settingsManager.set('soundEnabled', soundToggle.checked);
-    });
-}
-if (smoothCaretToggle) {
-    smoothCaretToggle.addEventListener('change', () => {
-        settingsManager.set('smoothCaret', smoothCaretToggle.checked);
-        updateCaret();
-    });
-}
-if (liveWpmToggle) {
-    liveWpmToggle.addEventListener('change', () => {
-        settingsManager.set('liveWpm', liveWpmToggle.checked);
-        const rawWpmStat = document.getElementById('rawWpmStat');
-        if (rawWpmStat) {
-            rawWpmStat.style.display = liveWpmToggle.checked ? 'block' : 'none';
+    // Global keyboard event listener
+    document.addEventListener('keydown', (event) => {
+        // Check if user is typing in an input field
+        const isTypingInInput = event.target.tagName === 'INPUT' || 
+                               event.target.tagName === 'TEXTAREA' || 
+                               event.target.tagName === 'SELECT';
+        
+        // Handle keyboard shortcuts
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            restartTest();
+            return;
+        }
+        
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            if (textDisplay) {
+                textDisplay.focus();
+            }
+            return;
+        }
+        
+        if (event.ctrlKey && event.shiftKey && event.key === 'P') {
+            event.preventDefault();
+            if (settingsPanel) {
+                settingsPanel.classList.toggle('active');
+            }
+            return;
+        }
+        
+        if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+            event.preventDefault();
+            if (soundToggle) {
+                soundToggle.checked = !soundToggle.checked;
+                soundToggle.dispatchEvent(new Event('change'));
+            }
+            return;
+        }
+        
+        // If not typing in an input field, handle typing
+        if (!isTypingInInput) {
+            handleKeyboard(event);
         }
     });
+
+    // Restart button
+    if (restartBtn) {
+        restartBtn.addEventListener('click', restartTest);
+    }
+    
+    // Time selection
+    if (timeSelect) {
+        timeSelect.addEventListener('change', (event) => {
+            gameState.timeLimit = parseInt(event.target.value);
+            initializeTest();
+        });
+    }
+    
+    // Settings toggle
+    if (settingsToggle) {
+        settingsToggle.addEventListener('click', () => {
+            if (settingsPanel) {
+                settingsPanel.classList.toggle('active');
+            }
+        });
+    }
+    
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            themeManager.toggle();
+        });
+    }
+    
+    // Difficulty change
+    if (difficultySelect) {
+        difficultySelect.addEventListener('change', (event) => {
+            gameState.difficulty = event.target.value;
+            initializeTest();
+        });
+    }
+    
+    // Sound toggle
+    if (soundToggle) {
+        soundToggle.addEventListener('change', (event) => {
+            soundManager.enabled = event.target.checked;
+            localStorage.setItem('soundEnabled', event.target.checked);
+        });
+    }
+    
+    // Smooth caret toggle
+    if (smoothCaretToggle) {
+        smoothCaretToggle.addEventListener('change', (event) => {
+            const smoothEnabled = event.target.checked;
+            if (caret) {
+                caret.classList.toggle('smooth', smoothEnabled);
+            }
+            localStorage.setItem('smoothCaret', smoothEnabled);
+        });
+    }
+    
+    // Live WPM toggle
+    if (liveWpmToggle) {
+        liveWpmToggle.addEventListener('change', (event) => {
+            const liveWpmEnabled = event.target.checked;
+            const floatingWpm = document.getElementById('floatingWpm');
+            if (floatingWpm) {
+                floatingWpm.style.display = liveWpmEnabled ? 'block' : 'none';
+            }
+            localStorage.setItem('liveWpmEnabled', liveWpmEnabled);
+        });
+    }
+    
+    // Info button for keyboard shortcuts
+    if (infoBtn && keyboardShortcuts) {
+        infoBtn.addEventListener('click', () => {
+            keyboardShortcuts.style.display = keyboardShortcuts.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+    
+    // Share button
+    if (shareBtn) {
+        shareBtn.addEventListener('click', shareResults);
+    }
 }
-
-// Theme toggle event listener
-if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        themeManager.toggle();
-    });
-}
-
-// Other event listeners
-if (infoBtn) infoBtn.addEventListener('click', toggleKeyboardShortcuts);
-if (shareBtn) shareBtn.addEventListener('click', shareResults);
-
-// Global keyboard shortcuts
-document.addEventListener('keydown', handleKeyboardShortcuts);
-
-// Prevent context menu on right click
-document.addEventListener('contextmenu', (e) => e.preventDefault());
-
-// Focus input when clicking on text display
-if (textDisplay) {
-    textDisplay.addEventListener('click', () => {
-        if (textInput) textInput.focus();
-    });
-}
-
-// Handle window resize for caret positioning
-window.addEventListener('resize', () => {
-    updateCaret();
-});
 
 // Initialize the test and set up the game state
 function initializeTest() {
     // Reset game state
-    gameState = {
+    Object.assign(gameState, {
         isActive: false,
         isPaused: false,
         startTime: null,
         currentTime: 0,
-        timeLimit: (timeSelect ? parseInt(timeSelect.value) : 60),
+        timeLimit: parseInt((timeSelect && timeSelect.value) || '60'),
         currentWordIndex: 0,
         currentCharIndex: 0,
+        currentTypedWord: '',
         words: [],
         typedWords: [],
         correctChars: 0,
@@ -1013,177 +1124,107 @@ function initializeTest() {
         errors: 0,
         wpmHistory: [],
         rawWpmHistory: [],
-        difficulty: (difficultySelect ? difficultySelect.value : 'normal')
-    };
-    
-    // Load settings from settings manager
-    gameState.timeLimit = settingsManager.get('timeLimit');
-    gameState.difficulty = settingsManager.get('difficulty');
-    
-    // Update UI elements with current settings
-    if (timeSelect) timeSelect.value = gameState.timeLimit;
-    if (difficultySelect) difficultySelect.value = gameState.difficulty;
-    if (soundToggle) soundToggle.checked = settingsManager.get('soundEnabled');
-    if (smoothCaretToggle) smoothCaretToggle.checked = settingsManager.get('smoothCaret');
-    if (liveWpmToggle) liveWpmToggle.checked = settingsManager.get('liveWpm');
-    
-    // Apply sound setting
-    soundManager.enabled = settingsManager.get('soundEnabled');
-    
-    // Show/hide raw WPM based on setting
-    const rawWpmStat = document.getElementById('rawWpmStat');
-    if (rawWpmStat) {
-        rawWpmStat.style.display = settingsManager.get('liveWpm') ? 'block' : 'none';
-    }
-    
-    // Generate words based on difficulty
-    const wordCount = Math.max(50, Math.ceil(gameState.timeLimit * 2.5));
-    gameState.words = generateWords(wordCount);
-    
-    // Reset UI elements
-    if (textInput) {
-        textInput.disabled = false;
-        textInput.value = '';
-        textInput.focus();
-    }
-    
-    // Reset display
-    if (textDisplay) textDisplay.classList.remove('focused');
-    
-    // Hide results and show stats bar
-    if (resultsDiv) {
-        resultsDiv.style.display = 'none';
-        resultsDiv.classList.remove('fade-in');
-    }
+        difficulty: (difficultySelect && difficultySelect.value) || 'normal'
+    });
+
+    // Generate plenty of words to completely fill the larger display area
+    gameState.words = generateWords(300);
+
+    // Update UI
+    if (resultsDiv) resultsDiv.style.display = 'none';
     if (statsBar) statsBar.style.display = 'flex';
+    if (textDisplay) {
+        textDisplay.classList.remove('focused');
+        textDisplay.focus(); // Auto-focus the text display
+        textDisplay.scrollTop = 0; // Reset scroll position
+    }
     
-    // Reset statistics display
-    if (wpmElement) wpmElement.textContent = '0';
-    if (rawWpmElement) rawWpmElement.textContent = '0';
-    if (accuracyElement) accuracyElement.textContent = '100%';
+    // Update timer display
     if (timerElement) timerElement.textContent = gameState.timeLimit;
-    if (errorsElement) errorsElement.textContent = '0';
     
-    // Reset visual elements
-    const progressBar = document.getElementById('progressBar');
-    const floatingWpm = document.getElementById('floatingWpm');
-    if (progressBar) progressBar.style.width = '0%';
-    if (floatingWpm) floatingWpm.style.display = 'none';
-    
-    // Generate and display text
     displayText();
-    
-    // Start performance monitoring
-    performanceMonitor.start();
-    
-    // Focus on input
-    setTimeout(() => {
-        if (textInput) textInput.focus();
-    }, 100);
-    
-    console.log(`Test initialized: ${gameState.difficulty} difficulty, ${gameState.timeLimit}s, ${gameState.words.length} words`);
+    updateStats();
 }
 
-// Initialize the test when the page loads
-window.addEventListener('load', () => {
+// Initialize everything when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
     initializeTest();
-    showToast('Welcome! Press Tab to restart, Esc to focus input');
 });
 
-// Clean input handling with sound effects
-function handleInput(event) {
-    if (!gameState.isActive) {
+// Enhanced keyboard input handler for direct text display interaction
+function handleKeyboard(event) {
+    // Prevent default browser behavior for typing keys
+    if (event.key.length === 1 || event.key === 'Backspace' || event.key === ' ') {
+        event.preventDefault();
+    }
+
+    if (!gameState.isActive && (event.key.length === 1 || event.key === ' ')) {
         gameState.isActive = true;
         gameState.startTime = Date.now();
         startTimer();
-        textDisplay.classList.add('focused');
+        if (textDisplay) textDisplay.classList.add('focused');
     }
-    
-    const inputValue = event.target.value;
+
     const currentWord = gameState.words[gameState.currentWordIndex];
-    
-    // Update current character index based on input length
-    gameState.currentCharIndex = inputValue.length;
-    
-    // Play sound for keystrokes
-    if (inputValue.length > 0) {
-        const lastChar = inputValue[inputValue.length - 1];
-        const expectedChar = currentWord[inputValue.length - 1];
+    if (!currentWord) return;
+
+    // Handle regular character input
+    if (event.key.length === 1 && event.key !== ' ') {
+        gameState.currentTypedWord += event.key;
+        gameState.currentCharIndex = gameState.currentTypedWord.length;
         
-        if (lastChar === expectedChar) {
+        // Play sound for keystrokes
+        const expectedChar = currentWord[gameState.currentTypedWord.length - 1];
+        if (event.key === expectedChar) {
             soundManager.playSound('keypress');
         } else {
             soundManager.playSound('error');
         }
+        
+        displayText();
+        updateStats();
+    }
+    
+    // Handle backspace
+    else if (event.key === 'Backspace') {
+        if (gameState.currentTypedWord.length > 0) {
+            gameState.currentTypedWord = gameState.currentTypedWord.slice(0, -1);
+            gameState.currentCharIndex = gameState.currentTypedWord.length;
+            displayText();
+            updateStats();
+        }
     }
     
     // Handle space (word completion)
-    if (inputValue.endsWith(' ')) {
-        const typedWord = inputValue.trim();
-        gameState.typedWords[gameState.currentWordIndex] = typedWord;
-        
-        // Count characters for this word
-        const originalWord = gameState.words[gameState.currentWordIndex];
-        for (let i = 0; i < Math.max(typedWord.length, originalWord.length); i++) {
-            gameState.totalChars++;
-            if (i < typedWord.length && i < originalWord.length && typedWord[i] === originalWord[i]) {
-                gameState.correctChars++;
-            } else {
-                gameState.errors++;
+    else if (event.key === ' ') {
+        if (gameState.currentTypedWord.length > 0) {
+            gameState.typedWords[gameState.currentWordIndex] = gameState.currentTypedWord;
+            
+            // Count characters for this word
+            const originalWord = gameState.words[gameState.currentWordIndex];
+            for (let i = 0; i < Math.max(gameState.currentTypedWord.length, originalWord.length); i++) {
+                gameState.totalChars++;
+                if (i < gameState.currentTypedWord.length && i < originalWord.length && gameState.currentTypedWord[i] === originalWord[i]) {
+                    gameState.correctChars++;
+                } else {
+                    gameState.errors++;
+                }
             }
-        }
-        
-        // Move to next word
-        gameState.currentWordIndex++;
-        gameState.currentCharIndex = 0;
-        
-        // Check if test is complete
-        if (gameState.currentWordIndex >= gameState.words.length) {
-            endTest();
-            return;
-        }
-        
-        // Clear input for next word
-        event.target.value = '';
-        
-        // Update display and caret
-        displayText();
-        updateStats();
-        return;
-    }
-    
-    // Real-time character counting for live stats
-    gameState.totalChars = 0;
-    gameState.correctChars = 0;
-    gameState.errors = 0;
-    
-    // Count previous complete words
-    for (let i = 0; i < gameState.currentWordIndex; i++) {
-        const typedWord = gameState.typedWords[i] || '';
-        const originalWord = gameState.words[i];
-        for (let j = 0; j < Math.max(typedWord.length, originalWord.length); j++) {
-            gameState.totalChars++;
-            if (j < typedWord.length && j < originalWord.length && typedWord[j] === originalWord[j]) {
-                gameState.correctChars++;
-            } else {
-                gameState.errors++;
+            
+            // Move to next word
+            gameState.currentWordIndex++;
+            gameState.currentCharIndex = 0;
+            gameState.currentTypedWord = '';
+            
+            // Check if test is complete
+            if (gameState.currentWordIndex >= gameState.words.length) {
+                endTest();
+                return;
             }
+            
+            displayText();
+            updateStats();
         }
     }
-    
-    // Count current word being typed
-    for (let i = 0; i < Math.max(inputValue.length, currentWord.length); i++) {
-        if (i < inputValue.length) {
-            gameState.totalChars++;
-            if (i < currentWord.length && inputValue[i] === currentWord[i]) {
-                gameState.correctChars++;
-            } else {
-                gameState.errors++;
-            }
-        }
-    }
-    
-    // Update display and stats
-    displayText();
-    updateStats();
 }
