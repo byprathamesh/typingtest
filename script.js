@@ -184,28 +184,20 @@ class KeyboardSoundManager {
         this.noteIndex = 0;
         this.lastKeypressTime = 0;
         this.typingSpeed = 0;
-        this.currentScale = 'pentatonic';
+        this.currentScale = 'cosmic';
         this.rhythmPattern = 0;
         this.accuracyBonus = 1.0;
         this.consecutiveCorrect = 0;
         
-        // Expanded musical scales for variety and emotional depth
+        // The 7 most soothing musical scales for perfect typing experience
         this.scales = {
+            cosmic: [65.41, 87.31, 130.81, 174.61, 220.00, 293.66], // Deep space frequencies - DEFAULT
             pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25], // C, D, E, G, A, C
-            major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25], // C Major
-            minor: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Minor
-            dorian: [261.63, 293.66, 311.13, 349.23, 392.00, 440.00, 466.16, 523.25], // C Dorian
             ambient: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63], // Lower, more ambient
-            blues: [261.63, 311.13, 349.23, 369.99, 392.00, 466.16, 523.25], // C Blues
-            phrygian: [261.63, 277.18, 311.13, 349.23, 392.00, 415.30, 466.16, 523.25], // C Phrygian (exotic)
-            lydian: [261.63, 293.66, 329.63, 369.99, 392.00, 440.00, 493.88, 523.25], // C Lydian (dreamy)
-            mixolydian: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 466.16, 523.25], // C Mixolydian (folk)
-            harmonic: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 493.88, 523.25], // Harmonic minor (dramatic)
             japanese: [261.63, 277.18, 329.63, 392.00, 415.30, 523.25], // Japanese pentatonic (zen)
-            arabic: [261.63, 277.18, 329.63, 349.23, 392.00, 415.30, 466.16, 523.25], // Arabic-inspired
-            crystalline: [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98], // High crystal tones
-            cosmic: [65.41, 87.31, 130.81, 174.61, 220.00, 293.66], // Deep space frequencies
-            ethereal: [329.63, 415.30, 523.25, 659.25, 830.61, 1046.50] // Floating ethereal tones
+            ethereal: [329.63, 415.30, 523.25, 659.25, 830.61, 1046.50], // Floating ethereal tones
+            ocean: [65.41, 98.00, 130.81, 164.81, 196.00, 246.94], // Deep ocean wave sounds
+            meditation: [108.00, 136.10, 172.06, 216.00, 272.20, 432.00] // Sacred meditation frequencies
         };
         
         // Rhythm patterns for dynamic musical flow
@@ -726,7 +718,7 @@ class SettingsManager {
         this.timeLimit = 60; 
         this.soundEnabled = true; 
         this.volume = 30; 
-        this.musicScale = 'pentatonic';
+        this.musicScale = 'cosmic';
         this.liveWpmEnabled = true;
     }
     
@@ -1264,11 +1256,11 @@ function handleWordCompletion() {
     const currentLineIndex = gameState.lines.indexOf(currentLineElement);
     const isLastWordInLine = gameState.currentWordElement === currentLineElement.lastElementChild;
     
-    // Handle different states: initial 2-line state vs 3-line scrolling state
+    // Handle different states based on number of lines
     if (gameState.lines.length === 2) {
-        // Initial state with 2 lines
+        // Initial 2-line state
         if (isLastWordInLine && currentLineIndex === 0) {
-            // Completed first line in 2-line state - move to second line
+            // Completed first line - move to second line
             console.log('Completed first line, moving to second line...');
             const secondLine = gameState.lines[1];
             if (secondLine && secondLine.children.length > 0) {
@@ -1279,23 +1271,22 @@ function handleWordCompletion() {
                 }
             }
         } else if (isLastWordInLine && currentLineIndex === 1) {
-            // Completed second line in 2-line state - start scrolling behavior
-            console.log('Completed second line, starting scroll mode...');
-            addNewLine(); // This adds the third line
-            // Now we transition to 3-line scrolling mode
-            // User should be on the middle line (index 1) now
-            const middleLine = gameState.lines[1];
-            if (middleLine && middleLine.children.length > 0) {
-                gameState.currentWordElement = middleLine.children[0];
+            // Completed second line - add third line and move to it
+            console.log('Completed second line, adding third line...');
+            addNewLine();
+            // Move to the NEW third line (index 2)
+            const thirdLine = gameState.lines[2];
+            if (thirdLine && thirdLine.children.length > 0) {
+                gameState.currentWordElement = thirdLine.children[0];
                 const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
                 if (!isNaN(elementIndex)) {
                     gameState.currentWordIndex = elementIndex;
                 }
             }
-            // Update highlighting to 3-line mode
+            // Update highlighting for 3-line mode
             updateLineHighlighting();
         } else {
-            // Normal progression within the same line in 2-line state
+            // Normal progression within the same line
             const nextSibling = gameState.currentWordElement.nextElementSibling;
             if (nextSibling) {
                 gameState.currentWordElement = nextSibling;
@@ -1305,13 +1296,13 @@ function handleWordCompletion() {
                 }
             }
         }
-    } else {
-        // 3-line scrolling state - user always types on middle line (index 1)
-        if (isLastWordInLine && currentLineIndex === 1) {
-            // Completed middle line in 3-line state - scroll up
-            console.log('Completed middle line, scrolling up...');
-            addNewLine();
-            // After scrolling, user should stay on the middle line (index 1)
+    } else if (gameState.lines.length === 3) {
+        // 3-line state - need to handle transition to scrolling mode
+        if (isLastWordInLine && currentLineIndex === 2) {
+            // Completed third line - NOW start the scrolling loop
+            console.log('Completed third line, starting continuous scroll mode...');
+            addNewLine(); // This removes top line and adds new bottom line
+            // Now user should be on the middle line (index 1)
             const middleLine = gameState.lines[1];
             if (middleLine && middleLine.children.length > 0) {
                 gameState.currentWordElement = middleLine.children[0];
@@ -1319,11 +1310,22 @@ function handleWordCompletion() {
                 if (!isNaN(elementIndex)) {
                     gameState.currentWordIndex = elementIndex;
                 }
-            } else {
-                console.error('Middle line has no words after scrolling!');
+            }
+        } else if (isLastWordInLine && currentLineIndex === 1) {
+            // Already in scrolling mode - completed middle line
+            console.log('Completed middle line, continuing scroll...');
+            addNewLine();
+            // Stay on the middle line (index 1)
+            const middleLine = gameState.lines[1];
+            if (middleLine && middleLine.children.length > 0) {
+                gameState.currentWordElement = middleLine.children[0];
+                const elementIndex = parseInt(gameState.currentWordElement.getAttribute('data-word-index'));
+                if (!isNaN(elementIndex)) {
+                    gameState.currentWordIndex = elementIndex;
+                }
             }
         } else {
-            // Normal progression within the middle line in 3-line state
+            // Normal progression within the same line
             const nextSibling = gameState.currentWordElement.nextElementSibling;
             if (nextSibling) {
                 gameState.currentWordElement = nextSibling;
@@ -1331,8 +1333,6 @@ function handleWordCompletion() {
                 if (!isNaN(elementIndex)) {
                     gameState.currentWordIndex = elementIndex;
                 }
-            } else {
-                console.error('No next word found on current line');
             }
         }
     }
@@ -1651,10 +1651,23 @@ function updateLineHighlighting() {
         gameState.lines[0].classList.add('active');
         gameState.lines[1].classList.add('inactive');
     } else if (gameState.lines.length === 3) {
-        // 3-line state: highlight middle line, dim first and third
-        gameState.lines[0].classList.add('inactive');
-        gameState.lines[1].classList.add('active');
-        gameState.lines[2].classList.add('inactive');
+        // 3-line state: 
+        // - If user is on third line (index 2), highlight it
+        // - If user is on middle line (index 1), highlight it (scrolling mode)
+        const currentLineElement = gameState.currentWordElement?.parentElement;
+        const currentLineIndex = gameState.lines.indexOf(currentLineElement);
+        
+        if (currentLineIndex === 2) {
+            // User is on third line - highlight it, dim others
+            gameState.lines[0].classList.add('inactive');
+            gameState.lines[1].classList.add('inactive');
+            gameState.lines[2].classList.add('active');
+        } else {
+            // User is on middle line (scrolling mode) - highlight middle, dim first and third
+            gameState.lines[0].classList.add('inactive');
+            gameState.lines[1].classList.add('active');
+            gameState.lines[2].classList.add('inactive');
+        }
     }
 }
 // End of script. Ensure no duplicated/old functions below this line. 
