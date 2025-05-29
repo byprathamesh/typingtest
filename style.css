@@ -12,7 +12,7 @@
     --text-secondary: #ffffff;
     --text-muted: #ffffff;
     --accent-primary: #ffffff;
-    --error-color: #ffffff;
+    --error-color: #ff0000;
     --success-color: #ffffff;
     --warning-color: #ffffff;
     --border-radius: 8px;
@@ -241,49 +241,71 @@ header h1 {
     position: relative;
     display: inline-block;
     color: var(--text-primary);
+    transition: var(--transition-fast);
 }
 
 .word.correct {
     color: var(--text-primary);
-    opacity: 0.3;
+    opacity: 0.7;
 }
 
 .word.incorrect {
-    background-color: var(--text-primary);
-    color: var(--bg-primary);
+    color: var(--error-color);
+    background-color: transparent;
     border-radius: 4px;
     padding: 0 2px;
 }
 
 .word.current {
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.05);
     color: var(--text-primary);
-    padding: 2px 4px;
-    border-radius: 4px;
-    outline: 1px solid var(--text-primary);
+    padding: 4px 6px;
+    border-radius: 6px;
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+    position: relative;
+    animation: currentWordPulse 2s infinite;
+}
+
+.word.shake {
+    animation: errorShake 0.3s ease-in-out;
 }
 
 .char {
     position: relative;
     color: var(--text-primary);
+    transition: var(--transition-fast);
 }
 
 .char.correct {
     color: var(--text-primary);
-    opacity: 0.3;
+    opacity: 0.7;
     background-color: transparent;
 }
 
 .char.incorrect {
-    color: var(--bg-primary);
-    background-color: var(--text-primary);
+    color: var(--error-color);
+    background-color: transparent;
     border-radius: 2px;
+    position: relative;
+}
+
+.char.incorrect::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--error-color);
+    border-radius: 1px;
 }
 
 .char.extra {
-    color: var(--bg-primary);
-    background-color: var(--text-primary);
+    color: var(--error-color);
+    background-color: rgba(255, 0, 0, 0.2);
     border-radius: 2px;
+    padding: 1px 2px;
 }
 
 .caret {
@@ -296,15 +318,33 @@ header h1 {
     transition: all 0.1s ease-out;
     z-index: 10;
     top: 0.2rem;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .caret.smooth {
     transition: all 0.08s ease-out;
 }
 
+.caret.streak {
+    background-color: #00ff00;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
+    animation: caretStreak 0.8s infinite;
+}
+
 @keyframes caretBlink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0.3; }
+}
+
+@keyframes caretStreak {
+    0%, 50% { 
+        opacity: 1; 
+        transform: scaleY(1);
+    }
+    51%, 100% { 
+        opacity: 0.7; 
+        transform: scaleY(1.1);
+    }
 }
 
 .input-area {
@@ -655,4 +695,138 @@ header h1 {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Typing streak indicator */
+.streak-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 255, 0, 0.9);
+    color: #000000;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 1000;
+    animation: streakPulse 0.5s ease-out;
+    pointer-events: none;
+    border: 2px solid #00ff00;
+}
+
+@keyframes streakPulse {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Burst WPM indicator */
+.burst-indicator {
+    position: fixed;
+    top: 20%;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    animation: burstFade 2s ease-out forwards;
+    z-index: 100;
+}
+
+@keyframes burstFade {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Enhanced progress indicators */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--text-primary), rgba(255, 255, 255, 0.5));
+    transition: width 0.3s ease;
+    z-index: 1001;
+}
+
+/* Floating WPM indicator */
+.floating-wpm {
+    position: fixed;
+    top: 10%;
+    left: 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    font-size: 2rem;
+    font-weight: bold;
+    z-index: 100;
+    min-width: 120px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.floating-wpm .label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    display: block;
+}
+
+/* Enhanced statistics with better visual hierarchy */
+.stat-value.milestone {
+    animation: milestoneGlow 1s ease-out;
+}
+
+@keyframes milestoneGlow {
+    0% {
+        transform: scale(1);
+        color: var(--text-primary);
+    }
+    50% {
+        transform: scale(1.2);
+        color: #00ff00;
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        color: var(--text-primary);
+    }
+}
+
+/* Perfect accuracy celebration */
+.perfect-accuracy {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 50;
+    animation: perfectGlow 2s ease-out;
+}
+
+@keyframes perfectGlow {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
 } 

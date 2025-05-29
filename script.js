@@ -249,7 +249,15 @@ let gameState = {
     averageWpm: 0,
     longestStreak: 0,
     currentStreak: 0,
-    totalWords: 0
+    totalWords: 0,
+    lastKeystrokeTime: 0,
+    burstStartTime: 0,
+    burstCharCount: 0,
+    consecutiveCorrect: 0,
+    mistakePositions: [],
+    typingRhythm: [],
+    focusTime: 0,
+    pauseTime: 0
 };
 
 // DOM elements with error checking
@@ -332,7 +340,7 @@ class ThemeManager {
             root.style.setProperty('--text-secondary', '#000000');
             root.style.setProperty('--text-muted', '#000000');
             root.style.setProperty('--accent-primary', '#000000');
-            root.style.setProperty('--error-color', '#000000');
+            root.style.setProperty('--error-color', '#ff0000');
             root.style.setProperty('--success-color', '#000000');
             root.style.setProperty('--warning-color', '#000000');
             themeToggle.textContent = '🌞';
@@ -345,10 +353,10 @@ class ThemeManager {
             root.style.setProperty('--text-secondary', '#ffffff');
             root.style.setProperty('--text-muted', '#ffffff');
             root.style.setProperty('--accent-primary', '#ffffff');
-            root.style.setProperty('--error-color', '#ffffff');
+            root.style.setProperty('--error-color', '#ff0000');
             root.style.setProperty('--success-color', '#ffffff');
             root.style.setProperty('--warning-color', '#ffffff');
-            themeToggle.textContent = '🌙';
+            themeToggle.textContent = '��';
         }
     }
 }
@@ -649,6 +657,60 @@ function updateStats() {
     const newRawWpm = calculateRawWPM();
     const newAccuracy = calculateAccuracy();
     
+    // Update progress bar
+    const progress = Math.min(100, (gameState.currentTime / gameState.timeLimit) * 100);
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+        progressBar.style.width = progress + '%';
+    }
+    
+    // Update floating WPM indicator
+    const floatingWpm = document.getElementById('floatingWpm');
+    const liveWpmValue = document.getElementById('liveWpmValue');
+    if (floatingWpm && liveWpmValue && gameState.isActive) {
+        floatingWpm.style.display = 'block';
+        liveWpmValue.textContent = newWpm;
+        
+        // Add glow effect for high WPM
+        if (newWpm >= 80) {
+            liveWpmValue.style.color = '#00ff00';
+            liveWpmValue.style.textShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
+        } else if (newWpm >= 60) {
+            liveWpmValue.style.color = '#ffff00';
+            liveWpmValue.style.textShadow = '0 0 10px rgba(255, 255, 0, 0.3)';
+        } else {
+            liveWpmValue.style.color = 'var(--text-primary)';
+            liveWpmValue.style.textShadow = 'none';
+        }
+    }
+    
+    // Animate milestone achievements
+    const milestones = [25, 50, 75, 100, 125, 150];
+    milestones.forEach(milestone => {
+        if (Math.floor(newWpm) === milestone && wpmElement.textContent !== newWpm.toString()) {
+            wpmElement.classList.add('milestone');
+            showAchievement(`${milestone} WPM Milestone!`, '🏆');
+            setTimeout(() => wpmElement.classList.remove('milestone'), 1000);
+        }
+    });
+    
+    // Show streak indicators
+    if (gameState.currentStreak > 0 && gameState.currentStreak % 10 === 0) {
+        showStreakIndicator(gameState.currentStreak);
+        caret.classList.add('streak');
+        setTimeout(() => caret.classList.remove('streak'), 2000);
+    }
+    
+    // Show burst WPM indicator
+    if (gameState.burstWpm > newWpm + 10) {
+        showBurstIndicator(gameState.burstWpm);
+    }
+    
+    // Perfect accuracy celebration
+    if (newAccuracy === 100 && gameState.totalChars > 50) {
+        showPerfectAccuracy();
+    }
+    
     // Animate value changes
     if (wpmElement.textContent !== newWpm.toString()) {
         wpmElement.textContent = newWpm;
@@ -665,30 +727,152 @@ function updateStats() {
     errorsElement.textContent = gameState.errors;
 }
 
+// Show streak indicator
+function showStreakIndicator(streak) {
+    const indicator = document.createElement('div');
+    indicator.className = 'streak-indicator';
+    indicator.textContent = `${streak} STREAK! 🔥`;
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+        indicator.remove();
+    }, 2000);
+}
+
+// Show burst WPM indicator
+function showBurstIndicator(burstWpm) {
+    const indicator = document.createElement('div');
+    indicator.className = 'burst-indicator';
+    indicator.textContent = `Burst: ${burstWpm} WPM!`;
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+        indicator.remove();
+    }, 2000);
+}
+
+// Show achievement notification
+function showAchievement(message, icon = '🎉') {
+    const achievement = document.createElement('div');
+    achievement.className = 'achievement';
+    achievement.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 255, 0, 0.9);
+            color: #000000;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 1000;
+            animation: achievementPop 3s ease-out forwards;
+            text-align: center;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">${icon}</div>
+            ${message}
+        </div>
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes achievementPop {
+            0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+            20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+            80% { opacity: 1; transform: translateX(-50%) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) scale(0.9); }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(achievement);
+    
+    setTimeout(() => {
+        achievement.remove();
+        style.remove();
+    }, 3000);
+}
+
+// Show perfect accuracy celebration
+function showPerfectAccuracy() {
+    const celebration = document.createElement('div');
+    celebration.className = 'perfect-accuracy';
+    document.body.appendChild(celebration);
+    
+    setTimeout(() => {
+        celebration.remove();
+    }, 2000);
+    
+    showAchievement('Perfect Accuracy!', '💎');
+}
+
 // Enhanced input handling with sound effects
 function handleInput(event) {
     if (!gameState.isActive) {
         gameState.isActive = true;
         gameState.startTime = Date.now();
+        gameState.burstStartTime = Date.now();
         startTimer();
         textDisplay.classList.add('focused');
     }
     
     const inputValue = event.target.value;
     const currentWord = gameState.words[gameState.currentWordIndex];
+    const currentTime = Date.now();
+    
+    // Track typing rhythm
+    if (gameState.lastKeystrokeTime > 0) {
+        const timeBetweenKeys = currentTime - gameState.lastKeystrokeTime;
+        gameState.typingRhythm.push(timeBetweenKeys);
+        if (gameState.typingRhythm.length > 10) {
+            gameState.typingRhythm.shift();
+        }
+    }
+    gameState.lastKeystrokeTime = currentTime;
     
     // Update current character index based on input length
     gameState.currentCharIndex = inputValue.length;
     
-    // Play sound for keystrokes
+    // Enhanced keystroke feedback
     if (inputValue.length > 0) {
         const lastChar = inputValue[inputValue.length - 1];
         const expectedChar = currentWord[inputValue.length - 1];
         
         if (lastChar === expectedChar) {
-            soundManager.playSound('keypress');
+            soundManager.playSound('keypress', 1 + (gameState.consecutiveCorrect * 0.05));
+            gameState.consecutiveCorrect++;
+            gameState.currentStreak++;
+            
+            // Track burst typing
+            gameState.burstCharCount++;
+            const burstTime = (currentTime - gameState.burstStartTime) / 1000;
+            if (burstTime > 0) {
+                const burstWpm = (gameState.burstCharCount / 5) / (burstTime / 60);
+                if (burstWpm > gameState.burstWpm) {
+                    gameState.burstWpm = Math.round(burstWpm);
+                }
+            }
         } else {
-            soundManager.playSound('error');
+            soundManager.playSound('error', 0.8);
+            gameState.consecutiveCorrect = 0;
+            gameState.mistakePositions.push({
+                wordIndex: gameState.currentWordIndex,
+                charIndex: inputValue.length - 1,
+                expected: expectedChar,
+                typed: lastChar
+            });
+            
+            // Reset burst tracking on error
+            gameState.burstStartTime = currentTime;
+            gameState.burstCharCount = 0;
+        }
+        
+        // Update longest streak
+        if (gameState.currentStreak > gameState.longestStreak) {
+            gameState.longestStreak = gameState.currentStreak;
         }
     }
     
@@ -696,6 +880,13 @@ function handleInput(event) {
     if (inputValue.endsWith(' ')) {
         const typedWord = inputValue.trim();
         gameState.typedWords[gameState.currentWordIndex] = typedWord;
+        
+        // Enhanced word completion feedback
+        if (typedWord === gameState.words[gameState.currentWordIndex]) {
+            soundManager.playSound('wordComplete', 1.2);
+        } else {
+            gameState.currentStreak = 0; // Reset streak on word error
+        }
         
         // Count characters for this word
         const originalWord = gameState.words[gameState.currentWordIndex];
@@ -727,7 +918,7 @@ function handleInput(event) {
         return;
     }
     
-    // Update real-time character counting for live stats
+    // Real-time character counting for live stats
     gameState.totalChars = 0;
     gameState.correctChars = 0;
     gameState.errors = 0;
@@ -1087,7 +1278,15 @@ function initializeTest() {
         averageWpm: 0,
         longestStreak: 0,
         currentStreak: 0,
-        totalWords: 0
+        totalWords: 0,
+        lastKeystrokeTime: 0,
+        burstStartTime: 0,
+        burstCharCount: 0,
+        consecutiveCorrect: 0,
+        mistakePositions: [],
+        typingRhythm: [],
+        focusTime: 0,
+        pauseTime: 0
     };
     
     // Load settings from settings manager
@@ -1131,6 +1330,15 @@ function initializeTest() {
     accuracyElement.textContent = '100%';
     timerElement.textContent = gameState.timeLimit;
     errorsElement.textContent = '0';
+    
+    // Reset visual elements
+    const progressBar = document.getElementById('progressBar');
+    const floatingWpm = document.getElementById('floatingWpm');
+    if (progressBar) progressBar.style.width = '0%';
+    if (floatingWpm) floatingWpm.style.display = 'none';
+    
+    // Remove any existing indicators
+    document.querySelectorAll('.streak-indicator, .burst-indicator, .achievement, .perfect-accuracy').forEach(el => el.remove());
     
     // Generate and display text
     displayText();
